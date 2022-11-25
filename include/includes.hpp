@@ -6,7 +6,6 @@
 #include <cstdio>
 #include <cstdlib>
 
-#include <type_traits>
 #include <concepts>
+#include <type_traits>
 #include <utility>
-

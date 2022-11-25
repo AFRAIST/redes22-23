@@ -1,106 +1,52 @@
-TOPDIR ?= $(CURDIR)
-
-TARGET	 = client
-BUILD	 = build
-SOURCES  = src
-INCLUDES := include
+GROUP_NUMBER	= 28
 
 #-----Compilers-----
 
-CC	= gcc
+export CC	= gcc
 
-CXX = g++
+export CXX	= g++
+
+export LD	= $(CXX)
 
 #------------------
 
 #-----Get Flags---------
 
-CFLAGS = $(INCLUDE) -march=native -Wall -Wextra -g -O2 -pedantic -ffunction-sections -fdata-sections -Wl,--gc-sections
-CXXFLAGS = $(CFLAGS) -std=gnu++20 -fno-exceptions
-
-LIBS := -pthread -lm
-
-DEPENDENCY_FLAGS = -MMD -MP -MF $(DEPSDIR)/$*.d
+export CFLAGS = -march=native -Wall -Wextra -g -O2 -pedantic \
+				-ffunction-sections -fdata-sections -Wl,--gc-sections \
+				-fno-strict-aliasing
+export CXXFLAGS = $(CFLAGS) -std=gnu++20 -fno-exceptions -fno-rtti
 
 #----------------------
 
-ifneq ($(BUILD),$(notdir $(CURDIR)))
 
-# Phony $(BUILD) so that the fact that it still executes even if it exists.
-.PHONY: $(BUILD) all clean
+#----Other------------
+export OUTDIR = $(CURDIR)
+CLIENT_DIR	= player_src
+CLIENT_MK 	= $(CLIENT_DIR)/client.mk
+SERVER_DIR	= GS_src
+SERVER_MK	= $(SERVER_DIR)/server.mk
+#---------------------
 
-export TOPDIR	:=	$(CURDIR)
+#----Programs---------
+.PHONY: all clean client server fenix
 
-export OUTPUT	:=	$(CURDIR)/$(TARGET)
+all: client server
 
-export VPATH	:=	$(foreach dir,$(SOURCES),$(CURDIR)/$(dir))
+client:
+	$(MAKE) all -C $(CLIENT_DIR) -f $(CURDIR)/$(CLIENT_MK)
 
-export DEPSDIR	:=	$(CURDIR)/$(BUILD)
-
-CFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.c)))
-CPPFILES	:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.cpp)))
-SFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.s)))
-BINFILES	:=	$(foreach dir,$(DATA),$(notdir $(wildcard $(dir)/*.*)))
-#-------------------------------------------------------------------------------
-# use CXX for linking C++ projects, CC for standard C
-#-------------------------------------------------------------------------------
-ifeq ($(strip $(CPPFILES)),)
-#-------------------------------------------------------------------------------
-	export LD	:=	$(CC)
-#-------------------------------------------------------------------------------
-else
-#-------------------------------------------------------------------------------
-	export LD	:=	$(CXX)
-#-------------------------------------------------------------------------------
-endif
-#-------------------------------------------------------------------------------
-
-export OFILES_BIN	:=	$(addsuffix .o,$(BINFILES))
-export OFILES_SRC	:=	$(CPPFILES:.cpp=.o) $(CFILES:.c=.o) $(SFILES:.s=.o)
-export OFILES 	:=	$(OFILES_BIN) $(OFILES_SRC)
-export HFILES_BIN	:=	$(addsuffix .h,$(subst .,_,$(BINFILES)))
-
-export INCLUDE	:=	$(foreach dir,$(INCLUDES),-I$(CURDIR)/$(dir)) \
-			$(foreach dir,$(LIBDIRS),-I$(dir)/include) \
-			-I$(CURDIR)/$(BUILD)
-
-all: $(BUILD)
-
-$(BUILD):
-	@[ -d $@ ] || mkdir -p $@
-	@$(MAKE) --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile
-
-$(OUTPUT).zip	:	$(OUTPUT)
-	zip -jr $@ $(SOURCES)
+server:
+	$(MAKE) all -C $(SERVER_DIR) -f $(CURDIR)/$(SERVER_MK)
 
 clean:
 	@echo Cleaning all build...
-	@rm -rf $(BUILD) $(TARGET)
-	@rm -rf $(BUILD) $(TARGET).zip
+	$(MAKE) clean -C $(CLIENT_DIR) -f $(CURDIR)/$(CLIENT_MK)
+	$(MAKE) clean -C $(SERVER_DIR) -f $(CURDIR)/$(SERVER_MK)
 
-#-------------------------------------------------------------------------------
-else
-.PHONY: all
+fenix: clean
+	@zip -r proj_$(GROUP_NUMBER).zip * 
 
-DEPENDS	:=	$(OFILES:.o=.d)
+#---------------------
 
-#-------------------------------------------------------------------------------
-# main targets
-#-------------------------------------------------------------------------------
-all	:	$(OUTPUT)
-
-$(OUTPUT)	:	$(OFILES)
-	$(LD) $(OFILES) $(LIBS) -o $@
-
-%.o: %.c
-	$(CC) $(DEPENDENCY_FLAGS) $(CFLAGS) -c $< -o $@
-
-%.o: %.cpp
-	$(CXX) $(DEPENDENCY_FLAGS) $(CXXFLAGS) -c $< -o $@
-
--include $(DEPENDS)
-
-#-------------------------------------------------------------------------------
-endif
-#-------------------------------------------------------------------------------
 
