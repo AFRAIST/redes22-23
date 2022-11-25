@@ -1,8 +1,18 @@
-#include "util/rcwg.hpp"
+#include "content.hpp"
 #include <arpa/inet.h>
 #include <cstdio>
 
-int main() {
-    std::printf("Hello World from client!\n");
-    std::printf("%p\n", reinterpret_cast<void *>(inet_ntop));
+namespace rcwg {
+    ALWAYS_INLINE void Main(int argc, char *argv[]) {
+        RCWG_UNUSED(argc, argv);
+        util::io::PrintF("Hello World from client!\n");
+        util::io::SetVerbose();
+        util::io::VerbosePrintF("aaaa\n");
+        util::io::PrintF("bbba\n");
+    }
 }
+
+int main(int argc, char *argv[]) {
+    rcwg::Main(argc, argv);
+}
+
