@@ -32,3 +32,6 @@ constexpr ALWAYS_INLINE void UnusedImpl(ArgTypes &&...args) {
 #define RCWG_UNUSED(...) ::rcwg::impl::UnusedImpl(__VA_ARGS__)
 
 #define BITSIZEOF(x) (sizeof(x) << 3)
+
+#define DEFAULT_PORT "58028"
+#define DEFAULT_IP "127.0.1.1"
