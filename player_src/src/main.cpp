@@ -43,8 +43,6 @@ namespace rcwg {
     ALWAYS_INLINE void Main(int argc, char *argv[]) {
         RCWG_UNUSED(argc, argv);
         util::io::PrintF("Hello World from client!\n");
-        util::io::SetVerbose();
-        util::io::VerbosePrintF("aaaa\n");
         util::io::PrintF("bbba\n");
 
         char* GSip = NULL;
