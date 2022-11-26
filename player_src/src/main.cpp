@@ -61,5 +61,3 @@ namespace rcwg {
 int main(int argc, char *argv[]) {
     rcwg::Main(argc, argv);
 } // namespace rcwg
-
-int main(int argc, char *argv[]) { rcwg::Main(argc, argv); }
