@@ -29,6 +29,7 @@ CPPFILES	:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.cpp)))
 SFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.s)))
 
 export OFILES		:=	$(CPPFILES:.cpp=.o) $(CFILES:.c=.o) $(SFILES:.s=.o)
+export OFILES_COMMON		:=	$(foreach dir,$(OUTDIR)/common_src/build,$(wildcard $(dir)/*.o))
 
 export INCLUDE	:=	$(foreach dir,$(INCLUDES),-I$(dir))
 
@@ -49,7 +50,7 @@ DEPENDS	:=	$(OFILES:.o=.d)
 all	:	$(OUTPUT)
 
 $(OUTPUT)	:	$(OFILES)
-	$(LD) $(OFILES) $(LIBS) -o $@
+	$(LD) $(OFILES) $(OFILES_COMMON) $(LIBS) -o $@
 
 %.o: %.c
 	$(CC) $(DEPENDENCY_FLAGS) $(INCLUDE) $(CFLAGS) -c $< -o $@

@@ -1,4 +1,4 @@
-#include "content.hpp"
+#include "rcwg.hpp"
 #include <arpa/inet.h>
 #include <cstdio>
 
@@ -43,9 +43,9 @@ namespace rcwg {
         fclose(word_file);
     }
 }
+} // namespace rcwg
 
 int main(int argc, char *argv[]) {
     rcwg::Main(argc, argv);
-    return 0;
 }
 
