@@ -1,5 +1,5 @@
 #pragma once
-#include "../../content.hpp"
+#include "../content.hpp"
 
 namespace rcwg::util {
 namespace impl {

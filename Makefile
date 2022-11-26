@@ -26,21 +26,27 @@ CLIENT_DIR	= player_src
 CLIENT_MK 	= $(CLIENT_DIR)/client.mk
 SERVER_DIR	= GS_src
 SERVER_MK	= $(SERVER_DIR)/server.mk
+COMMON_DIR	= common_src
+COMMON_MK	= $(COMMON_DIR)/common.mk
 #---------------------
 
 #----Programs---------
-.PHONY: all clean client server fenix
+.PHONY: all clean client common server fenix
 
 all: client server
 
-client:
+common:
+	$(MAKE) all -C $(COMMON_DIR) -f $(CURDIR)/$(COMMON_MK)
+
+client: common
 	$(MAKE) all -C $(CLIENT_DIR) -f $(CURDIR)/$(CLIENT_MK)
 
-server:
+server: common
 	$(MAKE) all -C $(SERVER_DIR) -f $(CURDIR)/$(SERVER_MK)
 
 clean:
 	@echo Cleaning all build...
+	$(MAKE) clean -C $(COMMON_DIR) -f $(CURDIR)/$(COMMON_MK)
 	$(MAKE) clean -C $(CLIENT_DIR) -f $(CURDIR)/$(CLIENT_MK)
 	$(MAKE) clean -C $(SERVER_DIR) -f $(CURDIR)/$(SERVER_MK)
 
