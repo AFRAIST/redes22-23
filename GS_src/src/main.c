@@ -1,11 +1,13 @@
 #include "rcwg.h"
 
+#include "Dictionary.h"
+
 char GSport_GSip_reader(int argc, char **argv, FILE** word_file, char** GSport){
 
     int option_val;
 
     if(argc >= 2){ 
-        (*word_file) = fopen(argv[1], "r");
+        (*word_file) = fopen(argv[1], "rb");
         if((*word_file) == NULL) return EXIT_FAILURE;
     }else return EXIT_FAILURE;
 
@@ -33,8 +35,12 @@ int main(int argc, char *argv[]) {
         printf("ABORT");
         exit(EXIT_FAILURE);
     }
+    
+
+    InitDictionary(&dict_instance, word_file);
 
     VerbosePrintF("%s\n", GSport);
-    fclose(word_file);
+
+    FiniDictionary(&dict_instance);
 }
 

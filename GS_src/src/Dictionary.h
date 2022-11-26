@@ -7,11 +7,19 @@ typedef struct {
 } DictionaryEntry;
 
 typedef struct {
-    DictionaryEntry *entries;
+    union {
+        DictionaryEntry *entries;
+        u8 *buffer;
+    };
 } Dictionary;
 
-const char *const invalid_word_size_error = "Dictionary: Invalid word size!";
-const char *const invalid_delimiter_error =
-    "Dictionary: Invalid delimiter formatting!";
+extern Dictionary dict_instance;
 
-void InitDictionary(Dictionary *dict, char *data, size_t size);
+#define DICT_INVALID_WORD_SIZE_ERROR "Dictionary: Invalid word size!"
+#define DICT_INVALID_DELIMITER_ERROR "Dictionary: Invalid delimiter formatting!"
+#define DICT_INVALID_LAST_LINE "Dictionary: Invalid last line!"
+#define DICT_INVALID_CHARACTER "Dictionary: Invalid character!"
+
+void InitDictionary(Dictionary *dict, FILE *fp);
+void FiniDictionary(Dictionary *dict);
+
