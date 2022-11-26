@@ -42,7 +42,6 @@ namespace rcwg {
         util::io::VerbosePrintF("%s\n", GSport);
         fclose(word_file);
     }
-}
 } // namespace rcwg
 
 int main(int argc, char *argv[]) {
