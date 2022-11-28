@@ -1,11 +1,6 @@
 #include "rcwg.h"
 #include "udp_sender.h"
 
-struct input {   // Structure declaration
-    char command[11];
-    char appendix[31];          // Member (int variable)
-};
-
 char GSport_GSip_reader(int argc, char **argv, char **GSip, char **GSport) {
 
     int option_val;
@@ -64,11 +59,9 @@ char process_buffer(char buffer[],struct input *inp){
 
 char command_reader(){
     
-    struct input inp;
+    INIT_INPUT(inp);
 
     char buffer[41];
-    char plid[7];
-    bool plid_exists = false;
 
     if(fgets(buffer, 41 , stdin) == NULL){
         printf("Como é que conseguiste fazer porcaria");
@@ -81,14 +74,8 @@ char command_reader(){
 
     while(!COND_COMP_STRINGS_1(inp.command, "quit")){
         if(COND_COMP_STRINGS_2(inp.command, "start", "sg")){
-            if(plid_exists == false){
-                if(get_plid(inp.appendix, plid) == EXIT_FAILURE)
-                    printf("Nada fixe :c");
-                else {
-                    printf("%s c:\n", plid);
-                    plid_exists = true;
-                }
-            }
+            if(start_command(&inp) == EXIT_FAILURE)
+                printf("Input Invalido :c");
         }
         else if(COND_COMP_STRINGS_2(inp.command, "play", "pl"))
             printf("Sucess! pl\n");

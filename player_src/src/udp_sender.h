@@ -2,4 +2,6 @@
 #include "udp_sender.h"
 
 
-char get_plid(char* appendix, char plid[7]);
+char get_plid(struct input *inp);
+
+char start_command(struct input *inp);
