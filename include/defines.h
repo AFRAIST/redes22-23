@@ -9,6 +9,7 @@
 
 #define DEFAULT_PORT "58028"
 #define DEFAULT_IP "127.0.0.1"
+#define PLID_MAX_SIZE 6
 
 #define BRANCH_PREDICT(expr, value, _probability)                              \
     __builtin_expect_with_probability(expr, value, _probability)
@@ -26,3 +27,8 @@
         fprintf(stderr, message);                                              \
         exit(EXIT_FAILURE);                                                    \
     }
+
+#define COND_COMP_STRINGS_2(command,str1,str2) (strcmp(command, str1) == 0      \
+    || strcmp(command, str2) == 0) 
+
+#define COND_COMP_STRINGS_1(command,str1) (strcmp(command, str1) == 0)

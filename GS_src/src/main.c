@@ -5,6 +5,7 @@
 char GSport_GSip_reader(int argc, char **argv, FILE** word_file, char** GSport){
 
     int option_val;
+    bool validation = true;
 
     if(argc >= 2){ 
         (*word_file) = fopen(argv[1], "rb");
@@ -14,13 +15,19 @@ char GSport_GSip_reader(int argc, char **argv, FILE** word_file, char** GSport){
     while ((option_val = getopt(argc, argv, "p:v")) != -1){
         switch (option_val){
             case 'p':
-            (*GSport) = strdup(optarg);
+            if((*GSport) == NULL)
+                (*GSport) = strdup(optarg);
+            else validation = false;
             break;
             case 'v':
-            SetVerbose();
+            if(is_verbose == false)
+                SetVerbose();
+            else validation = false;
             break;
         }
     }
+    if(validation == false)
+        return EXIT_FAILURE;
     if((*GSport) == NULL){
         (*GSport) = strdup(DEFAULT_PORT);
     }
@@ -32,7 +39,7 @@ int main(int argc, char *argv[]) {
     char* GSport = NULL;
 
     if(GSport_GSip_reader(argc, argv, &word_file, &GSport) == EXIT_FAILURE){
-        printf("ABORT");
+        printf("ABORT\n");
         exit(EXIT_FAILURE);
     }
     
