@@ -1,5 +1,5 @@
 #include "rcwg.h"
-#include "command.h"
+#include "command_processor.h"
 
 char GSport_GSip_reader(int argc, char **argv, char **GSip, char **GSport) {
 
@@ -26,10 +26,10 @@ char GSport_GSip_reader(int argc, char **argv, char **GSip, char **GSport) {
         return EXIT_FAILURE;
     }
     if ((*GSip) == NULL) {
-        (*GSip) = DEFAULT_IP;
+        (*GSip) = strdup(DEFAULT_IP);
     }
     if ((*GSport) == NULL) {
-        (*GSport) = DEFAULT_PORT;
+        (*GSport) = strdup(DEFAULT_PORT);
     }
     return EXIT_SUCCESS;
 }

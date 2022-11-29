@@ -32,9 +32,9 @@
         R_ABORT(message);                                                      \
     }
 
-#define R_NOT_IMPLEMENTED_MSG(message) ({ R_ABORT(msg); })
+#define R_NOT_IMPLEMENTED_MSG(msg) ({ R_ABORT(msg); })
 
-#define R_NOT_IMPLEMENTED() ({ R_NOT_IMPLEMENTED_MSG(msg); })
+#define R_NOT_IMPLEMENTED() R_NOT_IMPLEMENTED_MSG("Not implemented!")
 
 #define R_EXIT(message, res)                                                   \
     ({                                                                         \

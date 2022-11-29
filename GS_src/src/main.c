@@ -1,5 +1,5 @@
 #include "rcwg.h"
-
+#include "command_processor.h"
 #include "Dictionary.h"
 
 char GSport_GSip_reader(int argc, char **argv, FILE** word_file, char** GSport){
@@ -47,6 +47,8 @@ int main(int argc, char *argv[]) {
     InitDictionary(&dict_instance, word_file);
 
     VerbosePrintF("%s\n", GSport);
+
+    command_reader();
 
     FiniDictionary(&dict_instance);
 }

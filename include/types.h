@@ -19,3 +19,7 @@ struct input { // Structure declaration
     size_t plid;
     bool plid_exists;
 };
+
+struct output { // Structure declaration
+    u8 gap_x30[0x30];
+};
