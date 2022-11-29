@@ -1,0 +1,7 @@
+*.a
+*.o
+*.d
+*.elf
+*.angr.py
+*.pyc
+*.zip

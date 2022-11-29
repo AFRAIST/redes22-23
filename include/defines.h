@@ -1,7 +1,6 @@
 #pragma once
 
 #define NORETURN __attribute__((noreturn))
-#define ALWAYS_INLINE_LAMBDA __attribute__((always_inline))
 #define ALWAYS_INLINE inline __attribute__((always_inline))
 #define NOINLINE __attribute__((noinline))
 
@@ -22,15 +21,37 @@
 #define BRANCH_LIKELY(expr) BRANCH_PREDICT_TRUE(expr, 1.0)
 #define BRANCH_UNLIKELY(expr) BRANCH_PREDICT_FALSE(expr, 1.0)
 
-#define R_EXIT_IF(expr, message)                                               \
-    if (expr) {                                                                \
+#define R_ABORT(message)                                                       \
+    ({                                                                         \
         fprintf(stderr, message);                                              \
-        exit(EXIT_FAILURE);                                                    \
+        abort();                                                               \
+    })
+
+#define R_ABORT_IF(expr, message)                                              \
+    if (expr) {                                                                \
+        R_ABORT(message);                                                      \
     }
 
-#define COND_COMP_STRINGS_2(command,str1,str2) (strcmp(command, str1) == 0      \
-    || strcmp(command, str2) == 0) 
+#define R_NOT_IMPLEMENTED_MSG(message) ({ R_ABORT(msg); })
 
-#define COND_COMP_STRINGS_1(command,str1) (strcmp(command, str1) == 0)
+#define R_NOT_IMPLEMENTED() ({ R_NOT_IMPLEMENTED_MSG(msg); })
+
+#define R_EXIT(message, res)                                                   \
+    ({                                                                         \
+        fprintf(stderr, message);                                              \
+        exit(res);                                                             \
+    })
+
+#define R_EXIT_IF(expr, message, res)                                               \
+    if (expr) {                                                                \
+        R_EXIT(message, res);                                         \
+    }
+
+#define R_FAIL_EXIT_IF(expr, message) R_EXIT_IF(expr, message, EXIT_FAILURE)
+
+#define COND_COMP_STRINGS_2(command, str1, str2)                               \
+    (strcmp(command, str1) == 0 || strcmp(command, str2) == 0)
+
+#define COND_COMP_STRINGS_1(command, str1) (strcmp(command, str1) == 0)
 
 #define INIT_INPUT(X) struct input X = {.plid_exists = false}

@@ -22,4 +22,3 @@ extern Dictionary dict_instance;
 
 void InitDictionary(Dictionary *dict, FILE *fp);
 void FiniDictionary(Dictionary *dict);
-

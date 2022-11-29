@@ -39,15 +39,15 @@ void InitDictionary(Dictionary *dict, FILE *fp) {
     char cc = delim[0];
     size_t amt = 0;
     for (size_t i = 0; i != size; ++i) {
-        R_EXIT_IF(BRANCH_UNLIKELY(data[i] == '\0' || data[i] == 0x1A), DICT_INVALID_CHARACTER);
+        R_FAIL_EXIT_IF(BRANCH_UNLIKELY(data[i] == '\0' || data[i] == 0x1A), DICT_INVALID_CHARACTER);
         if (cc == delim[0]) {
             /* Keep checking word validity. */
-            R_EXIT_IF(BRANCH_UNLIKELY(data[i] == delim[1] || counter > 30),
+            R_FAIL_EXIT_IF(BRANCH_UNLIKELY(data[i] == delim[1] || counter > 30),
                       DICT_INVALID_WORD_SIZE_ERROR);
             
             if (data[i] == cc) {
                 /* Assert size again. */
-                R_EXIT_IF(BRANCH_UNLIKELY(counter < 3), DICT_INVALID_WORD_SIZE_ERROR);
+                R_FAIL_EXIT_IF(BRANCH_UNLIKELY(counter < 3), DICT_INVALID_WORD_SIZE_ERROR);
 
                 cc = delim[1];
                 dict->entries[amt].word = &data[i - counter];
@@ -56,7 +56,7 @@ void InitDictionary(Dictionary *dict, FILE *fp) {
                 continue;
             }
         } else /*if (cc == delim[1])*/ {
-            R_EXIT_IF(BRANCH_UNLIKELY(data[i] == delim[0]),
+            R_FAIL_EXIT_IF(BRANCH_UNLIKELY(data[i] == delim[0]),
                       DICT_INVALID_DELIMITER_ERROR);
 
             if (data[i] == cc) {
@@ -71,7 +71,7 @@ void InitDictionary(Dictionary *dict, FILE *fp) {
         ++counter;
     }
 
-    R_EXIT_IF(BRANCH_UNLIKELY(cc != delim[0] || data[size-1] != '\0'),
+    R_FAIL_EXIT_IF(BRANCH_UNLIKELY(cc != delim[0] || data[size-1] != '\0'),
               DICT_INVALID_LAST_LINE);
 }
 

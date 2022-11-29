@@ -13,9 +13,9 @@ typedef int64_t s64;
 
 typedef s32 Result;
 
-struct input {   // Structure declaration
-    char command[11];
-    char appendix[31];          // Member (int variable)
-    char plid[7];
+struct input { // Structure declaration
+    char *command; /*[11]*/
+    char *appendix; /*[31]*/ // Member (int variable)
+    size_t plid;
     bool plid_exists;
 };

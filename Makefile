@@ -12,7 +12,7 @@ export LD	= $(CXX)
 
 #-----Get Flags---------
 
-export CFLAGS = -march=native -Wall -Wextra -g -O2 -pedantic \
+export CFLAGS = -march=native -Wall -Wextra -g -O2 \
 				-ffunction-sections -fdata-sections -Wl,--gc-sections \
 				-fno-strict-aliasing
 export CXXFLAGS = $(CFLAGS) -std=gnu++20 -fno-exceptions -fno-rtti
