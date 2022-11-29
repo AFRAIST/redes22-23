@@ -5,6 +5,7 @@
 #define NOINLINE __attribute__((noinline))
 
 #define BITSIZEOF(x) (sizeof(x) << 3)
+#define STR_SIZEOF(s) (sizeof(s) - 1)
 
 #define DEFAULT_PORT "58028"
 #define DEFAULT_IP "127.0.0.1"
@@ -36,18 +37,24 @@
 
 #define R_NOT_IMPLEMENTED() R_NOT_IMPLEMENTED_MSG("Not implemented!")
 
-#define R_EXIT(message, res)                                                   \
+#define R_EXIT(res, message)                                                   \
     ({                                                                         \
         fprintf(stderr, message);                                              \
         exit(res);                                                             \
     })
 
-#define R_EXIT_IF(expr, message, res)                                               \
-    if (expr) {                                                                \
-        R_EXIT(message, res);                                         \
+#define R_FAIL_RETURN(res, cond, message)                                      \
+    if (cond) {                                                                \
+        fprintf(stderr, (message));                                            \
+        return (res);                                                          \
     }
 
-#define R_FAIL_EXIT_IF(expr, message) R_EXIT_IF(expr, message, EXIT_FAILURE)
+#define R_EXIT_IF(res, expr, message)                                          \
+    if (expr) {                                                                \
+        R_EXIT(res, message);                                                  \
+    }
+
+#define R_FAIL_EXIT_IF(expr, message) R_EXIT_IF(EXIT_FAILURE, expr, message)
 
 #define COND_COMP_STRINGS_2(command, str1, str2)                               \
     (strcmp(command, str1) == 0 || strcmp(command, str2) == 0)
