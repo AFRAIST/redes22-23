@@ -11,10 +11,10 @@ typedef int16_t s16;
 typedef int32_t s32;
 typedef int64_t s64;
 
-typedef s32 Result;
+typedef ssize_t Result;
 
-struct input { // Structure declaration
-    char *command; /*[11]*/
+struct input {               // Structure declaration
+    char *command;           /*[11]*/
     char *appendix; /*[31]*/ // Member (int variable)
     size_t plid;
     bool plid_exists;

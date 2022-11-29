@@ -1,6 +1,6 @@
 #include "command.h"
 
-Result command_start(struct output *outp){
+Result command_start(struct output *outp) {
     (void)(outp);
     R_NOT_IMPLEMENTED();
     return EXIT_SUCCESS;

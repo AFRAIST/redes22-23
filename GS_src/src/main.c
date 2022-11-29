@@ -1,48 +1,52 @@
-#include "rcwg.h"
-#include "command_processor.h"
 #include "Dictionary.h"
+#include "command_processor.h"
+#include "rcwg.h"
 
-char GSport_GSip_reader(int argc, char **argv, FILE** word_file, char** GSport){
+char GSport_GSip_reader(int argc, char **argv, FILE **word_file,
+                        char **GSport) {
 
     int option_val;
     bool validation = true;
 
-    if(argc >= 2){ 
+    if (argc >= 2) {
         (*word_file) = fopen(argv[1], "rb");
-        if((*word_file) == NULL) return EXIT_FAILURE;
-    }else return EXIT_FAILURE;
+        if ((*word_file) == NULL)
+            return EXIT_FAILURE;
+    } else
+        return EXIT_FAILURE;
 
-    while ((option_val = getopt(argc, argv, "p:v")) != -1){
-        switch (option_val){
-            case 'p':
-            if((*GSport) == NULL)
+    while ((option_val = getopt(argc, argv, "p:v")) != -1) {
+        switch (option_val) {
+        case 'p':
+            if ((*GSport) == NULL)
                 (*GSport) = strdup(optarg);
-            else validation = false;
+            else
+                validation = false;
             break;
-            case 'v':
-            if(is_verbose == false)
+        case 'v':
+            if (is_verbose == false)
                 SetVerbose();
-            else validation = false;
+            else
+                validation = false;
             break;
         }
     }
-    if(validation == false)
+    if (validation == false)
         return EXIT_FAILURE;
-    if((*GSport) == NULL){
+    if ((*GSport) == NULL) {
         (*GSport) = strdup(DEFAULT_PORT);
     }
     return EXIT_SUCCESS;
 }
 
 int main(int argc, char *argv[]) {
-    FILE* word_file = NULL;
-    char* GSport = NULL;
+    FILE *word_file = NULL;
+    char *GSport = NULL;
 
-    if(GSport_GSip_reader(argc, argv, &word_file, &GSport) == EXIT_FAILURE){
+    if (GSport_GSip_reader(argc, argv, &word_file, &GSport) == EXIT_FAILURE) {
         printf("ABORT\n");
         exit(EXIT_FAILURE);
     }
-    
 
     InitDictionary(&dict_instance, word_file);
 
@@ -52,4 +56,3 @@ int main(int argc, char *argv[]) {
 
     FiniDictionary(&dict_instance);
 }
-
