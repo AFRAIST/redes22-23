@@ -27,7 +27,11 @@ static Result get_plid(struct input *inp){
     /*inp->plid[i] = '\0';*/
     
     inp->plid = strtol(ap, NULL, 10);
-    
+
+    if(inp->plid > 999999)
+        return EXIT_FAILURE; 
+
+
     /* Invalid number. */
     if(errno != 0) {
         errno = 0;
