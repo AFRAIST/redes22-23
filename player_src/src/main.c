@@ -1,5 +1,5 @@
 #include "rcwg.h"
-#include "command.h"
+#include "command_processor.h"
 
 char GSport_GSip_reader(int argc, char **argv, char **GSip, char **GSport) {
 
