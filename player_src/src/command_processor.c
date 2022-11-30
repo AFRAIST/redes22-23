@@ -2,19 +2,49 @@
 #include "command.h"
 #include "udp_sender.h"
 
-static Result process_buffer(char buffer[], struct input *inp) {
+static Result process_buffer(char buffer[], size_t sz, struct input *inp) {
 #define MAX_CMD_OP1_SZ 10
 #define MAX_CMD_OP2_SZ 30
 
+    /* Reset the buffer. */
+    memset(buffer, 0, sz);
+
+    /* Parse from stdin. Will not trivially fail. */
+    fgets(buffer, sz, stdin);
+
+    /* Fail if first char is null. */
+    if(*buffer == '\0')
+        return EXIT_FAILURE;
+
+    /* Check if input contains nulls because fgets won't stop at them. */
+    if(BufContainsInvalidNull(buffer, sz) == EXIT_FAILURE)
+        return EXIT_FAILURE;
+
+    /* Parse command logic. */ 
     inp->command = buffer;
     buffer = StrNSplitSpaceNext(buffer, MAX_CMD_OP1_SZ);
 
+    /* Invalid. */
     if (buffer == NULL)
         return EXIT_FAILURE;
 
+    /* 1 op command. */
+    if(*buffer == '\0')
+        return EXIT_SUCCESS;
+
+    /* Next. */
     inp->appendix = buffer;
     buffer = StrNSplitSpaceNext(buffer, MAX_CMD_OP2_SZ);
 
+    /* Invalid. */
+    if(buffer == NULL)
+        return EXIT_FAILURE;
+
+    /* There are no commands with 3 ops. */
+    if(*buffer != '\0')
+        return EXIT_FAILURE;
+
+    /* 2 op command. */
     return EXIT_SUCCESS;
 
 #undef MAX_CMD_OP1_SZ
@@ -28,11 +58,7 @@ void command_reader() {
 
     char buffer[CUR_BUFFER_SZ];
 
-    if (fgets(buffer, CUR_BUFFER_SZ, stdin) == NULL) {
-        printf("Como é que conseguiste fazer porcaria");
-    };
-
-    if (process_buffer(buffer, &inp) == EXIT_FAILURE) {
+    while (process_buffer(buffer, CUR_BUFFER_SZ, &inp) == EXIT_FAILURE) {
         printf("Nao sabes ecrever? vai lere o enunciado! esse comando nao é "
                "valido :angry face:\n");
     };
@@ -40,7 +66,7 @@ void command_reader() {
     while (!COND_COMP_STRINGS_1(inp.command, "quit")) {
         if (COND_COMP_STRINGS_2(inp.command, "start", "sg")) {
             if (command_start(&inp) == EXIT_FAILURE)
-                printf("Input Invalido :c");
+                printf("Input Invalido :c\n");
         } else if (COND_COMP_STRINGS_2(inp.command, "play", "pl"))
             printf("Sucess! pl\n");
         else if (COND_COMP_STRINGS_2(inp.command, "guess", "gw"))
@@ -51,10 +77,8 @@ void command_reader() {
             printf("Sucess! h\n");
         else if (COND_COMP_STRINGS_2(inp.command, "state", "st"))
             printf("Sucess! st\n");
-        if (fgets(buffer, CUR_BUFFER_SZ, stdin) == NULL) {
-            printf("Como é que conseguiste fazer porcaria");
-        };
-        if (process_buffer(buffer, &inp) == EXIT_FAILURE) {
+        
+        while (process_buffer(buffer, CUR_BUFFER_SZ, &inp) == EXIT_FAILURE) {
             printf("Nao sabes ecrever? vai ler o enunciado! esse comando nao é "
                    "valido :angry face:\n");
         };

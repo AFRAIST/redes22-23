@@ -20,8 +20,11 @@ static Result get_plid(struct input *inp) {
             continue;
         }
         */
-        if (inp->appendix[appendix_size - PLID_MAX_SIZE + i] < '0' &&
-            inp->appendix[appendix_size - PLID_MAX_SIZE + i] > '9') {
+        if(inp->appendix[i] == '\0')
+            break;
+
+        if (inp->appendix[i] < '0' ||
+            inp->appendix[i] > '9') {
             return EXIT_FAILURE;
         }
     }
@@ -44,7 +47,7 @@ static Result get_plid(struct input *inp) {
 Result command_start(struct input *inp) {
     if (inp->plid_exists == false) {
         if (get_plid(inp) == EXIT_FAILURE) {
-            printf("Nada fixe :c");
+            printf("Nada fixe :c\n");
             return EXIT_FAILURE;
         } else {
             printf("%06zu c:\n", inp->plid);
@@ -53,7 +56,7 @@ Result command_start(struct input *inp) {
     }
 
     else {
-        printf("Jogador ja existente");
+        printf("[ERR] Jogador ja existente\n");
         return EXIT_FAILURE;
     }
 
