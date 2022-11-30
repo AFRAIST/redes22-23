@@ -3,8 +3,6 @@
 #include "player.h"
 #include "rcwg.h"
 
-#include <signal.h>
-
 char *player_ip = NULL;
 char *player_port = NULL;
 
@@ -49,6 +47,8 @@ int main(int argc, char *argv[]) {
     FILE *word_file = NULL;
     char *GSport = NULL;
 
+    ignore_signals();
+
     if (GSport_GSip_reader(argc, argv, &word_file, &GSport) == EXIT_FAILURE) {
         printf("ABORT\n");
         exit(EXIT_FAILURE);
@@ -59,8 +59,6 @@ int main(int argc, char *argv[]) {
     VerbosePrintF("%s\n", GSport);
 
     init_players(g_players, sizeof(g_players) / sizeof(Player));
-
-    signal(SIGPIPE, SIG_IGN);
 
     command_reader();
 

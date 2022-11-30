@@ -1,6 +1,6 @@
 #include "rcwg.h"
 
-ssize_t try_pipe_write(int fd, const void *buf, size_t count) {
+ssize_t try_write(int fd, const void *buf, size_t count) {
     ssize_t rc = 0;
 
     do {
