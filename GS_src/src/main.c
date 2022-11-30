@@ -1,6 +1,10 @@
 #include "Dictionary.h"
 #include "command_processor.h"
+#include "player.h"
 #include "rcwg.h"
+
+char *player_ip = NULL;
+char *player_port = NULL;
 
 char GSport_GSip_reader(int argc, char **argv, FILE **word_file,
                         char **GSport) {
@@ -43,6 +47,8 @@ int main(int argc, char *argv[]) {
     FILE *word_file = NULL;
     char *GSport = NULL;
 
+    ignore_signals();
+
     if (GSport_GSip_reader(argc, argv, &word_file, &GSport) == EXIT_FAILURE) {
         printf("ABORT\n");
         exit(EXIT_FAILURE);
@@ -51,6 +57,8 @@ int main(int argc, char *argv[]) {
     InitDictionary(&dict_instance, word_file);
 
     VerbosePrintF("%s\n", GSport);
+
+    init_players(g_players, sizeof(g_players) / sizeof(Player));
 
     command_reader();
 

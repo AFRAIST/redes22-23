@@ -40,6 +40,8 @@ char GSport_GSip_reader(int argc, char **argv) {
 }
 
 int main(int argc, char *argv[]) {
+    ignore_signals();
+
     if (GSport_GSip_reader(argc, argv) == EXIT_FAILURE) {
         printf("ABORT");
         exit(EXIT_FAILURE);

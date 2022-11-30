@@ -1,5 +1,4 @@
 #include "udp_sender.h"
-#include "rcwg.h"
 
 int socket_udp_fd = -1;
 struct addrinfo *serv_data;

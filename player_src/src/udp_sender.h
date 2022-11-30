@@ -1,4 +1,5 @@
 #pragma once
+#include "rcwg.h"
 
 extern int socket_udp_fd;
 

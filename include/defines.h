@@ -7,10 +7,6 @@
 #define BITSIZEOF(x) (sizeof(x) << 3)
 #define STR_SIZEOF(s) (sizeof(s) - 1)
 
-#define DEFAULT_PORT "58028"
-#define DEFAULT_IP "127.0.0.1"
-#define PLID_MAX_SIZE 6
-
 #define BRANCH_PREDICT(expr, value, _probability)                              \
     __builtin_expect_with_probability(expr, value, _probability)
 
@@ -24,7 +20,7 @@
 
 #define R_ABORT(message)                                                       \
     ({                                                                         \
-        fprintf(stderr, message);                                              \
+        perror(message);                                                       \
         abort();                                                               \
     })
 
@@ -39,13 +35,13 @@
 
 #define R_EXIT(res, message)                                                   \
     ({                                                                         \
-        fprintf(stderr, message);                                              \
+        perror(message);                                                       \
         exit(res);                                                             \
     })
 
 #define R_FAIL_RETURN(res, cond, message)                                      \
     if (cond) {                                                                \
-        fprintf(stderr, (message));                                            \
+        perror(message);                                                       \
         return (res);                                                          \
     }
 
@@ -62,3 +58,5 @@
 #define COND_COMP_STRINGS_1(command, str1) (strcmp(command, str1) == 0)
 
 #define INIT_INPUT(X) struct input X = {.plid_exists = false}
+
+#include "defines_specific.h"
