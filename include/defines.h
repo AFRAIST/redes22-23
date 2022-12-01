@@ -57,6 +57,6 @@
 
 #define COND_COMP_STRINGS_1(command, str1) (strcmp(command, str1) == 0)
 
-#define INIT_INPUT(X) struct input X = {.plid_exists = false}
+#define INIT_INPUT(X) struct input X = {.plid_exists = false, .trials = 1}
 
 #include "defines_specific.h"

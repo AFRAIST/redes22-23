@@ -67,10 +67,14 @@ void command_reader() {
         if (COND_COMP_STRINGS_2(inp.command, "start", "sg")) {
             if (command_start(&inp) == EXIT_FAILURE)
                 printf("Input Invalido :c\n");
-        } else if (COND_COMP_STRINGS_2(inp.command, "play", "pl"))
-            printf("Sucess! pl\n");
-        else if (COND_COMP_STRINGS_2(inp.command, "guess", "gw"))
-            printf("Sucess! gw\n");
+        } else if (COND_COMP_STRINGS_2(inp.command, "play", "pl")){
+            if (command_play(&inp) == EXIT_FAILURE)
+                printf("Input Invalido :c\n");
+        }
+        else if (COND_COMP_STRINGS_2(inp.command, "guess", "gw")){
+            if (command_guess(&inp) == EXIT_FAILURE)
+                printf("Input Invalido :c\n");
+        }
         else if (COND_COMP_STRINGS_2(inp.command, "scoreboard", "sb"))
             printf("Sucess! sb\n");
         else if (COND_COMP_STRINGS_2(inp.command, "hint", "h"))

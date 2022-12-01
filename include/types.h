@@ -18,6 +18,7 @@ struct input {               // Structure declaration
     char *appendix; /*[31]*/ // Member (int variable)
     size_t plid;
     bool plid_exists;
+    int trials;
 };
 
 struct output { // Structure declaration
