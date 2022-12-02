@@ -60,7 +60,7 @@ int main(int argc, char *argv[]) {
 
     init_players(g_players, sizeof(g_players) / sizeof(Player));
 
-    command_reader();
+    command_reader(GSport);
 
     FiniDictionary(&dict_instance);
 }
