@@ -1,5 +1,6 @@
 #include "command.h"
 #include "udp_sender.h"
+#include "game.h"
 
 static Result get_plid(struct input *inp) {
     char *ap = inp->appendix;
@@ -58,20 +59,54 @@ Result command_start(struct input *inp) {
         return EXIT_FAILURE;
     }
 
-    const size_t buf_sz =
+    const size_t send_buf_sz =
         STR_SIZEOF("SNG ") + sizeof('0') * 6 + sizeof('\n') + sizeof('\0');
-    char buf[buf_sz];
+    char send_buf[send_buf_sz];
 
-    size_t sz = (size_t)sprintf(buf, "SNG %zu\n", inp->plid);
+    /* Will not include the null. */
+    size_t sz = (size_t)sprintf(send_buf, "SNG %06zu\n", inp->plid);
 
     R_FAIL_RETURN(EXIT_FAILURE, udp_sender_try_init() == EXIT_FAILURE,
                   "[ERROR] Could not initialize socket.\n");
 
-    R_FAIL_RETURN(EXIT_FAILURE, udp_sender_send((u8 *)buf, sz) == EXIT_FAILURE,
+    R_FAIL_RETURN(EXIT_FAILURE, udp_sender_send((u8 *)send_buf, sz) == EXIT_FAILURE,
                   "[ERROR] Could not send player id to server.\n");
 
-    // falta pedir request para ter os max errors
+    const size_t recv_buf_sz = sizeof("RSG ERR 33 9\n");
+    char recv_buf[recv_buf_sz];
+    R_FAIL_RETURN(EXIT_FAILURE, (sz = udp_sender_recv((u8 *)recv_buf, recv_buf_sz)) == EXIT_FAILURE,
+                    "[ERROR] Could not receive reply for game start.\n");
+
+    #define OPT_NUM 4
+    char *opts[OPT_NUM+1] = {NULL};
+
+    BufTokenizeOpts(recv_buf, opts, sz);
+
+    R_FAIL_RETURN(EXIT_FAILURE, opts[0] == NULL || strcmp(opts[0], "RSG"),
+                    "[ERROR] Invalid server reply.");
+
+    R_FAIL_RETURN(EXIT_FAILURE, opts[1] != NULL && !strcmp(opts[1], "NOK"),
+                    "[ERROR] Invalid command specification.");
+
+    R_FAIL_RETURN(EXIT_FAILURE, opts[1] == NULL || strcmp(opts[1], "OK"),
+                    E_INVALID_SERVER_REPLY);
+
+    R_FAIL_RETURN(EXIT_FAILURE, opts[2] == NULL || opts[3] == NULL,
+                    E_INVALID_SERVER_REPLY);
+
+    size_t n_letters, n_errors;
+
+    R_FAIL_RETURN(EXIT_FAILURE, (strtoul_check((ssize_t *)&n_letters, opts[2]) == EXIT_FAILURE
+    || strtoul_check((ssize_t *)&n_errors, opts[3]) == EXIT_FAILURE
+    || !IS_IN_RANGE(n_letters, 3, 30) || !IS_IN_RANGE(n_errors, 7, 9)),
+                    E_INVALID_NUMBER_REPLY);
+
+    //printf("%zu %zu\n", n_letters, n_errors);
+    game_init(&g_game, n_letters, n_errors);
+    
     return EXIT_SUCCESS;
+
+    #undef OPT_NUM
 }
 
 Result command_play(struct input *inp) {

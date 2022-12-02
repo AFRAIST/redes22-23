@@ -17,7 +17,7 @@ static Result process_buffer(char buffer[], size_t sz, struct input *inp) {
         return EXIT_FAILURE;
 
     /* Check if input contains nulls because fgets won't stop at them. */
-    if(BufContainsInvalidNull(buffer, sz) == EXIT_FAILURE)
+    if(BufNotContainsInvalidNull(buffer, sz) == EXIT_FAILURE)
         return EXIT_FAILURE;
 
     /* Parse command logic. */ 
@@ -63,7 +63,11 @@ void command_reader() {
                "valido :angry face:\n");
     };
 
-    while (!COND_COMP_STRINGS_1(inp.command, "quit")) {
+    errno = 0;
+
+    do {
+        errno = 0;
+
         if (COND_COMP_STRINGS_2(inp.command, "start", "sg")) {
             if (command_start(&inp) == EXIT_FAILURE)
                 printf("Input Invalido :c\n");
@@ -86,7 +90,7 @@ void command_reader() {
             printf("Nao sabes ecrever? vai ler o enunciado! esse comando nao é "
                    "valido :angry face:\n");
         };
-    }
+    } while (!COND_COMP_STRINGS_1(inp.command, "quit"));
 
 #undef CUR_BUFFER_SZ
 }

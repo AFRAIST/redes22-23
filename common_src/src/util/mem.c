@@ -17,13 +17,71 @@ char *StrNSplitSpaceNext(char *s, size_t bounds) {
     return s + (1 * sizeof(char));
 }
 
-Result BufContainsInvalidNull(char *b, size_t sz) {
+Result BufNotContainsInvalidNull(char *b, size_t sz) {
     if (BRANCH_UNLIKELY(b == NULL || sz < 2))
         return EXIT_SUCCESS;
  
-    for(u32 i = 0; i < (sz - 1); ++i)
+    for(size_t i = 0; i < (sz - 1); ++i)
         if(b[i] == '\0' && b[i+1] != '\0')
             return EXIT_FAILURE;
 
     return EXIT_SUCCESS;
 }
+
+Result BufNotContainsNull(char *b, size_t sz) {
+    for(size_t i = 0; i < sz; ++i)
+        if(b[i] == '\0')
+            return EXIT_FAILURE;
+    
+    return EXIT_SUCCESS;
+}
+
+Result BufTokenizeOpts(char *b, char **opts, size_t sz) {
+    if(BufNotContainsNull(b, sz) == EXIT_FAILURE || !sz || b[sz - 1] != '\n' || *b == '\0')
+        return EXIT_FAILURE;
+    
+    b[sz - 1] = '\0';
+
+    char *const top = b + sz - 1;
+
+    size_t j = 0;
+    char *cur = b;
+    for(; b < top; ++b) {
+        if (*b == ' ') {
+            if ((b+1) >= top || *(b+1) == ' ' || j >= (sz-1))
+                return EXIT_FAILURE;
+
+            *b = 0;
+            opts[j++] = cur;
+            cur = b+1;
+        }
+
+        if (*b == '\n')
+            return EXIT_FAILURE;
+    }
+
+    opts[j] = cur;
+
+    return EXIT_SUCCESS;
+}
+
+bool all_digits(const char *s) {
+    for(; *s; s++)
+        if(*s < '0' || *s > '9')
+            return false;
+    
+    return true;
+}
+
+Result strtoul_check(ssize_t *out, const char *s) {
+    if(!all_digits(s))
+        return EXIT_FAILURE;
+
+    *out = strtol(s, NULL, 10);
+
+    if(errno != 0 || *out < 0)
+        return EXIT_FAILURE;
+
+    return EXIT_SUCCESS;
+}
+

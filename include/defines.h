@@ -57,6 +57,8 @@
 
 #define COND_COMP_STRINGS_1(command, str1) (strcmp(command, str1) == 0)
 
+#define IS_IN_RANGE(x, bot, top) (x >= bot && x <= top)
+
 #define INIT_INPUT(X) struct input X = {.plid_exists = false, .trials = 1}
 
 #include "defines_specific.h"
