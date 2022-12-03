@@ -4,6 +4,7 @@ typedef struct {
     char word[WORD_LETTERS + 1];
     size_t plid;
     u32 attempts;
+    u32 cur_attempt;
     bool is_active;
 } Game;
 

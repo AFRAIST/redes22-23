@@ -19,7 +19,9 @@
 
 #define E_INVALID_SERVER_REPLY ("[ERROR] Invalid server reply.\n")
 #define E_INVALID_NUMBER_REPLY ("[ERROR] Invalid number in server reply.\n")
+#define E_INVALID_TRIAL_REPLY ("[ERROR] Invalid trial in server reply.\n")
 #define E_INVALID_COMMAND ("[ERROR] Invalid command specification.\n")
+#define E_TRIAL_MISMATCH ("[ERROR] The trial value mismatches between peers.\n")
 
 #define E_QUIT_SERVER ("[ERROR] Could not quit the server.\n")
 #define E_START_GAME ("[ERROR] Could not start the game.\n")
@@ -27,3 +29,5 @@
 #define E_FAILED_SOCKET ("[ERROR] Failed to init socket.\n")
 #define E_FAILED_REPLY ("[ERROR] Failed to reply.\n")
 #define E_FAILED_RECEIVE ("[ERROR] Failed to receive.\n")
+
+#define E_SERVER_ERROR ("[ERROR] Server error.")

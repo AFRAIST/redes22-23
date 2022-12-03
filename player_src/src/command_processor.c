@@ -56,6 +56,7 @@ static void sig_exit() {
         perror(E_QUIT_SERVER);
 
     fflush(stderr);
+    fflush(stdout);
 
     exit(EXIT_SUCCESS);
 }
