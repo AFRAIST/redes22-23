@@ -59,6 +59,6 @@
 
 #define IS_IN_RANGE(x, bot, top) (x >= bot && x <= top)
 
-#define INIT_INPUT(X) struct input X = {.plid_exists = false, .trials = 1}
+#define INIT_INPUT(X) struct input X = {0};
 
 #include "defines_specific.h"

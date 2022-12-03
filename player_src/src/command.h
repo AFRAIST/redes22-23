@@ -7,5 +7,5 @@ Result command_guess(struct input *inp);
 Result command_scoreboard(struct input *inp);
 Result command_hint(struct input *inp);
 Result command_state(struct input *inp);
-Result command_quit(struct input *inp);
-Result command_exit(struct input *inp);
+Result command_quit();
+Result command_exit();

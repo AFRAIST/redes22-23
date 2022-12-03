@@ -17,11 +17,9 @@ struct input {               // Structure declaration
     char *command;           /*[11]*/
     char *appendix; /*[31]*/ // Member (int variable)
     size_t plid;
-    bool plid_exists;
-    int trials;
 };
 
 struct output { // Structure declaration
     u8 gap_x30[0x30];
-    char* buff;
+    char *buff;
 };
