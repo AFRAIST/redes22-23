@@ -4,4 +4,5 @@ Result BufNotContainsInvalidNull(char *b, size_t sz);
 Result BufNotContainsNull(char *b, size_t sz);
 Result BufTokenizeOpts(char *b, char **opts, size_t sz);
 bool all_digits(const char *s);
+void str_replace(char *s, char old, char new);
 Result strtoul_check(ssize_t *out, const char *s);

@@ -79,7 +79,6 @@ void command_reader() {
 
     do {
         errno = 0;
-
         if (COND_COMP_STRINGS_2(inp.command, "start", "sg")) {
             if (command_start(&inp) == EXIT_FAILURE)
                 perror(E_START_GAME);

@@ -74,6 +74,12 @@ bool all_digits(const char *s) {
     return true;
 }
 
+void str_replace(char *s, char old, char new) {
+    for (; *s; ++s)
+        if (*s == old)
+            *s = new;
+}
+
 Result strtoul_check(ssize_t *out, const char *s) {
     if (!all_digits(s))
         return EXIT_FAILURE;
