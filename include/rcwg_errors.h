@@ -31,3 +31,5 @@
 #define E_FAILED_RECEIVE ("[ERROR] Failed to receive.\n")
 
 #define E_SERVER_ERROR ("[ERROR] Server error.")
+
+#define E_ACQUIRE_ERROR ("[ERROR] Failed to acquire file lock.")

@@ -1,60 +1,93 @@
 #include "command_processor.h"
-#include "rcwg.h"
+#include "proc.h"
+#include "serial.h"
+#include "udp_sender.h"
 
-int init_server(struct addrinfo *hints, struct addrinfo **res, char *GSport) {
-    int errcode, fd, n;
-    fd = socket(AF_INET, SOCK_DGRAM, 0); // UDP socket
-    if (fd == -1)                        /*error*/
-        exit(1);
-
-    memset(hints, 0, sizeof(*hints));
-    hints->ai_family = AF_INET;      // IPv4
-    hints->ai_socktype = SOCK_DGRAM; // UDP socket
-    hints->ai_flags = AI_PASSIVE;
-
-    errcode = getaddrinfo(NULL, GSport, hints, res);
-    if (errcode != 0) /*error*/
-        exit(1);
-    n = bind(fd, (*res)->ai_addr, (*res)->ai_addrlen);
-    if (n == -1) /*error*/
-        exit(1);
-
-    return fd;
-}
-
-void command_reader(char *GSport) {
-
-    int udp_fd, n, i = 0;
-    socklen_t addrlen;
-    struct addrinfo hints, *res;
-    struct sockaddr_in addr;
-    char buffer[128];
+static void handle_udp_impl() {
+    const size_t recv_buf_sz = COMMAND_BUF_SZ;
+    char recv_buf[COMMAND_BUF_SZ] = "";
     char *command;
+    char *plid_s;
     struct output outp;
 
-    udp_fd = init_server(&hints, &res, GSport);
-
-    while (1) {
-        outp.buff = buffer;
-        memset(buffer, 'a', 128);
-        addrlen = sizeof(addr);
-        printf("AAAAAAAAA\n");
-        n = recvfrom(udp_fd, buffer, 128, 0, (struct sockaddr *)&addr,
-                     &addrlen);
-        if (n == -1) /*error*/
-            exit(1);
-
-        command = outp.buff;
-        outp.buff = StrNSplitSpaceNext(outp.buff, 3);
-        if (COND_COMP_STRINGS_1("SNG", command))
-            command_start(&outp);
-        else if (COND_COMP_STRINGS_1("PLG", command)) {
-            command_play(&outp);
-        } else if (COND_COMP_STRINGS_1("PWG", command)) {
-            command_guess(&outp);
-        }
-        n = sendto(udp_fd, buffer, n, 0, (struct sockaddr *)&addr, addrlen);
-        if (n == -1) /*error*/
-            exit(1);
+    ssize_t sz;
+    if ((sz = udp_sender_recv((u8 *)recv_buf, recv_buf_sz)) == EXIT_FAILURE) {
+        perror(E_FAILED_RECEIVE);
+        return;
     }
+
+#define ERROR_RETURN()                                                         \
+    ({                                                                         \
+        udp_sender_send((u8 *)"ERR\n", 4);                                     \
+        return;                                                                \
+    })
+
+    if (BufNotContainsInvalidNull(recv_buf, sz) == EXIT_FAILURE) {
+        ERROR_RETURN();
+    }
+
+    printf("a %s\n", recv_buf);
+    outp.buff = recv_buf;
+    command = outp.buff;
+    outp.buff = StrNSplitSpaceNext(outp.buff, 3);
+    plid_s = outp.buff;
+    outp.buff = StrNSplitSpaceNext(outp.buff, 6);
+
+    if (strtoul_check((ssize_t *)&outp.plid, plid_s) == EXIT_FAILURE) {
+        ERROR_RETURN();
+    }
+
+    acquire_player_file(outp.plid);
+
+    if (COND_COMP_STRINGS_1("SNG", command))
+        command_start(&outp);
+    else if (COND_COMP_STRINGS_1("PLG", command)) {
+        command_play(&outp);
+    } else if (COND_COMP_STRINGS_1("PWG", command)) {
+        command_guess(&outp);
+    } else {
+        perror("No command.\n");
+    }
+
+    release_player_file();
+#undef ERROR_RETURN
+}
+
+void command_reader() {
+    const pid_t udp_pid = fork();
+    if (udp_pid == 0) {
+        /* Listen for UDP in parent. */
+        udp_sender_try_init();
+
+        fd_set set;
+        while (true) {
+            FD_ZERO(&set);
+            FD_SET(socket_udp_fd, &set);
+
+            int rc = try_select(socket_udp_fd + 1, &set, NULL, NULL, NULL);
+
+            if (rc == -1)
+                continue;
+
+            const pid_t h_udp = fork();
+            if (h_udp == 0) {
+                handle_udp_impl();
+                exit(EXIT_SUCCESS);
+            }
+        }
+
+        exit(EXIT_SUCCESS);
+    } else {
+        const pid_t tcp_pid = fork();
+
+        if (tcp_pid == 0) {
+            puts("TCP not yet implemented!");
+            exit(EXIT_SUCCESS);
+        }
+
+        /* Hunt the zombies! */
+        proc_start_zombie_hunter();
+    }
+
+    udp_sender_fini();
 }

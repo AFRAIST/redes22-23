@@ -1,5 +1,17 @@
 #include "rcwg.h"
 
+int try_select(int nfds, fd_set *restrict readfds, fd_set *restrict writefds,
+               fd_set *restrict exceptfds, struct timeval *restrict timeout) {
+    int rc = 0;
+
+    do {
+        errno = 0;
+        rc = select(nfds, readfds, writefds, exceptfds, timeout);
+    } while (rc == -1 && errno == EINTR);
+
+    return rc;
+}
+
 ssize_t try_write(int fd, const void *buf, size_t count) {
     ssize_t rc = 0;
 

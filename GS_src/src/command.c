@@ -13,9 +13,15 @@ Result command_play(struct output *outp) {
     int plid, trials;
     char letter;
     printf("AAAAAAAA\n");
+#define OPT_NUM 3
+    char *opts[OPT_NUM + 1] = {NULL};
+
+    BufTokenizeOpts(outp->buff, opts, COMMAND_BUF_SZ);
+
     sscanf(outp->buff, "%i %c %i\n", &plid, &letter, &trials);
     printf("%i %c %i\n", plid, letter, trials);
     return EXIT_SUCCESS;
+#undef OPT_NUM
 }
 
 Result command_guess(struct output *outp) {

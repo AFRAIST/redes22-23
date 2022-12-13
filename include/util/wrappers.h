@@ -1,5 +1,10 @@
 #pragma once
 #include "../content.h"
+int try_select(int nfds, fd_set *restrict readfds, fd_set *restrict writefds,
+               fd_set *restrict exceptfds, struct timeval *restrict timeout);
+
+ssize_t try_write(int fd, const void *buf, size_t count);
+
 ssize_t try_read(int fd, void *buf, size_t sz);
 int try_close(int fd);
 

@@ -20,6 +20,6 @@ struct input {               // Structure declaration
 };
 
 struct output { // Structure declaration
-    u8 gap_x30[0x30];
+    size_t plid;
     char *buff;
 };

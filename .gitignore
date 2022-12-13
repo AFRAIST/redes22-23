@@ -6,3 +6,6 @@
 *.pyc
 *.zip
 *.pdf
+*.tmux.sh
+*.xopp
+*.json

@@ -334,8 +334,6 @@ static Result command_quit_impl() {
     /* Will not include the null. */
     size_t sz = (size_t)sprintf(send_buf, "QUT %06zu\n", g_game.plid);
 
-    R_FAIL_RETURN(EXIT_FAILURE, udp_sender_try_init() == -1, E_FAILED_SOCKET);
-
     R_FAIL_RETURN(EXIT_FAILURE,
                   udp_sender_send((u8 *)send_buf, sz) != (ssize_t)sz,
                   E_FAILED_REPLY);
