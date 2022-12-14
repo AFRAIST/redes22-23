@@ -1,4 +1,4 @@
-#include "proc.h"
+#include "rcwg.h"
 
 void proc_start_zombie_hunter() {
     pid_t rc;

@@ -10,6 +10,7 @@ static void handle_udp_impl() {
     char *plid_s;
     struct output outp;
 
+    srand(time(NULL));
     ssize_t sz;
     if ((sz = udp_sender_recv((u8 *)recv_buf, recv_buf_sz)) == EXIT_FAILURE) {
         perror(E_FAILED_RECEIVE);
@@ -26,7 +27,6 @@ static void handle_udp_impl() {
         ERROR_RETURN();
     }
 
-    printf("a %s\n", recv_buf);
     outp.buff = recv_buf;
     command = outp.buff;
     outp.buff = StrNSplitSpaceNext(outp.buff, 3);

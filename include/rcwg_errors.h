@@ -16,6 +16,7 @@
 #define E_TIMEOUT_TCP_SOCKET ("[ERR] The TCP socket connection timed out\n")
 #define E_NOTCONN_TCP_SOCKET                                                   \
     ("[ERR] The TCP socket is in connection mode, not connected though\n")
+#define E_HANDSHAKE_FAILED ("[ERR] The TCP handshake failed.\n")
 
 #define E_INVALID_SERVER_REPLY ("[ERROR] Invalid server reply.\n")
 #define E_INVALID_NUMBER_REPLY ("[ERROR] Invalid number in server reply.\n")

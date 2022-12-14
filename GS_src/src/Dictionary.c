@@ -30,6 +30,10 @@ static inline void ParseDataFromFile(Dictionary *dict, FILE *fp, char **data,
     fclose(fp);
 }
 
+const char *random_word(Dictionary *dict) {
+    return dict->entries[rand() % dict->amt].word;
+}
+
 void InitDictionary(Dictionary *dict, FILE *fp) {
     char *data;
     size_t size;
@@ -77,6 +81,7 @@ void InitDictionary(Dictionary *dict, FILE *fp) {
 
     R_FAIL_EXIT_IF(BRANCH_UNLIKELY(cc != delim[0] || data[size - 1] != '\0'),
                    DICT_INVALID_LAST_LINE);
+    dict->amt = amt;
 }
 
 void FiniDictionary(Dictionary *dict) { free(dict->buffer); }

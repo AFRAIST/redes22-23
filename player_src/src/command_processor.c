@@ -75,6 +75,14 @@ void command_reader() {
                "valido :angry face:\n");
     };
 
+    pid_t pid = fork();
+    if (pid != 0) {
+        /* Hunt the zombies! */
+        /* Probably lixei isto com os errors codes, mas depois vemos. */
+        proc_start_zombie_hunter();
+        return;
+    }
+
     errno = 0;
 
     do {
@@ -88,9 +96,10 @@ void command_reader() {
         } else if (COND_COMP_STRINGS_2(inp.command, "guess", "gw")) {
             if (command_guess(&inp) == EXIT_FAILURE)
                 printf("Input Invalido :c\n");
-        } else if (COND_COMP_STRINGS_2(inp.command, "scoreboard", "sb"))
-            printf("Sucess! sb\n");
-        else if (COND_COMP_STRINGS_2(inp.command, "hint", "h"))
+        } else if (COND_COMP_STRINGS_2(inp.command, "scoreboard", "sb")) {
+            if (command_scoreboard(&inp) == EXIT_FAILURE)
+                printf("Input Invalido :c\n");
+        } else if (COND_COMP_STRINGS_2(inp.command, "hint", "h"))
             printf("Sucess! h\n");
         else if (COND_COMP_STRINGS_2(inp.command, "state", "st"))
             printf("Sucess! st\n");
@@ -106,5 +115,6 @@ void command_reader() {
 
     R_EXIT_IF(EXIT_FAILURE, command_exit(&inp) == EXIT_FAILURE, E_QUIT_SERVER);
 
+    exit(EXIT_SUCCESS);
 #undef CUR_BUFFER_SZ
 }

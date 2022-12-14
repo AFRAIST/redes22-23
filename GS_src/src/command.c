@@ -1,11 +1,9 @@
 #include "command.h"
+#include "Dictionary.h"
 
 Result command_start(struct output *outp) {
-    int plid;
-
-    printf("AAAAAAAA\n");
-    sscanf(outp->buff, "%i\n", &plid);
-    printf("%i", plid);
+    (void)outp;
+    printf("%s\n", random_word(&dict_instance));
     return EXIT_SUCCESS;
 }
 

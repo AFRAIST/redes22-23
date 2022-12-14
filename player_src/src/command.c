@@ -1,5 +1,6 @@
 #include "command.h"
 #include "game.h"
+#include "tcp_sender.h"
 #include "udp_sender.h"
 
 static Result get_plid(struct input *inp) {
@@ -309,9 +310,57 @@ Result command_guess(struct input *inp) {
 #undef OPT_NUM
 }
 
+/* Used for the TCP communications. */
+#define BIG_BUF_SZ (4 * 1024 * 1024)
+static u8 big_buffer[BIG_BUF_SZ];
+
+static void get_file(u32 offset, u32 whence) {
+    u8 *buf = big_buffer + offset;
+    (void)buf;
+    u32 sz = (u32)tcp_sender_recv_all(big_buffer + whence, BIG_BUF_SZ - whence);
+    R_FAIL_EXIT_IF((s32)sz == -1 || sz == 0, E_FAILED_RECEIVE);
+
+    /*
+        BufTokenizeOpts
+        StrNSplitSpaceNext
+
+        if (sz < BIG_BUF_SZ-whence)
+    */
+}
+
 Result command_scoreboard(struct input *inp) {
-    (void)(inp);
-    R_NOT_IMPLEMENTED();
+    (void)inp;
+    RETURN_IF_NOT_ACTIVE_GAME();
+
+    R_FAIL_EXIT_IF(tcp_sender_try_init() != EXIT_SUCCESS, E_FAILED_SOCKET);
+
+    const pid_t pid = fork();
+    if (pid == 0) {
+        R_FAIL_EXIT_IF(tcp_sender_handshake() == -1, E_HANDSHAKE_FAILED);
+
+        const u32 lim = STR_SIZEOF("RSB EMPTY\n");
+
+        u32 sz;
+        /* -1 for OK leetter */
+        R_FAIL_EXIT_IF((sz = tcp_sender_recv_all(big_buffer, lim)) <
+                           STR_SIZEOF("RSB OK "),
+                       E_INVALID_SERVER_REPLY);
+
+        if (!strncmp((char *)big_buffer, "RSB EMPTY\n", lim)) {
+            printf("The scoreboard is empty...\n");
+            /* Maybe read more. */
+            exit(EXIT_SUCCESS);
+        }
+
+        R_FAIL_EXIT_IF(strncmp((char *)big_buffer, "RSB OK ", 7),
+                       E_INVALID_SERVER_REPLY);
+
+        /* Save file. */
+        get_file(sz, 7);
+
+        exit(EXIT_SUCCESS);
+    }
+
     return EXIT_SUCCESS;
 }
 

@@ -2,6 +2,8 @@
 
 FILE *g_file_dat = NULL;
 
+void serialize_current_game() {}
+
 void acquire_player_file(size_t plid) {
     char dat[19];
     sprintf(dat, "sv_data/DAT_%06zu", plid);

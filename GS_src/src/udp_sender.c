@@ -43,15 +43,15 @@ ssize_t udp_sender_try_init() {
 
 ssize_t udp_sender_recv(u8 *data, size_t sz) {
     addrlen = sizeof(addr);
-    const Result res = try_recvfrom(socket_udp_fd, data, sz, 0,
-                                    (struct sockaddr *)&addr, &addrlen);
+    const ssize_t res = try_recvfrom(socket_udp_fd, data, sz, 0,
+                                     (struct sockaddr *)&addr, &addrlen);
 
     return res;
 }
 
 ssize_t udp_sender_send(const u8 *data, size_t sz) {
-    const Result res = try_sendto(socket_udp_fd, data, sz, 0,
-                                  (struct sockaddr *)&addr, addrlen);
+    const ssize_t res = try_sendto(socket_udp_fd, data, sz, 0,
+                                   (struct sockaddr *)&addr, addrlen);
 
     return res;
 }
