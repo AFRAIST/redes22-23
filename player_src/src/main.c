@@ -36,6 +36,7 @@ char GSport_GSip_reader(int argc, char **argv) {
     if ((GSport) == NULL) {
         (GSport) = strdup(DEFAULT_PORT);
     }
+
     return EXIT_SUCCESS;
 }
 

@@ -84,7 +84,6 @@ void command_reader() {
     }
 
     errno = 0;
-
     do {
         errno = 0;
         if (COND_COMP_STRINGS_2(inp.command, "start", "sg")) {

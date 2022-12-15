@@ -36,6 +36,20 @@ Result BufNotContainsNull(char *b, size_t sz) {
     return EXIT_SUCCESS;
 }
 
+char *BufTokenizeOpt(char *b, const char *delim, char **next) {
+    char *end;
+
+    end = b + strcspn(b, delim);
+    if (*end == '\x00') {
+        *next = end;
+        return b;
+    }
+
+    *end = '\x00';
+    *next = end + 1;
+    return b;
+}
+
 Result BufTokenizeOpts(char *b, char **opts, size_t sz) {
     if (BufNotContainsNull(b, sz) == EXIT_FAILURE || !sz || b[sz - 1] != '\n' ||
         *b == '\0')

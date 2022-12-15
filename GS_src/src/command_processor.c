@@ -27,6 +27,7 @@ static void handle_udp_impl() {
         ERROR_RETURN();
     }
 
+    /* Isto está errado. */
     outp.buff = recv_buf;
     command = outp.buff;
     outp.buff = StrNSplitSpaceNext(outp.buff, 3);

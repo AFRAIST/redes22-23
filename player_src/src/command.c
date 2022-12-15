@@ -19,6 +19,20 @@ static Result get_plid(struct input *inp) {
     return EXIT_SUCCESS;
 }
 
+static Result final_num(char *next, size_t *out) {
+    char *tok = BufTokenizeOpt(next, " ", &next);
+
+    /* We already know 1 behind is safe and we have to nuke the newline. */
+    R_FAIL_RETURN(EXIT_FAILURE, *next != '\x00' || *(next - 1) != '\n',
+                  E_INVALID_NUMBER_REPLY);
+    *(next - 1) = '\x00';
+
+    if (strtoul_check((ssize_t *)out, tok) == EXIT_FAILURE)
+        return EXIT_FAILURE;
+
+    return EXIT_SUCCESS;
+}
+
 #define RETURN_IF_ACTIVE_GAME()                                                \
     if (g_game.is_active) {                                                    \
         printf("There is already an ongoing session of a game. Use quit "      \
@@ -47,7 +61,7 @@ Result command_start(struct input *inp) {
     char send_buf[send_buf_sz];
 
     /* Will not include the null. */
-    size_t sz = (size_t)sprintf(send_buf, "SNG %06zu\n", inp->plid);
+    ssize_t sz = sprintf(send_buf, "SNG %06zu\n", inp->plid);
 
     R_FAIL_RETURN(EXIT_FAILURE, udp_sender_try_init() == -1, E_FAILED_SOCKET);
 
@@ -57,38 +71,45 @@ Result command_start(struct input *inp) {
 
     const size_t recv_buf_sz = sizeof("RSG ERR 33 9\n");
     char recv_buf[recv_buf_sz];
+    /* -1 because of '\x00' */
     R_FAIL_RETURN(EXIT_FAILURE,
-                  (sz = udp_sender_recv((u8 *)recv_buf, recv_buf_sz)) ==
-                      EXIT_FAILURE,
+                  (sz = udp_sender_recv((u8 *)recv_buf, recv_buf_sz - 1)) == -1,
                   E_FAILED_RECEIVE);
+    recv_buf[sz] = '\x00';
 
-#define OPT_NUM 4
-    char *opts[OPT_NUM + 1] = {NULL};
+    // memset(recv_buf, 0, recv_buf_sz);
+    // strcpy(recv_buf, "RSG OK 10 8\n");
 
     R_FAIL_RETURN(EXIT_FAILURE,
-                  BufTokenizeOpts(recv_buf, opts, sz) == EXIT_FAILURE,
+                  BufNotContainsInvalidNull(recv_buf, sz) == EXIT_FAILURE,
                   E_INVALID_SERVER_REPLY);
 
-    R_FAIL_RETURN(EXIT_FAILURE, opts[0] == NULL || strcmp(opts[0], "RSG"),
-                  E_INVALID_SERVER_REPLY);
+    char *next;
+    char *tok;
 
-    R_FAIL_RETURN(EXIT_FAILURE, opts[1] != NULL && !strcmp(opts[1], "NOK"),
-                  E_INVALID_COMMAND);
+    tok = BufTokenizeOpt(recv_buf, " ", &next);
 
-    R_FAIL_RETURN(EXIT_FAILURE, opts[1] == NULL || strcmp(opts[1], "OK"),
-                  E_INVALID_SERVER_REPLY);
+    R_FAIL_RETURN(EXIT_FAILURE, strcmp(tok, "RSG"), E_INVALID_SERVER_REPLY);
 
-    R_FAIL_RETURN(EXIT_FAILURE, opts[2] == NULL || opts[3] == NULL,
-                  E_INVALID_SERVER_REPLY);
+    tok = BufTokenizeOpt(next, " ", &next);
+
+    /* Check status. */
+    R_FAIL_RETURN(EXIT_FAILURE, !strcmp(tok, "NOK"), E_INVALID_COMMAND);
+
+    R_FAIL_RETURN(EXIT_FAILURE, strcmp(tok, "OK"), E_INVALID_SERVER_REPLY);
 
     size_t n_letters, n_errors;
 
-    R_FAIL_RETURN(
-        EXIT_FAILURE,
-        (strtoul_check((ssize_t *)&n_letters, opts[2]) == EXIT_FAILURE ||
-         strtoul_check((ssize_t *)&n_errors, opts[3]) == EXIT_FAILURE ||
-         !IS_IN_RANGE(n_letters, 3, 30) || !IS_IN_RANGE(n_errors, 7, 9)),
-        E_INVALID_NUMBER_REPLY);
+    tok = BufTokenizeOpt(next, " ", &next);
+    R_FAIL_RETURN(EXIT_FAILURE,
+                  strtoul_check((ssize_t *)&n_letters, tok) == EXIT_FAILURE ||
+                      !IS_IN_RANGE(n_letters, 3, 30),
+                  E_INVALID_SERVER_REPLY);
+
+    R_FAIL_RETURN(EXIT_FAILURE,
+                  final_num(next, &n_errors) == EXIT_FAILURE ||
+                      !IS_IN_RANGE(n_errors, 7, 9),
+                  E_INVALID_SERVER_REPLY);
 
     game_init(&g_game, inp->plid, n_letters, n_errors);
 
@@ -96,84 +117,80 @@ Result command_start(struct input *inp) {
            g_game.word);
 
     return EXIT_SUCCESS;
-
-#undef OPT_NUM
 }
 
-static Result finalize_play_opts(char **opts, char c) {
-    if (!strcmp(opts[1], "ERR")) {
-        R_FAIL_RETURN(EXIT_FAILURE, opts[2] != NULL, E_INVALID_SERVER_REPLY);
+static Result finalize_play_opts(char *recv_buf, char c) {
+    char *next;
+    char *tok;
+    size_t attempts;
+
+    tok = BufTokenizeOpt(recv_buf, " ", &next);
+    R_FAIL_RETURN(EXIT_FAILURE, strcmp(tok, "RLG"), E_INVALID_SERVER_REPLY);
+
+    tok = BufTokenizeOpt(next, " ", &next);
+    if (!strcmp(tok, "ERR\n")) {
+        R_FAIL_RETURN(EXIT_FAILURE, *next != '\0', E_INVALID_SERVER_REPLY);
         perror(E_SERVER_ERROR);
         return EXIT_FAILURE;
-    } else {
-        size_t num;
+    } else if (!strcmp(tok, "OVR")) {
+        R_FAIL_RETURN(EXIT_FAILURE, final_num(next, &attempts) == EXIT_FAILURE,
+                      E_INVALID_SERVER_REPLY);
+        printf("OWARI DAAAAA.\n");
+        g_game.is_active = false;
+    } else if (!strcmp(tok, "DUP")) {
+        R_FAIL_RETURN(EXIT_FAILURE, final_num(next, &attempts) == EXIT_FAILURE,
+                      E_INVALID_SERVER_REPLY);
+        printf("Detected repetition.\n");
+    } else if (!strcmp(tok, "NOK")) {
+        R_FAIL_RETURN(EXIT_FAILURE, final_num(next, &attempts) == EXIT_FAILURE,
+                      E_INVALID_SERVER_REPLY);
+        printf("The word does not contain a '%c'.\n", c);
+    } else if (!strcmp(tok, "INV")) {
+        R_FAIL_RETURN(EXIT_FAILURE, final_num(next, &attempts) == EXIT_FAILURE,
+                      E_INVALID_SERVER_REPLY);
+        perror(E_TRIAL_MISMATCH);
+        g_game.cur_attempt = attempts;
+        return EXIT_FAILURE;
+    } else if (!strcmp(tok, "WIN")) {
+        R_FAIL_RETURN(EXIT_FAILURE, final_num(next, &attempts) == EXIT_FAILURE,
+                      E_INVALID_SERVER_REPLY);
+        str_replace(g_game.word, '_', c);
+        printf("You won! The word was: %s\n", g_game.word);
+        g_game.is_active = false;
+    } else if (!strcmp(tok, "OK")) {
+        tok = BufTokenizeOpt(next, " ", &next);
+        R_FAIL_RETURN(EXIT_FAILURE, strtoul_check((ssize_t *)&attempts, tok),
+                      E_INVALID_COMMAND);
+
+        size_t num, num2;
+        tok = BufTokenizeOpt(next, " ", &next);
         R_FAIL_RETURN(EXIT_FAILURE,
-                      opts[2] == NULL || strtoul_check((ssize_t *)&num,
-                                                       opts[2]) == EXIT_FAILURE,
-                      E_INVALID_NUMBER_REPLY);
+                      strtoul_check((ssize_t *)&num, tok) == EXIT_FAILURE ||
+                          num > 30 || num == 0,
+                      E_INVALID_SERVER_REPLY);
 
-        R_FAIL_RETURN(EXIT_FAILURE, g_game.cur_attempt != num,
-                      E_INVALID_TRIAL_REPLY);
-
-        if (!strcmp(opts[1], "OK")) {
-#define OPT_NUM 34
-            R_FAIL_RETURN(EXIT_FAILURE, opts[4] == NULL,
-                          E_INVALID_SERVER_REPLY);
-
+        for (u32 i = 0; i < (num - 1); ++i) {
+            tok = BufTokenizeOpt(next, " ", &next);
             R_FAIL_RETURN(EXIT_FAILURE,
-                          strtoul_check((ssize_t *)&num, opts[3]) ==
-                              EXIT_FAILURE,
-                          E_INVALID_NUMBER_REPLY);
-
-            R_FAIL_RETURN(EXIT_FAILURE, num > 30, E_INVALID_NUMBER_REPLY);
-
-            num += 4;
-            for (u32 i = 4; i < num; ++i) {
-                R_FAIL_RETURN(EXIT_FAILURE, opts[i] == NULL,
-                              E_INVALID_SERVER_REPLY);
-
-                size_t num2;
-                R_FAIL_RETURN(EXIT_FAILURE,
-                              strtoul_check((ssize_t *)&num2, opts[i]) ==
-                                      EXIT_FAILURE ||
-                                  num2 > 30,
-                              E_INVALID_NUMBER_REPLY);
-                g_game.word[num2 - 1] = c;
-            }
-
-            R_FAIL_RETURN(EXIT_FAILURE, num < OPT_NUM && opts[num] != NULL,
+                          strtoul_check((ssize_t *)&num2, tok) ==
+                                  EXIT_FAILURE ||
+                              num2 > 30,
                           E_INVALID_SERVER_REPLY);
 
-            printf("Guess word: %s\n", g_game.word);
-
-#undef OPT_NUM
-        } else if (!strcmp(opts[1], "WIN")) {
-            R_FAIL_RETURN(EXIT_FAILURE, opts[3] != NULL,
-                          E_INVALID_SERVER_REPLY);
-            str_replace(g_game.word, '_', c);
-            printf("You won! The word was: %s\n", g_game.word);
-            g_game.is_active = false;
-        } else if (!strcmp(opts[1], "DUP")) {
-            --g_game.cur_attempt;
-            R_FAIL_RETURN(EXIT_FAILURE, opts[3] != NULL,
-                          E_INVALID_SERVER_REPLY);
-            printf("Detected repetition.\n");
-        } else if (!strcmp(opts[1], "NOK")) {
-            R_FAIL_RETURN(EXIT_FAILURE, opts[3] != NULL,
-                          E_INVALID_SERVER_REPLY);
-            printf("The word does not contain a '%c'.\n", c);
-        } else if (!strcmp(opts[1], "OVR")) {
-            --g_game.cur_attempt;
-            printf("OWARI DAAAAA.\n");
-            g_game.is_active = false;
-        } else if (!strcmp(opts[1], "INV")) {
-            R_FAIL_RETURN(EXIT_FAILURE, opts[3] != NULL,
-                          E_INVALID_SERVER_REPLY);
-            perror(E_TRIAL_MISMATCH);
-            return EXIT_FAILURE;
+            g_game.word[num2 - 1] = c;
         }
+
+        R_FAIL_RETURN(EXIT_FAILURE, final_num(next, &num2) == EXIT_FAILURE,
+                      E_INVALID_SERVER_REPLY);
+        g_game.word[num2 - 1] = c;
+
+        printf("Guess word: %s\n", g_game.word);
+    } else {
+        perror(E_INVALID_SERVER_REPLY);
+        return EXIT_FAILURE;
     }
 
+    g_game.cur_attempt = attempts;
     return EXIT_SUCCESS;
 }
 
@@ -204,60 +221,60 @@ Result command_play(struct input *inp) {
                                sizeof("\n");
     char recv_buf[recv_buf_sz];
     R_FAIL_RETURN(EXIT_FAILURE,
-                  (sz = udp_sender_recv((u8 *)recv_buf, recv_buf_sz)) ==
+                  (sz = udp_sender_recv((u8 *)recv_buf, recv_buf_sz - 1)) ==
                       EXIT_FAILURE,
                   E_FAILED_RECEIVE);
+    recv_buf[sz] = '\x00';
 
-#define OPT_NUM 34
-    char *opts[OPT_NUM + 1] = {NULL};
+    // memset(recv_buf, 0, recv_buf_sz);
+    // strcpy(recv_buf, "RLG ERR 7\n");
 
-    puts(recv_buf);
     R_FAIL_RETURN(EXIT_FAILURE,
-                  BufTokenizeOpts(recv_buf, opts, sz) == EXIT_FAILURE,
+                  BufNotContainsInvalidNull(recv_buf, sz) == EXIT_FAILURE,
                   E_INVALID_SERVER_REPLY);
 
-    R_FAIL_RETURN(EXIT_FAILURE, opts[0] == NULL || strcmp(opts[0], "RLG"),
-                  E_INVALID_SERVER_REPLY);
-
-    R_FAIL_RETURN(EXIT_FAILURE, opts[1] == NULL, E_INVALID_SERVER_REPLY);
-
-    return finalize_play_opts(opts, c);
-#undef OPT_NUM
+    return finalize_play_opts(recv_buf, c);
 }
 
-static Result finalize_guess_opts(char **opts, char *word) {
-#define OPT_NUM 3
-    if (!strcmp(opts[1], "ERR")) {
-        R_EXIT_IF(EXIT_FAILURE, opts[2] != NULL, E_INVALID_SERVER_REPLY);
+static Result finalize_guess_opts(char *recv_buf, char *word) {
+    char *next;
+    char *tok;
+    size_t attempts;
+
+    tok = BufTokenizeOpt(recv_buf, " ", &next);
+    R_FAIL_RETURN(EXIT_FAILURE, strcmp(tok, "RWG"), E_INVALID_SERVER_REPLY);
+
+    tok = BufTokenizeOpt(next, " ", &next);
+    if (!strcmp(tok, "ERR\n")) {
+        R_FAIL_RETURN(EXIT_FAILURE, *next != '\0', E_INVALID_SERVER_REPLY);
         perror(E_SERVER_ERROR);
         return EXIT_FAILURE;
+    } else if (!strcmp(tok, "OVR")) {
+        R_FAIL_RETURN(EXIT_FAILURE, final_num(next, &attempts) == EXIT_FAILURE,
+                      E_INVALID_SERVER_REPLY);
+        printf("OWARI DAAAAA.\n");
+        g_game.is_active = false;
+    } else if (!strcmp(tok, "NOK")) {
+        R_FAIL_RETURN(EXIT_FAILURE, final_num(next, &attempts) == EXIT_FAILURE,
+                      E_INVALID_SERVER_REPLY);
+        printf("Try again! The word was not: %s\n", word);
+    } else if (!strcmp(tok, "INV")) {
+        R_FAIL_RETURN(EXIT_FAILURE, final_num(next, &attempts) == EXIT_FAILURE,
+                      E_INVALID_SERVER_REPLY);
+        perror(E_TRIAL_MISMATCH);
+        return EXIT_FAILURE;
+    } else if (!strcmp(tok, "WIN")) {
+        R_FAIL_RETURN(EXIT_FAILURE, final_num(next, &attempts) == EXIT_FAILURE,
+                      E_INVALID_SERVER_REPLY);
+        printf("You won! The word was: %s\n", word);
+        g_game.is_active = false;
     } else {
-        size_t num;
-        R_FAIL_RETURN(EXIT_FAILURE,
-                      opts[2] == NULL || strtoul_check((ssize_t *)&num,
-                                                       opts[2]) == EXIT_FAILURE,
-                      E_INVALID_NUMBER_REPLY);
-
-        R_FAIL_RETURN(EXIT_FAILURE, g_game.cur_attempt != num,
-                      E_INVALID_TRIAL_REPLY);
-
-        if (!strcmp(opts[1], "WIN")) {
-            printf("You won! The word was: %s\n", word);
-            g_game.is_active = false;
-        } else if (!strcmp(opts[1], "NOK")) {
-            printf("Try again! The word was not: %s\n", word);
-        } else if (!strcmp(opts[1], "OVR")) {
-            --g_game.cur_attempt;
-            printf("OWARI DAAAAA.\n");
-        } else if (!strcmp(opts[1], "INV")) {
-            perror(E_TRIAL_MISMATCH);
-            return EXIT_FAILURE;
-        }
+        perror(E_INVALID_SERVER_REPLY);
+        return EXIT_FAILURE;
     }
 
+    g_game.cur_attempt = attempts;
     return EXIT_SUCCESS;
-
-#undef OPT_NUM
 }
 
 Result command_guess(struct input *inp) {
@@ -292,22 +309,16 @@ Result command_guess(struct input *inp) {
     const size_t recv_buf_sz = sizeof("RWG ERR 9\n");
     char recv_buf[recv_buf_sz];
     R_FAIL_RETURN(EXIT_FAILURE,
-                  (sz = udp_sender_recv((u8 *)recv_buf, recv_buf_sz)) ==
+                  (sz = udp_sender_recv((u8 *)recv_buf, recv_buf_sz - 1)) ==
                       EXIT_FAILURE,
                   E_FAILED_RECEIVE);
+    recv_buf[sz] = '\x00';
 
-#define OPT_NUM 3
-    char *opts[OPT_NUM + 1] = {NULL};
     R_FAIL_RETURN(EXIT_FAILURE,
-                  BufTokenizeOpts(recv_buf, opts, sz) == EXIT_FAILURE,
+                  BufNotContainsInvalidNull(recv_buf, sz) == EXIT_FAILURE,
                   E_INVALID_SERVER_REPLY);
 
-    /* Check for opt size and correct opt. */
-    R_FAIL_RETURN(EXIT_FAILURE, opts[1] == NULL || strcmp(opts[0], "RWG"),
-                  E_INVALID_SERVER_REPLY);
-
-    return finalize_guess_opts(opts, inp->appendix);
-#undef OPT_NUM
+    return finalize_guess_opts(recv_buf, inp->appendix);
 }
 
 /* Used for the TCP communications. */
@@ -322,7 +333,6 @@ static void get_file(u32 offset, u32 whence) {
 
     /*
         BufTokenizeOpts
-        StrNSplitSpaceNext
 
         if (sz < BIG_BUF_SZ-whence)
     */
