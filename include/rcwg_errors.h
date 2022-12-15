@@ -25,12 +25,13 @@
 #define E_TRIAL_MISMATCH ("[ERROR] The trial value mismatches between peers.\n")
 
 #define E_QUIT_SERVER ("[ERROR] Could not quit the server.\n")
-#define E_START_GAME ("[ERROR] Could not start the game.\n")
 
 #define E_FAILED_SOCKET ("[ERROR] Failed to init socket.\n")
 #define E_FAILED_REPLY ("[ERROR] Failed to reply.\n")
 #define E_FAILED_RECEIVE ("[ERROR] Failed to receive.\n")
 
-#define E_SERVER_ERROR ("[ERROR] Server error.")
+#define E_SERVER_ERROR ("[ERROR] Server error.\n")
 
-#define E_ACQUIRE_ERROR ("[ERROR] Failed to acquire file lock.")
+#define E_ACQUIRE_ERROR ("[ERROR] Failed to acquire file lock.\n")
+
+#define E_CLOSE_SOCKET ("[ERROR] Failed to close socket.\n")

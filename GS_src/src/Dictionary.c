@@ -45,7 +45,7 @@ void InitDictionary(Dictionary *dict, FILE *fp) {
     char cc = delim[0];
     size_t amt = 0;
     for (size_t i = 0; i != size; ++i) {
-        R_FAIL_EXIT_IF(BRANCH_UNLIKELY(data[i] == '\0' || data[i] == 0x1A),
+        R_FAIL_EXIT_IF(BRANCH_UNLIKELY(data[i] == '\x00' || data[i] == 0x1A),
                        DICT_INVALID_CHARACTER);
         if (cc == delim[0]) {
             /* Keep checking word validity. */
@@ -79,7 +79,7 @@ void InitDictionary(Dictionary *dict, FILE *fp) {
         ++counter;
     }
 
-    R_FAIL_EXIT_IF(BRANCH_UNLIKELY(cc != delim[0] || data[size - 1] != '\0'),
+    R_FAIL_EXIT_IF(BRANCH_UNLIKELY(cc != delim[0] || data[size - 1] != '\x00'),
                    DICT_INVALID_LAST_LINE);
     dict->amt = amt;
 }

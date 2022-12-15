@@ -42,7 +42,7 @@ ssize_t tcp_sender_recv(u8 *data, size_t sz) {
     return res;
 }
 
-ssize_t tcp_sender_recv_all(u8 *buf, size_t sz) {
+ssize_t tcp_sender_recv_all(u8 *buf, size_t sz, bool *finished) {
     size_t bytes = 0;
 
     do {
@@ -51,15 +51,19 @@ ssize_t tcp_sender_recv_all(u8 *buf, size_t sz) {
 
         /* EOF... */
         if (rc == 0) {
-            return rc;
+            *finished = true;
+            return bytes;
         }
 
-        if (rc == -1)
+        if (rc == -1) {
+            *finished = false;
             return -1;
+        }
 
         bytes += (size_t)rc;
     } while (bytes != sz);
 
+    *finished = false;
     return bytes;
 }
 
@@ -67,4 +71,11 @@ ssize_t tcp_sender_send(const u8 *data, size_t sz) {
     const ssize_t res = try_write(socket_tcp_fd, data, sz);
 
     return res;
+}
+
+ssize_t tcp_sender_fini() {
+    freeaddrinfo(tcp_peer_data);
+    const ssize_t rc = try_close(socket_tcp_fd);
+    socket_tcp_fd = -1;
+    return rc;
 }

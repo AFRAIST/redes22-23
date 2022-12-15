@@ -5,7 +5,7 @@
 
 static Result get_plid(struct input *inp) {
     char *ap = inp->appendix;
-    if (*ap == '\0')
+    if (*ap == '\x00')
         return EXIT_FAILURE;
 
     int appendix_size = strlen(inp->appendix);
@@ -61,7 +61,7 @@ Result command_start(struct input *inp) {
     char send_buf[send_buf_sz];
 
     /* Will not include the null. */
-    ssize_t sz = sprintf(send_buf, "SNG %06zu\n", inp->plid);
+    ssize_t sz = snprintf(send_buf, send_buf_sz, "SNG %06zu\n", inp->plid);
 
     R_FAIL_RETURN(EXIT_FAILURE, udp_sender_try_init() == -1, E_FAILED_SOCKET);
 
@@ -129,7 +129,7 @@ static Result finalize_play_opts(char *recv_buf, char c) {
 
     tok = BufTokenizeOpt(next, " ", &next);
     if (!strcmp(tok, "ERR\n")) {
-        R_FAIL_RETURN(EXIT_FAILURE, *next != '\0', E_INVALID_SERVER_REPLY);
+        R_FAIL_RETURN(EXIT_FAILURE, *next != '\x00', E_INVALID_SERVER_REPLY);
         perror(E_SERVER_ERROR);
         return EXIT_FAILURE;
     } else if (!strcmp(tok, "OVR")) {
@@ -210,8 +210,8 @@ Result command_play(struct input *inp) {
     // handle max
     const u32 attempt = ++g_game.cur_attempt;
 
-    size_t sz =
-        (size_t)sprintf(buf, "PLG %06zu %c %u\n", g_game.plid, c, attempt);
+    size_t sz = (size_t)snprintf(buf, buf_sz, "PLG %06zu %c %u\n", g_game.plid,
+                                 c, attempt);
 
     R_FAIL_RETURN(EXIT_FAILURE, udp_sender_send((u8 *)buf, sz) != (ssize_t)sz,
                   E_FAILED_REPLY);
@@ -246,7 +246,7 @@ static Result finalize_guess_opts(char *recv_buf, char *word) {
 
     tok = BufTokenizeOpt(next, " ", &next);
     if (!strcmp(tok, "ERR\n")) {
-        R_FAIL_RETURN(EXIT_FAILURE, *next != '\0', E_INVALID_SERVER_REPLY);
+        R_FAIL_RETURN(EXIT_FAILURE, *next != '\x00', E_INVALID_SERVER_REPLY);
         perror(E_SERVER_ERROR);
         return EXIT_FAILURE;
     } else if (!strcmp(tok, "OVR")) {
@@ -300,8 +300,8 @@ Result command_guess(struct input *inp) {
     // handle max
     const u32 attempt = ++g_game.cur_attempt;
 
-    size_t sz = (size_t)sprintf(buf, "PWG %06zu %s %i\n", inp->plid,
-                                inp->appendix, attempt);
+    size_t sz = (size_t)snprintf(buf, buf_sz, "PWG %06zu %s %i\n", inp->plid,
+                                 inp->appendix, attempt);
 
     R_FAIL_RETURN(EXIT_FAILURE, udp_sender_send((u8 *)buf, sz) != (ssize_t)sz,
                   E_FAILED_REPLY);
@@ -325,58 +325,177 @@ Result command_guess(struct input *inp) {
 #define BIG_BUF_SZ (4 * 1024 * 1024)
 static u8 big_buffer[BIG_BUF_SZ];
 
-static void get_file(u32 offset, u32 whence) {
+static Result get_file(u32 offset, u32 whence, bool show) {
+    /* Data right after status. */
     u8 *buf = big_buffer + offset;
-    (void)buf;
-    u32 sz = (u32)tcp_sender_recv_all(big_buffer + whence, BIG_BUF_SZ - whence);
-    R_FAIL_EXIT_IF((s32)sz == -1 || sz == 0, E_FAILED_RECEIVE);
+    bool fin;
+    /* No file metadata will take 4MiB, so we can nuke false positives here,
+     * too. */
 
-    /*
-        BufTokenizeOpts
+    u32 sz = (u32)tcp_sender_recv_all(big_buffer + whence, BIG_BUF_SZ - whence,
+                                      &fin);
+    R_FAIL_RETURN(EXIT_FAILURE, (s32)sz == -1 || sz == 0, E_FAILED_RECEIVE);
 
-        if (sz < BIG_BUF_SZ-whence)
-    */
+    char *tok;
+    char *next;
+
+    char *fname;
+    fname = BufTokenizeOpt((char *)buf, " ", &next);
+
+    tok = BufTokenizeOpt((char *)next, " ", &next);
+    size_t full_size;
+    R_FAIL_RETURN(EXIT_FAILURE,
+                  strtoul_check((ssize_t *)&full_size, tok) == EXIT_FAILURE,
+                  E_INVALID_SERVER_REPLY);
+
+    /* Derive out. */
+    size_t cur_sz = (size_t)((big_buffer + whence + sz) - (u8 *)next);
+
+    int fd = open(fname, O_WRONLY | O_CREAT, 0644);
+    R_FAIL_RETURN(EXIT_FAILURE, fd == -1, "[ERROR] Failed to open file.\n");
+    printf("Saving file to %s ...\n", fname);
+
+    if (show)
+        write(1, next, fin ? cur_sz : cur_sz - 1);
+
+    if (write(fd, next, fin ? cur_sz : cur_sz - 1) == -1) {
+        perror("[ERROR] Failed to write file.\n");
+        goto error;
+    }
+
+    /* In caise it does not get looped, to validate the restriction. */
+    sz += whence - 1;
+
+    while (cur_sz != full_size + 1) {
+        if (fin) {
+            /* Contradiction with the packet info... */
+            perror(E_INVALID_SERVER_REPLY);
+            goto error;
+        }
+
+        sz = (u32)tcp_sender_recv_all(big_buffer, BIG_BUF_SZ, &fin);
+
+        if ((s32)sz == -1 || sz == 0) {
+            perror(E_FAILED_RECEIVE);
+            goto error;
+        }
+
+        cur_sz += sz;
+        if (fin)
+            sz -= 1;
+
+        if (show)
+            write(1, big_buffer, sz);
+
+        if (write(fd, big_buffer, sz) == -1) {
+            perror("[ERROR] Failed to write file.\n");
+            goto error;
+        }
+    }
+
+    /* Final packet accuracy assert. */
+    R_FAIL_RETURN(EXIT_FAILURE, big_buffer[sz] != '\n', E_INVALID_SERVER_REPLY);
+    R_FAIL_RETURN(EXIT_FAILURE, !fin, E_FAILED_RECEIVE);
+
+    R_FAIL_RETURN(EXIT_FAILURE, close(fd) == -1,
+                  "[ERROR] Failed to close file.\n");
+    return EXIT_SUCCESS;
+
+error:
+    close(fd);
+    return EXIT_FAILURE;
 }
 
 Result command_scoreboard(struct input *inp) {
     (void)inp;
-    RETURN_IF_NOT_ACTIVE_GAME();
 
-    R_FAIL_EXIT_IF(tcp_sender_try_init() != EXIT_SUCCESS, E_FAILED_SOCKET);
+    R_FAIL_RETURN(EXIT_FAILURE, tcp_sender_try_init() != EXIT_SUCCESS,
+                  E_FAILED_SOCKET);
 
-    const pid_t pid = fork();
-    if (pid == 0) {
-        R_FAIL_EXIT_IF(tcp_sender_handshake() == -1, E_HANDSHAKE_FAILED);
+    R_FAIL_RETURN(EXIT_FAILURE, tcp_sender_handshake() == -1,
+                  E_HANDSHAKE_FAILED);
 
-        const u32 lim = STR_SIZEOF("RSB EMPTY\n");
+    R_FAIL_RETURN(EXIT_FAILURE, tcp_sender_send((u8 *)"GSB\n", 4) == -1,
+                  E_FAILED_REPLY);
 
-        u32 sz;
-        /* -1 for OK leetter */
-        R_FAIL_EXIT_IF((sz = tcp_sender_recv_all(big_buffer, lim)) <
-                           STR_SIZEOF("RSB OK "),
-                       E_INVALID_SERVER_REPLY);
+    const u32 lim = STR_SIZEOF("RSB EMPTY\n");
 
-        if (!strncmp((char *)big_buffer, "RSB EMPTY\n", lim)) {
-            printf("The scoreboard is empty...\n");
-            /* Maybe read more. */
-            exit(EXIT_SUCCESS);
-        }
+    u32 sz;
+    bool fin;
+    /* -1 for OK leetter */
+    /* It is safe to assume there is no data incoming shorter than EMPTY. */
+    R_FAIL_RETURN(EXIT_FAILURE,
+                  (sz = tcp_sender_recv_all(big_buffer, lim, &fin)) != lim,
+                  E_INVALID_SERVER_REPLY);
 
-        R_FAIL_EXIT_IF(strncmp((char *)big_buffer, "RSB OK ", 7),
-                       E_INVALID_SERVER_REPLY);
+    big_buffer[sz] = '\x00';
 
-        /* Save file. */
-        get_file(sz, 7);
+    // memset(big_buffer, 0, 1024);
+    // strcpy(big_buffer, "RSB OK wwww");
 
-        exit(EXIT_SUCCESS);
+    if (!strcmp((char *)big_buffer, "RSB EMPTY\n")) {
+        R_FAIL_RETURN(EXIT_FAILURE, fin == false, E_INVALID_SERVER_REPLY);
+        printf("The scoreboard is empty...\n");
+        return EXIT_SUCCESS;
     }
+
+    R_FAIL_RETURN(EXIT_FAILURE, strncmp((char *)big_buffer, "RSB OK ", 7),
+                  E_INVALID_SERVER_REPLY);
+
+    /* Save file. */
+    if (get_file(7, lim, true) != EXIT_SUCCESS) {
+        tcp_sender_fini();
+        return EXIT_FAILURE;
+    }
+
+    R_FAIL_RETURN(EXIT_FAILURE, tcp_sender_fini() == -1, E_CLOSE_SOCKET);
 
     return EXIT_SUCCESS;
 }
 
 Result command_hint(struct input *inp) {
-    (void)(inp);
-    R_NOT_IMPLEMENTED();
+    R_FAIL_RETURN(EXIT_FAILURE, tcp_sender_try_init() != EXIT_SUCCESS,
+                  E_FAILED_SOCKET);
+
+    R_FAIL_RETURN(EXIT_FAILURE, tcp_sender_handshake() == -1,
+                  E_HANDSHAKE_FAILED);
+
+    const size_t send_buf_sz = sizeof("GHL 000000\n");
+    char send_buf[send_buf_sz];
+    snprintf(send_buf, send_buf_sz, "GHL %06zu\n", inp->plid);
+
+    R_FAIL_RETURN(EXIT_FAILURE,
+                  tcp_sender_send((u8 *)send_buf, send_buf_sz - 1) == -1,
+                  E_FAILED_REPLY);
+
+    const u32 lim = STR_SIZEOF("RSB NOK\n");
+
+    u32 sz;
+    bool fin;
+    /* It is safe to assume there is no data incoming shorter than EMPTY. */
+    R_FAIL_RETURN(EXIT_FAILURE,
+                  (sz = tcp_sender_recv_all(big_buffer, lim, &fin)) != lim,
+                  E_INVALID_SERVER_REPLY);
+
+    big_buffer[sz] = '\x00';
+
+    if (!strcmp((char *)big_buffer, "RHL NOK\n")) {
+        R_FAIL_RETURN(EXIT_FAILURE, fin == false, E_INVALID_SERVER_REPLY);
+        printf("Server could not provide a hint file...\n");
+        return EXIT_SUCCESS;
+    }
+
+    R_FAIL_RETURN(EXIT_FAILURE, strncmp((char *)big_buffer, "RHL OK ", 7),
+                  E_INVALID_SERVER_REPLY);
+
+    /* Save file. */
+    if (get_file(7, lim, false) != EXIT_SUCCESS) {
+        tcp_sender_fini();
+        return EXIT_FAILURE;
+    }
+
+    R_FAIL_RETURN(EXIT_FAILURE, tcp_sender_fini() == -1, E_CLOSE_SOCKET);
+
     return EXIT_SUCCESS;
 }
 

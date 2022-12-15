@@ -12,7 +12,7 @@ char *StrNSplitSpaceNext(char *s, size_t bounds) {
     if (s > top)
         return NULL;
 
-    *s = '\0';
+    *s = '\x00';
 
     return s + (1 * sizeof(char));
 }
@@ -22,7 +22,7 @@ Result BufNotContainsInvalidNull(char *b, size_t sz) {
         return EXIT_SUCCESS;
 
     for (size_t i = 0; i < (sz - 1); ++i)
-        if (b[i] == '\0' && b[i + 1] != '\0')
+        if (b[i] == '\x00' && b[i + 1] != '\x00')
             return EXIT_FAILURE;
 
     return EXIT_SUCCESS;
@@ -30,7 +30,7 @@ Result BufNotContainsInvalidNull(char *b, size_t sz) {
 
 Result BufNotContainsNull(char *b, size_t sz) {
     for (size_t i = 0; i < sz; ++i)
-        if (b[i] == '\0')
+        if (b[i] == '\x00')
             return EXIT_FAILURE;
 
     return EXIT_SUCCESS;
@@ -52,10 +52,10 @@ char *BufTokenizeOpt(char *b, const char *delim, char **next) {
 
 Result BufTokenizeOpts(char *b, char **opts, size_t sz) {
     if (BufNotContainsNull(b, sz) == EXIT_FAILURE || !sz || b[sz - 1] != '\n' ||
-        *b == '\0')
+        *b == '\x00')
         return EXIT_FAILURE;
 
-    b[sz - 1] = '\0';
+    b[sz - 1] = '\x00';
 
     char *const top = b + sz - 1;
 

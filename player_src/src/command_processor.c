@@ -13,7 +13,7 @@ static Result process_buffer(char buffer[], size_t sz, struct input *inp) {
     fgets(buffer, sz, stdin);
 
     /* Fail if first char is null. */
-    if (*buffer == '\0')
+    if (*buffer == '\x00')
         return EXIT_FAILURE;
 
     /* Check if input contains nulls because fgets won't stop at them. */
@@ -29,7 +29,7 @@ static Result process_buffer(char buffer[], size_t sz, struct input *inp) {
         return EXIT_FAILURE;
 
     /* 1 op command. */
-    if (*buffer == '\0')
+    if (*buffer == '\x00')
         return EXIT_SUCCESS;
 
     /* Next. */
@@ -41,7 +41,7 @@ static Result process_buffer(char buffer[], size_t sz, struct input *inp) {
         return EXIT_FAILURE;
 
     /* There are no commands with 3 ops. */
-    if (*buffer != '\0')
+    if (*buffer != '\x00')
         return EXIT_FAILURE;
 
     /* 2 op command. */
@@ -75,32 +75,25 @@ void command_reader() {
                "valido :angry face:\n");
     };
 
-    pid_t pid = fork();
-    if (pid != 0) {
-        /* Hunt the zombies! */
-        /* Probably lixei isto com os errors codes, mas depois vemos. */
-        proc_start_zombie_hunter();
-        return;
-    }
-
     errno = 0;
     do {
         errno = 0;
         if (COND_COMP_STRINGS_2(inp.command, "start", "sg")) {
             if (command_start(&inp) == EXIT_FAILURE)
-                perror(E_START_GAME);
+                perror("Could not start the game.\n");
         } else if (COND_COMP_STRINGS_2(inp.command, "play", "pl")) {
             if (command_play(&inp) == EXIT_FAILURE)
-                printf("Input Invalido :c\n");
+                perror("Could not play.\n");
         } else if (COND_COMP_STRINGS_2(inp.command, "guess", "gw")) {
             if (command_guess(&inp) == EXIT_FAILURE)
-                printf("Input Invalido :c\n");
+                printf("Could not get word.\n");
         } else if (COND_COMP_STRINGS_2(inp.command, "scoreboard", "sb")) {
             if (command_scoreboard(&inp) == EXIT_FAILURE)
-                printf("Input Invalido :c\n");
-        } else if (COND_COMP_STRINGS_2(inp.command, "hint", "h"))
-            printf("Sucess! h\n");
-        else if (COND_COMP_STRINGS_2(inp.command, "state", "st"))
+                printf("Could not get scoreboard.\n");
+        } else if (COND_COMP_STRINGS_2(inp.command, "hint", "h")) {
+            if (command_hint(&inp) == EXIT_FAILURE)
+                printf("Could not get hint.\n");
+        } else if (COND_COMP_STRINGS_2(inp.command, "state", "st"))
             printf("Sucess! st\n");
         else if (COND_COMP_STRINGS_1(inp.command, "quit"))
             if (command_quit(&inp) == EXIT_FAILURE)
