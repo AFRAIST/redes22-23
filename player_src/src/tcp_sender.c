@@ -1,7 +1,7 @@
 #include "tcp_sender.h"
 
 int socket_tcp_fd = -1;
-struct addrinfo *tcp_peer_data;
+struct addrinfo *tcp_peer_data = NULL;
 
 extern char *GSip;
 extern char *GSport;
@@ -16,7 +16,7 @@ ssize_t tcp_sender_try_init() {
     socket_tcp_fd = socket(AF_INET, SOCK_STREAM, 0);
 
     if (socket_tcp_fd == -1)
-        return -1;
+        goto error;
 
     struct addrinfo hints;
     memset(&hints, 0, sizeof(hints));
@@ -24,9 +24,16 @@ ssize_t tcp_sender_try_init() {
     hints.ai_socktype = SOCK_STREAM;
 
     if (getaddrinfo(CUR_IP_VAR, CUR_PORT_VAR, &hints, &tcp_peer_data) != 0)
-        return -1;
+        goto error;
 
     return EXIT_SUCCESS;
+
+error:
+    if (tcp_sender_fini() == -1) {
+        perror(E_CLOSE_SOCKET);
+    }
+
+    return -1;
 }
 
 int tcp_sender_handshake() {
@@ -74,8 +81,12 @@ ssize_t tcp_sender_send(const u8 *data, size_t sz) {
 }
 
 ssize_t tcp_sender_fini() {
-    freeaddrinfo(tcp_peer_data);
+    if (tcp_peer_data != NULL) {
+        freeaddrinfo(tcp_peer_data);
+        tcp_peer_data = NULL;
+    }
     const ssize_t rc = try_close(socket_tcp_fd);
+
     socket_tcp_fd = -1;
     return rc;
 }

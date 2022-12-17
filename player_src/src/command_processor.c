@@ -6,6 +6,9 @@ static Result process_buffer(char buffer[], size_t sz, struct input *inp) {
 #define MAX_CMD_OP1_SZ 10
 #define MAX_CMD_OP2_SZ 30
 
+    /* Reset the input. */
+    memset(inp, 0, sizeof(*inp));
+
     /* Reset the buffer. */
     memset(buffer, 0, sz);
 
@@ -63,10 +66,9 @@ static void sig_exit() {
 
 void command_reader() {
 #define CUR_BUFFER_SZ 41
-
-    INIT_INPUT(inp);
-
     signal(SIGINT, sig_exit);
+
+    struct input inp;
 
     char buffer[CUR_BUFFER_SZ];
 
@@ -80,10 +82,10 @@ void command_reader() {
         errno = 0;
         if (COND_COMP_STRINGS_2(inp.command, "start", "sg")) {
             if (command_start(&inp) == EXIT_FAILURE)
-                perror("Could not start the game.\n");
+                printf("Could not start the game.\n");
         } else if (COND_COMP_STRINGS_2(inp.command, "play", "pl")) {
             if (command_play(&inp) == EXIT_FAILURE)
-                perror("Could not play.\n");
+                printf("Could not play.\n");
         } else if (COND_COMP_STRINGS_2(inp.command, "guess", "gw")) {
             if (command_guess(&inp) == EXIT_FAILURE)
                 printf("Could not get word.\n");
@@ -93,11 +95,12 @@ void command_reader() {
         } else if (COND_COMP_STRINGS_2(inp.command, "hint", "h")) {
             if (command_hint(&inp) == EXIT_FAILURE)
                 printf("Could not get hint.\n");
-        } else if (COND_COMP_STRINGS_2(inp.command, "state", "st"))
-            printf("Sucess! st\n");
-        else if (COND_COMP_STRINGS_1(inp.command, "quit"))
+        } else if (COND_COMP_STRINGS_2(inp.command, "state", "st")) {
+            if (command_state(&inp) == EXIT_FAILURE)
+                printf("Could not get state.\n");
+        } else if (COND_COMP_STRINGS_1(inp.command, "quit"))
             if (command_quit(&inp) == EXIT_FAILURE)
-                perror(E_QUIT_SERVER);
+                printf(E_QUIT_SERVER);
 
         while (process_buffer(buffer, CUR_BUFFER_SZ, &inp) == EXIT_FAILURE) {
             printf("Nao sabes ecrever? vai ler o enunciado! esse comando nao é "

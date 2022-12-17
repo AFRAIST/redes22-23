@@ -50,6 +50,11 @@ static Result final_num(char *next, size_t *out) {
 Result command_start(struct input *inp) {
     RETURN_IF_ACTIVE_GAME();
 
+    if (inp->appendix == NULL) {
+        printf("Input invalido. :c\n");
+        return EXIT_FAILURE;
+    }
+
     if (get_plid(inp) == EXIT_FAILURE) {
         printf("Please, insert a valid plid.\n");
         return EXIT_SUCCESS;
@@ -196,6 +201,12 @@ static Result finalize_play_opts(char *recv_buf, char c) {
 
 Result command_play(struct input *inp) {
     RETURN_IF_NOT_ACTIVE_GAME();
+
+    if (inp->appendix == NULL) {
+        printf("Input invalido. :c\n");
+        return EXIT_FAILURE;
+    }
+
     size_t appendix_size = strlen(inp->appendix);
 
     const char c = toupper(inp->appendix[0]);
@@ -279,6 +290,12 @@ static Result finalize_guess_opts(char *recv_buf, char *word) {
 
 Result command_guess(struct input *inp) {
     RETURN_IF_NOT_ACTIVE_GAME();
+
+    if (inp->appendix == NULL) {
+        printf("Input invalido. :c\n");
+        return EXIT_SUCCESS;
+    }
+
     size_t appendix_size = strlen(inp->appendix);
 
     if (appendix_size < 3 || appendix_size > 30) {
@@ -289,6 +306,7 @@ Result command_guess(struct input *inp) {
     for (u32 i = 0; i < appendix_size; i++) {
         if (toupper(inp->appendix[i]) > 'Z' ||
             toupper(inp->appendix[i]) < 'A') {
+            printf("Palavra Invalida");
             return EXIT_SUCCESS;
         }
     }
@@ -300,7 +318,7 @@ Result command_guess(struct input *inp) {
     // handle max
     const u32 attempt = ++g_game.cur_attempt;
 
-    size_t sz = (size_t)snprintf(buf, buf_sz, "PWG %06zu %s %i\n", inp->plid,
+    size_t sz = (size_t)snprintf(buf, buf_sz, "PWG %06zu %s %i\n", g_game.plid,
                                  inp->appendix, attempt);
 
     R_FAIL_RETURN(EXIT_FAILURE, udp_sender_send((u8 *)buf, sz) != (ssize_t)sz,
@@ -406,26 +424,21 @@ error:
     return EXIT_FAILURE;
 }
 
-Result command_scoreboard(struct input *inp) {
-    (void)inp;
-
-    R_FAIL_RETURN(EXIT_FAILURE, tcp_sender_try_init() != EXIT_SUCCESS,
-                  E_FAILED_SOCKET);
-
+static Result scoreboard_impl() {
     R_FAIL_RETURN(EXIT_FAILURE, tcp_sender_handshake() == -1,
                   E_HANDSHAKE_FAILED);
 
     R_FAIL_RETURN(EXIT_FAILURE, tcp_sender_send((u8 *)"GSB\n", 4) == -1,
                   E_FAILED_REPLY);
 
-    const u32 lim = STR_SIZEOF("RSB EMPTY\n");
+    const u32 lim = STR_SIZEOF("RSB EMPTY\n") + 1; // for EOF detect
 
     u32 sz;
     bool fin;
     /* -1 for OK leetter */
     /* It is safe to assume there is no data incoming shorter than EMPTY. */
     R_FAIL_RETURN(EXIT_FAILURE,
-                  (sz = tcp_sender_recv_all(big_buffer, lim, &fin)) != lim,
+                  (s32)(sz = tcp_sender_recv_all(big_buffer, lim, &fin)) == -1,
                   E_INVALID_SERVER_REPLY);
 
     big_buffer[sz] = '\x00';
@@ -443,38 +456,44 @@ Result command_scoreboard(struct input *inp) {
                   E_INVALID_SERVER_REPLY);
 
     /* Save file. */
-    if (get_file(7, lim, true) != EXIT_SUCCESS) {
-        tcp_sender_fini();
+    if (get_file(7, lim, true) != EXIT_SUCCESS)
         return EXIT_FAILURE;
-    }
-
-    R_FAIL_RETURN(EXIT_FAILURE, tcp_sender_fini() == -1, E_CLOSE_SOCKET);
 
     return EXIT_SUCCESS;
 }
 
-Result command_hint(struct input *inp) {
+Result command_scoreboard(struct input *inp) {
+    (void)inp;
+
     R_FAIL_RETURN(EXIT_FAILURE, tcp_sender_try_init() != EXIT_SUCCESS,
                   E_FAILED_SOCKET);
 
+    const Result rc = scoreboard_impl();
+
+    R_FAIL_RETURN(EXIT_FAILURE, tcp_sender_fini() == -1, E_CLOSE_SOCKET);
+
+    return rc;
+}
+
+static Result hint_impl() {
     R_FAIL_RETURN(EXIT_FAILURE, tcp_sender_handshake() == -1,
                   E_HANDSHAKE_FAILED);
 
     const size_t send_buf_sz = sizeof("GHL 000000\n");
     char send_buf[send_buf_sz];
-    snprintf(send_buf, send_buf_sz, "GHL %06zu\n", inp->plid);
+    snprintf(send_buf, send_buf_sz, "GHL %06zu\n", g_game.plid);
 
     R_FAIL_RETURN(EXIT_FAILURE,
                   tcp_sender_send((u8 *)send_buf, send_buf_sz - 1) == -1,
                   E_FAILED_REPLY);
 
-    const u32 lim = STR_SIZEOF("RSB NOK\n");
+    const u32 lim = STR_SIZEOF("RHL NOK\n") + 1; // for EOF detct
 
     u32 sz;
     bool fin;
     /* It is safe to assume there is no data incoming shorter than EMPTY. */
     R_FAIL_RETURN(EXIT_FAILURE,
-                  (sz = tcp_sender_recv_all(big_buffer, lim, &fin)) != lim,
+                  (s32)(sz = tcp_sender_recv_all(big_buffer, lim, &fin)) == -1,
                   E_INVALID_SERVER_REPLY);
 
     big_buffer[sz] = '\x00';
@@ -490,19 +509,86 @@ Result command_hint(struct input *inp) {
 
     /* Save file. */
     if (get_file(7, lim, false) != EXIT_SUCCESS) {
-        tcp_sender_fini();
         return EXIT_FAILURE;
     }
 
+    return EXIT_SUCCESS;
+}
+
+Result command_hint(struct input *inp) {
+    (void)inp;
+    R_FAIL_RETURN(EXIT_FAILURE, tcp_sender_try_init() != EXIT_SUCCESS,
+                  E_FAILED_SOCKET);
+
+    const Result rc = hint_impl();
+
     R_FAIL_RETURN(EXIT_FAILURE, tcp_sender_fini() == -1, E_CLOSE_SOCKET);
+
+    return rc;
+}
+
+static Result state_impl() {
+    R_FAIL_RETURN(EXIT_FAILURE, tcp_sender_handshake() == -1,
+                  E_HANDSHAKE_FAILED);
+
+    const size_t send_buf_sz = sizeof("STA 000000\n");
+    char send_buf[send_buf_sz];
+    snprintf(send_buf, send_buf_sz, "STA %06zu\n", g_game.plid);
+
+    R_FAIL_RETURN(EXIT_FAILURE,
+                  tcp_sender_send((u8 *)send_buf, send_buf_sz - 1) == -1,
+                  E_FAILED_REPLY);
+
+    const u32 lim = STR_SIZEOF("RST NOK\n") + 1; // for eof detect
+
+    u32 sz;
+    bool fin;
+    /* It is safe to assume there is no data incoming shorter than EMPTY. */
+    R_FAIL_RETURN(EXIT_FAILURE,
+                  (s32)(sz = tcp_sender_recv_all(big_buffer, lim, &fin)) == -1,
+                  E_INVALID_SERVER_REPLY);
+
+    big_buffer[sz] = '\x00';
+
+    if (!strcmp((char *)big_buffer, "RST NOK\n")) {
+        R_FAIL_RETURN(EXIT_FAILURE, fin == false, E_INVALID_SERVER_REPLY);
+        printf("Server could not find a valid game...\n");
+        return EXIT_SUCCESS;
+    }
+
+    R_FAIL_RETURN(EXIT_FAILURE, strncmp((char *)big_buffer, "RST ", 4),
+                  E_INVALID_SERVER_REPLY);
+
+    bool term;
+    if (!strncmp((char *)big_buffer, "RST ACT ", 8)) {
+        term = true;
+    } else if (!strncmp((char *)big_buffer, "RST FIN ", 8)) {
+        term = false;
+    } else {
+        perror(E_INVALID_COMMAND);
+        return EXIT_FAILURE;
+    }
+
+    if (get_file(8, lim, true) != EXIT_SUCCESS)
+        return EXIT_FAILURE;
+
+    g_game.is_active = term;
 
     return EXIT_SUCCESS;
 }
 
 Result command_state(struct input *inp) {
-    (void)(inp);
-    R_NOT_IMPLEMENTED();
-    return EXIT_SUCCESS;
+    (void)inp;
+    RETURN_IF_NOT_ACTIVE_GAME();
+
+    R_FAIL_RETURN(EXIT_FAILURE, tcp_sender_try_init() != EXIT_SUCCESS,
+                  E_FAILED_SOCKET);
+
+    const Result rc = state_impl();
+
+    R_FAIL_RETURN(EXIT_FAILURE, tcp_sender_fini() == -1, E_CLOSE_SOCKET);
+
+    return rc;
 }
 
 static Result command_quit_impl() {
@@ -522,28 +608,28 @@ static Result command_quit_impl() {
                   (sz = udp_sender_recv((u8 *)recv_buf, recv_buf_sz)) ==
                       EXIT_FAILURE,
                   E_FAILED_RECEIVE);
+    recv_buf[sz] = '\x00';
 
     puts(recv_buf);
-#define OPT_NUM 2
-    char *opts[OPT_NUM + 1] = {NULL};
 
-    R_FAIL_RETURN(EXIT_FAILURE,
-                  BufTokenizeOpts(recv_buf, opts, sz) == EXIT_FAILURE,
-                  E_INVALID_SERVER_REPLY);
+    char *tok;
+    char *next;
 
-    R_FAIL_RETURN(EXIT_FAILURE, opts[0] == NULL || strcmp(opts[0], "RQT"),
-                  E_INVALID_SERVER_REPLY);
+    tok = BufTokenizeOpt(recv_buf, " ", &next);
+    R_FAIL_RETURN(EXIT_FAILURE, strcmp(tok, "RQT"), E_INVALID_SERVER_REPLY);
 
-    R_FAIL_RETURN(EXIT_FAILURE, opts[1] != NULL && !strcmp(opts[1], "ERR"),
-                  E_INVALID_COMMAND);
+    tok = BufTokenizeOpt(next, " ", &next);
+    R_FAIL_RETURN(EXIT_FAILURE, !strcmp(tok, "ERR\n"), E_SERVER_ERROR);
 
-    R_FAIL_RETURN(EXIT_FAILURE, opts[1] == NULL || strcmp(opts[1], "OK"),
-                  E_INVALID_SERVER_REPLY);
+    if (!strcmp(tok, "NOK\n")) {
+        printf("No need to requit.\n");
+        return EXIT_SUCCESS;
+    }
+
+    R_FAIL_RETURN(EXIT_FAILURE, strcmp(tok, "OK\n"), E_INVALID_SERVER_REPLY);
 
     game_fini(&g_game);
     return EXIT_SUCCESS;
-
-#undef OPT_NUM
 }
 
 Result command_quit() {
