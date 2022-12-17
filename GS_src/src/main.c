@@ -53,6 +53,9 @@ int main(int argc, char *argv[]) {
         exit(EXIT_FAILURE);
     }
 
+    /* Init randomizer. */
+    srand(time(NULL));
+
     InitDictionary(&dict_instance, word_file);
 
     VerbosePrintF("%s\n", GSport);

@@ -10,7 +10,6 @@ static void handle_udp_impl() {
     char *plid_s;
     struct output outp;
 
-    srand(time(NULL));
     ssize_t sz;
     if ((sz = udp_sender_recv((u8 *)recv_buf, recv_buf_sz)) == EXIT_FAILURE) {
         perror(E_FAILED_RECEIVE);
@@ -62,7 +61,7 @@ void command_reader() {
 
         fd_set set;
         while (true) {
-            FD_ZERO(&set);
+            FD_ZERO(&set);\
             FD_SET(socket_udp_fd, &set);
 
             int rc = try_select(socket_udp_fd + 1, &set, NULL, NULL, NULL);
@@ -70,11 +69,15 @@ void command_reader() {
             if (rc == -1)
                 continue;
 
+            /* Spin the seeds. */
+            rand();
+            
             const pid_t h_udp = fork();
             if (h_udp == 0) {
                 handle_udp_impl();
                 exit(EXIT_SUCCESS);
             }
+            /* Return the seeds. */
         }
 
         exit(EXIT_SUCCESS);
