@@ -10,3 +10,5 @@ void str_replace(char *s, char old, char new);
 /* Checks for a ssize_t actually. Is called unsigned for accuracy.
    Things over LONG_MAX will error. */
 Result strtoul_check(ssize_t *out, const char *s);
+
+Result final_num(char *next, size_t *out);

@@ -28,8 +28,12 @@ Result GameAcquire(size_t plid) {
     return EXIT_SUCCESS;
 }
 
-bool GameHasMoves() {
-    return g_serv_game->letter_guess[0].letter != 0 || g_serv_game->word_guess[0].word != NULL;
+u32 GameRegTrial() {
+    return ++g_serv_game->trials;
+}
+
+u32 GameTrials() {
+    return g_serv_game->trials;
 }
 
 Result GameRelease() {
@@ -40,13 +44,24 @@ Result GameRelease() {
 Result StartGame() {
     if (!exists) {
         memset(g_serv_game, 0, sizeof(ServGame));
-        *(u64 *)&g_file_arena = sizeof(ServGame);
+        u64 c_sz;
+        c_sz = *(u64 *)&g_file_arena = sizeof(ServGame);
 
         g_serv_game->cur_entry = random_entry(&dict_instance);
+        const u32 s_sz = strlen(GetCurWord());
+        g_serv_game->word_state = (char*)g_serv_game+c_sz;
+        
+        /* Fill with empty. */
+        memset(g_serv_game->word_state, '-', s_sz);
+        *(g_serv_game->word_state+s_sz) = '\x00';
+        *(u64 *)&g_file_arena += s_sz+1;
     } else {
         const ssize_t rd = read(g_file_dat, g_serv_game, 0x1000);
         R_FAIL_RETURN(EXIT_FAILURE, rd == -1 || rd == 0, "[ERROR] Failed to read serial file.\n");
         *(u64 *)&g_file_arena = rd;
+    
+        /* Rebase pointers. */
+        g_serv_game->word_state = (char *)g_serv_game->word_state + (size_t)g_serv_game;
     }
 
     return EXIT_SUCCESS;
@@ -56,6 +71,9 @@ Result ExitAndSerializeGame() {
     R_FAIL_RETURN(EXIT_FAILURE, lseek(g_file_dat, 0, SEEK_SET),
                   "[ERROR] Failed to seek file.\n");
 
+    /* Debase pointers. */
+    g_serv_game->word_state = (char *)g_serv_game->word_state - (size_t)g_serv_game;
+    
     const u64 sz = *(u64 *)&g_file_arena;
 
     Result rc = EXIT_SUCCESS;
@@ -80,6 +98,8 @@ Result ExitAndSerializeGame() {
 }
 
 const char *GetCurWord() { return dict_instance.entries[g_serv_game->cur_entry].word; }
+
+char *GetCurRepr() { return g_serv_game->word_state; }
 
 void RegisterLetterTrial() {}
 

@@ -105,3 +105,18 @@ Result strtoul_check(ssize_t *out, const char *s) {
 
     return EXIT_SUCCESS;
 }
+
+
+Result final_num(char *next, size_t *out) {
+    char *tok = BufTokenizeOpt(next, " ", &next);
+
+    /* We already know 1 behind is safe and we have to nuke the newline. */
+    R_FAIL_RETURN(EXIT_FAILURE, *next != '\x00' || *(next - 1) != '\n',
+                  E_INVALID_NUMBER_REPLY);
+    *(next - 1) = '\x00';
+
+    if (strtoul_check((ssize_t *)out, tok) == EXIT_FAILURE)
+        return EXIT_FAILURE;
+
+    return EXIT_SUCCESS;
+}

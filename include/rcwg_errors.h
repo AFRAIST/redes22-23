@@ -19,6 +19,7 @@
 #define E_HANDSHAKE_FAILED ("[ERR] The TCP handshake failed.\n")
 
 #define E_INVALID_SERVER_REPLY ("[ERROR] Invalid server reply.\n")
+#define E_INVALID_CLIENT_REPLY ("[ERROR] Invalid client reply.\n")
 #define E_INVALID_NUMBER_REPLY ("[ERROR] Invalid number in server reply.\n")
 #define E_INVALID_TRIAL_REPLY ("[ERROR] Invalid trial in server reply.\n")
 #define E_INVALID_COMMAND ("[ERROR] Invalid command specification.\n")
@@ -36,3 +37,5 @@
 #define E_RELEASE_ERROR ("[ERROR] Failed to acquire release file lock.\n")
 
 #define E_CLOSE_SOCKET ("[ERROR] Failed to close socket.\n")
+
+#define E_FAILED_SERIAL_READ ("[ERROR] Failed serial read.\n")
