@@ -1,9 +1,21 @@
 #pragma once
 #include "rcwg.h"
 
-typedef struct {
-    char *cur_word;
-    u32 transactions;
+typedef struct __attribute__((packed)) {
+    char letter;
+} LetterGuess;
+
+typedef struct __attribute__((packed)) {
+    const char *cur_word;
+    LetterGuess letter_guess[40];
     u32 errors;
-    u8 _gap[200];
 } ServGame;
+
+void StartGame();
+Result GameAcquire(size_t plid);
+Result ExitAndSerializeGame();
+Result GameRelease();
+void RegisterLetterTrial();
+void RegisterWordGuess();
+const char *GetCurWord();
+

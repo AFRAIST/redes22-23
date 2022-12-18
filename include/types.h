@@ -21,5 +21,6 @@ struct input {               // Structure declaration
 
 struct output { // Structure declaration
     size_t plid;
-    char *buff;
+    char *next;
+    bool err;
 };

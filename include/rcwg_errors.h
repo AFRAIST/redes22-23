@@ -33,5 +33,6 @@
 #define E_SERVER_ERROR ("[ERROR] Server error.\n")
 
 #define E_ACQUIRE_ERROR ("[ERROR] Failed to acquire file lock.\n")
+#define E_RELEASE_ERROR ("[ERROR] Failed to acquire release file lock.\n")
 
 #define E_CLOSE_SOCKET ("[ERROR] Failed to close socket.\n")

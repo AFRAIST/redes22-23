@@ -3,22 +3,6 @@
 #include "tcp_sender.h"
 #include "udp_sender.h"
 
-static Result get_plid(struct input *inp) {
-    char *ap = inp->appendix;
-    if (*ap == '\x00')
-        return EXIT_FAILURE;
-
-    int appendix_size = strlen(inp->appendix);
-
-    if (appendix_size > 6 || appendix_size <= 0)
-        return EXIT_FAILURE;
-
-    if (strtoul_check((ssize_t *)&inp->plid, ap) == EXIT_FAILURE)
-        return EXIT_FAILURE;
-
-    return EXIT_SUCCESS;
-}
-
 static Result final_num(char *next, size_t *out) {
     char *tok = BufTokenizeOpt(next, " ", &next);
 
@@ -55,7 +39,7 @@ Result command_start(struct input *inp) {
         return EXIT_FAILURE;
     }
 
-    if (get_plid(inp) == EXIT_FAILURE) {
+    if (get_plid(inp->appendix, &inp->plid) == EXIT_FAILURE) {
         printf("Please, insert a valid plid.\n");
         return EXIT_SUCCESS;
     } else {
