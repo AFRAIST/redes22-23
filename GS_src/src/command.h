@@ -3,7 +3,7 @@
 
 #define COMMAND_BUF_SZ 128
 
-Result command_start(struct output *inp);
+void command_start(struct output *inp);
 Result command_play(struct output *inp);
 Result command_guess(struct output *inp);
 Result command_scoreboard(struct output *inp);

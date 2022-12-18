@@ -30,8 +30,8 @@ static inline void ParseDataFromFile(Dictionary *dict, FILE *fp, char **data,
     fclose(fp);
 }
 
-const char *random_word(Dictionary *dict) {
-    return dict->entries[rand() % dict->amt].word;
+size_t random_entry(Dictionary *dict) {
+    return rand() % dict->amt;
 }
 
 void InitDictionary(Dictionary *dict, FILE *fp) {

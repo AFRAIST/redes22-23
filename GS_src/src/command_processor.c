@@ -2,7 +2,7 @@
 #include "proc.h"
 #include "udp_sender.h"
 
-static void handle_udp_impl() {
+static __attribute__((noreturn)) void handle_udp_impl() {
     const size_t recv_buf_sz = COMMAND_BUF_SZ;
     char recv_buf[COMMAND_BUF_SZ] = "";
     struct output outp;
@@ -10,14 +10,15 @@ static void handle_udp_impl() {
     ssize_t sz;
     if ((sz = udp_sender_recv((u8 *)recv_buf, recv_buf_sz)) == EXIT_FAILURE) {
         perror(E_FAILED_RECEIVE);
-        return;
+        exit(EXIT_FAILURE);
     }
 
 #define ERROR_RETURN()                                                         \
     ({                                                                         \
-        if (udp_sender_send((u8 *)"ERR\n", 4) != 4)                            \
+        if (udp_sender_send((u8 *)"ERR\n", 4) != 4) {                            \
             perror(E_FAILED_REPLY);                                            \
-        return;                                                                \
+            exit(EXIT_FAILURE); \
+        } \
     })
 
     if (BufNotContainsInvalidNull(recv_buf, sz) == EXIT_FAILURE) {
@@ -42,7 +43,6 @@ static void handle_udp_impl() {
     }
 
     tok[6] = back;
-    /* Do it foreach cmd, lmao. Poo+p-.*/
 
     if (COND_COMP_STRINGS_1("SNG", cmd))
         command_start(&outp);
@@ -53,7 +53,7 @@ static void handle_udp_impl() {
     } else {
         perror("No command.\n");
     }
-
+    exit(EXIT_SUCCESS); 
 }
 
 void command_reader() {
@@ -77,8 +77,8 @@ void command_reader() {
 
             const pid_t h_udp = fork();
             if (h_udp == 0) {
+                /* Will exit inside. */
                 handle_udp_impl();
-                exit(EXIT_SUCCESS);
             }
             /* Return the seeds. */
         }

@@ -21,6 +21,6 @@ extern Dictionary dict_instance;
 #define DICT_INVALID_LAST_LINE "Dictionary: Invalid last line!"
 #define DICT_INVALID_CHARACTER "Dictionary: Invalid character!"
 
-const char *random_word(Dictionary *dict);
+size_t random_entry(Dictionary *dict);
 void InitDictionary(Dictionary *dict, FILE *fp);
 void FiniDictionary(Dictionary *dict);

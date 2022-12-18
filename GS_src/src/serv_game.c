@@ -2,9 +2,10 @@
 #include "Dictionary.h"
 
 static __attribute__((aligned(1024))) u8 g_file_arena[0x1000];
-ServGame *g_serv_game = (ServGame *)((u8 *)g_file_arena+8);
+ServGame *g_serv_game = (ServGame *)((u8 *)g_file_arena + 8);
 
 int g_file_dat = 0;
+bool exists;
 
 Result GameAcquire(size_t plid) {
     char dat[19];
@@ -13,39 +14,47 @@ Result GameAcquire(size_t plid) {
     /* Check if file exists. */
     if (access(dat, F_OK) == 0) {
         VerbosePrintF("%s exists.\n", dat);
-        
+
         g_file_dat = open(dat, O_RDWR, 0644);
+        exists = true;
     } else {
         VerbosePrintF("%s does not exist.\n", dat);
-    
+
         g_file_dat = open(dat, O_RDWR | O_CREAT, 0644);
+        exists = false;
     }
 
-    R_FAIL_EXIT_IF(flock(g_file_dat, LOCK_EX) == -1, E_ACQUIRE_ERROR);
+    R_FAIL_RETURN(EXIT_FAILURE, flock(g_file_dat, LOCK_EX) == -1, E_ACQUIRE_ERROR);
     return EXIT_SUCCESS;
+}
+
+bool GameHasMoves() {
+    return g_serv_game->letter_guess[0].letter != 0 || g_serv_game->word_guess[0].word != NULL;
 }
 
 Result GameRelease() {
-    R_FAIL_EXIT_IF(flock(g_file_dat, LOCK_UN) == -1, E_ACQUIRE_ERROR);
+    R_FAIL_RETURN(EXIT_FAILURE, flock(g_file_dat, LOCK_UN) == -1, E_ACQUIRE_ERROR);
     return EXIT_SUCCESS;
 }
 
-void StartGame() {
-    memset(g_serv_game, 0, sizeof(ServGame));
-    *(u64 *)&g_file_arena = sizeof(ServGame);
+Result StartGame() {
+    if (!exists) {
+        memset(g_serv_game, 0, sizeof(ServGame));
+        *(u64 *)&g_file_arena = sizeof(ServGame);
 
-    g_serv_game->cur_word = random_word(&dict_instance);
+        g_serv_game->cur_entry = random_entry(&dict_instance);
+    } else {
+        const ssize_t rd = read(g_file_dat, g_serv_game, 0x1000);
+        R_FAIL_RETURN(EXIT_FAILURE, rd == -1 || rd == 0, "[ERROR] Failed to read serial file.\n");
+        *(u64 *)&g_file_arena = rd;
+    }
 
-    const u64 reg = *(u64 *)&g_file_arena;
-    *(u64 *)&g_file_arena += strlen(g_serv_game->cur_word);
-   
-    strcpy((char *)g_file_arena + reg, g_serv_game->cur_word);
-    g_serv_game->cur_word = (char *)g_file_arena + reg;
+    return EXIT_SUCCESS;
 }
 
 Result ExitAndSerializeGame() {
-    g_serv_game->cur_word = (const char*)((const char*)(g_serv_game->cur_word) - ((const char*)g_file_arena+8));
-    R_FAIL_RETURN(EXIT_FAILURE, lseek(g_file_dat, 0, SEEK_SET), "[ERROR] Failed to seek file.\n");
+    R_FAIL_RETURN(EXIT_FAILURE, lseek(g_file_dat, 0, SEEK_SET),
+                  "[ERROR] Failed to seek file.\n");
 
     const u64 sz = *(u64 *)&g_file_arena;
 
@@ -60,24 +69,18 @@ Result ExitAndSerializeGame() {
         perror("[ERROR] Failed to truncate serialization file.\n");
         rc = EXIT_FAILURE;
     }
-    
+
     if (close(g_file_dat) == -1) {
         perror("[ERROR] Failed to close serialization file.\n");
         rc = EXIT_FAILURE;
     }
-    
+
     g_file_dat = 0;
     return rc;
 }
 
-const char *GetCurWord() {
-    return g_serv_game->cur_word;
-}
+const char *GetCurWord() { return dict_instance.entries[g_serv_game->cur_entry].word; }
 
-void RegisterLetterTrial() {
-}
+void RegisterLetterTrial() {}
 
-void RegisterWordGuess() {
-
-}
-
+void RegisterWordGuess() {}

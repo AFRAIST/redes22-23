@@ -6,16 +6,25 @@ typedef struct __attribute__((packed)) {
 } LetterGuess;
 
 typedef struct __attribute__((packed)) {
-    const char *cur_word;
+    char *word;
+} WordGuess;
+
+typedef struct __attribute__((packed)) {
+    /* This way, we can point to the entry without memlayout concerns. */
+    size_t cur_entry;
+    /* LetterGuess can be arrayd out. */
     LetterGuess letter_guess[40];
+    WordGuess word_guess[40];
+    /* Error counter. */
     u32 errors;
+    /* Then, we'll have to array wordguess too.*/
 } ServGame;
 
-void StartGame();
+Result StartGame();
 Result GameAcquire(size_t plid);
 Result ExitAndSerializeGame();
+bool GameHasMoves();
 Result GameRelease();
 void RegisterLetterTrial();
 void RegisterWordGuess();
 const char *GetCurWord();
-
