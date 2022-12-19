@@ -2,6 +2,7 @@
 #include "Dictionary.h"
 #include "serv_game.h"
 #include "udp_sender.h"
+#include "tcp_sender.h"
 
 static inline u32 get_errs(u32 size) {
     if (size < 7)
@@ -99,7 +100,7 @@ static Result play_impl(struct output *outp) {
         goto no_work;
     }
 
-    int i = 0;
+    u32 i = 0;
     for(; i < 40 && g_serv_game->letter_guess[i].letter != 0; ++i) {
         if (g_serv_game->letter_guess[i].letter == ch) {
             tok = "DUP";
@@ -210,10 +211,73 @@ Result command_hint(struct output *outp) {
     return EXIT_SUCCESS;
 }
 
-Result command_state(struct output *outp) {
-    (void)(outp);
-    R_NOT_IMPLEMENTED();
+static Result state_impl(struct output *outp) {
+    u8 *r_buf = malloc(0xA000);
+    if(StartGame() == EXIT_FAILURE)
+        goto no_work;
+
+    char * const a_buf = (char *)r_buf + 0x1000;
+    char *buf = a_buf;
+
+    sprintf(buf, "     Active game found for player %06zu\n", outp->plid);
+    buf += strlen(buf);
+    sprintf(buf, "     -- Transactions found: %u ---\n", g_serv_game->trials);
+    buf += strlen(buf);
+
+    char ch;
+    for(u32 i = 0; i < 40 && (ch = g_serv_game->letter_guess[i].letter) != 0; ++i) {
+        sprintf(buf, "     Letter trial: %c\n", ch);
+        buf += strlen(buf);
+    }
+
+    const size_t file_sz = strlen(a_buf);
+    buf[0] = '\n';
+    buf[1] = '\x00';
+
+    char dat[0x1000];
+    sprintf(dat, "RST ACT STATE_%06zu %zu ", outp->plid, file_sz);
+
+    const size_t diff = strlen(dat);
+    u8 *send_buf = (u8 *)a_buf - diff;
+    memcpy(send_buf, dat, diff);
+
+    VerbosePrintF("Sending the data!\n");
+    if(tcp_sender_send(send_buf, (size_t)strlen((char *)send_buf)) == -1) {
+        goto no_work;
+    }
+
+    free(r_buf);
     return EXIT_SUCCESS;
+
+no_work:
+    free(r_buf);
+    return EXIT_FAILURE;
+}
+
+Result command_state(struct output *outp) {
+    Result rc = EXIT_SUCCESS;
+
+    if (outp->err)
+        goto out;
+
+    if ((rc = GameAcquire(outp->plid)) == EXIT_FAILURE) {
+        perror(E_ACQUIRE_ERROR);
+        goto out;
+    }
+    
+    
+    if ((rc = state_impl(outp)) == EXIT_FAILURE) {
+        goto out;
+    } 
+
+    R_FAIL_EXIT_IF(GameRelease() == EXIT_FAILURE, E_RELEASE_ERROR);
+    exit(rc);
+
+out:
+    R_FAIL_EXIT_IF(tcp_sender_send((u8 *)"STA ERR\n", 8) != 8,
+                      E_FAILED_REPLY);
+
+    exit(EXIT_FAILURE);
 }
 
 Result command_quit(struct output *outp) {

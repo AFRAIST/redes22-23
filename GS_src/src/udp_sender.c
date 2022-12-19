@@ -11,9 +11,9 @@ extern char *GSport;
 #define CUR_IP_VAR (player_ip)
 #define CUR_PORT_VAR (player_port)
 
-struct addrinfo *own_data;
-socklen_t addrlen;
-struct sockaddr_in addr;
+static struct addrinfo *own_data;
+static socklen_t addrlen;
+static struct sockaddr_in addr;
 
 ssize_t udp_sender_try_init() {
     if (BRANCH_LIKELY(socket_udp_fd != -1))
