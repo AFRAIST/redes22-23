@@ -235,6 +235,10 @@ static Result finalize_guess_opts(char *recv_buf, char *word) {
                       E_INVALID_SERVER_REPLY);
         printf("OWARI DAAAAA.\n");
         g_game.is_active = false;
+    }else if (!strcmp(tok, "DUP")) {
+        R_FAIL_RETURN(EXIT_FAILURE, final_num(next, &attempts) == EXIT_FAILURE,
+                      E_INVALID_SERVER_REPLY);
+        printf("Try Another Word! The Word %s was already used\n", word);
     } else if (!strcmp(tok, "NOK")) {
         R_FAIL_RETURN(EXIT_FAILURE, final_num(next, &attempts) == EXIT_FAILURE,
                       E_INVALID_SERVER_REPLY);
