@@ -312,10 +312,35 @@ Result command_scoreboard(struct output *outp) {
     return EXIT_SUCCESS;
 }
 
-Result command_hint(struct output *outp) {
-    (void)(outp);
-    R_NOT_IMPLEMENTED();
+
+static Result hint_impl(struct output *outp) {
+    (void)outp;
     return EXIT_SUCCESS;
+}
+
+Result command_hint(struct output *outp) {
+    Result rc = EXIT_SUCCESS;
+    
+    if (outp->err)
+        goto out;
+
+    if ((rc = GameAcquire(outp->plid)) == EXIT_FAILURE) {
+        perror(E_ACQUIRE_ERROR);
+        goto out;
+    }
+
+    if ((rc = hint_impl(outp)) == EXIT_FAILURE) {
+        goto out;
+    } 
+    
+    R_FAIL_EXIT_IF(GameRelease() == EXIT_FAILURE, E_RELEASE_ERROR);
+    exit(rc);
+
+out:
+    R_FAIL_EXIT_IF(tcp_sender_send((u8 *)"STA ERR\n", 8) != 8,
+                      E_FAILED_REPLY);
+
+    exit(EXIT_FAILURE);
 }
 
 static Result state_impl(struct output *outp) {
@@ -336,6 +361,15 @@ static Result state_impl(struct output *outp) {
         sprintf(buf, "     Letter trial: %c\n", ch);
         buf += strlen(buf);
     }
+
+    char *c_word;
+    for(u32 i = 0; i < 40 && (c_word = g_serv_game->word_guess[i].word) != NULL; ++i) {
+        sprintf(buf, "     Word guess: %s\n", c_word);
+        buf += strlen(buf);
+    }
+
+    sprintf(buf, "     Solved so far: %s\n", g_serv_game->word_state);
+    buf += strlen(buf);
 
     const size_t file_sz = strlen(a_buf);
     buf[0] = '\n';
@@ -371,7 +405,20 @@ Result command_state(struct output *outp) {
         perror(E_ACQUIRE_ERROR);
         goto out;
     }
-    
+
+    bool game_empty;
+    if ((rc = GameEmpty(&game_empty)) == EXIT_FAILURE) {
+        perror(E_ACQUIRE_ERROR);
+        goto out;
+    }
+
+    if (game_empty) {
+        R_FAIL_EXIT_IF(tcp_sender_send((u8 *)"STA NOK\n", 8) != 8,
+                      E_FAILED_REPLY);
+
+        exit(EXIT_SUCCESS);
+    }
+
     if ((rc = state_impl(outp)) == EXIT_FAILURE) {
         goto out;
     } 
