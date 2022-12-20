@@ -74,8 +74,6 @@ void command_start(struct output *outp) {
 
 
 static Result play_impl(struct output *outp) {
-    (void)outp;
-
     R_FAIL_RETURN(EXIT_FAILURE, StartGame() == EXIT_FAILURE, E_FAILED_SERIAL_READ);
 
     const char *word = GetCurWord();
@@ -184,8 +182,6 @@ out:
 }
 
 static Result guess_impl(struct output *outp) {
-    (void)outp;
-
     R_FAIL_RETURN(EXIT_FAILURE, StartGame() == EXIT_FAILURE, E_FAILED_SERIAL_READ);
 
     const char *word = GetCurWord();
@@ -200,7 +196,7 @@ static Result guess_impl(struct output *outp) {
         word_guessed[i] = (char)tolower(tok[i]);
         R_FAIL_RETURN(EXIT_FAILURE, (toupper(word_guessed[i]) > 'Z' || toupper(word_guessed[i]) < 'A'), E_INVALID_CLIENT_REPLY);
     }
-    word_guessed[i] = '\0';
+    word_guessed[i] = '\x00';
 
     VerbosePrintF("Guessed word: %s\n", word);
 
@@ -214,21 +210,15 @@ static Result guess_impl(struct output *outp) {
 
     i = 0;
     u32 guessed_word_size = strlen(word_guessed); 
-    u32 dup_state = true;
     for(; i < 40 && g_serv_game->word_guess[i].word != 0; ++i) {
-        VerbosePrintF("other attempts: %s\n", g_serv_game->word_guess[0].word);
-        if(guessed_word_size == strlen(g_serv_game->word_guess[i].word)){
-            //isto vai poder ir para uma funcao compare_words
-            if(strcasecmp(g_serv_game->word_guess[i].word, word_guessed) != 0){
-                dup_state = false;
-            }
-        }
-        if(dup_state == false){
+        VerbosePrintF("other attempts: %s\n", g_serv_game->word_guess[i].word);
+        //isto vai poder ir para uma funcao compare_words
+        if(strcasecmp(g_serv_game->word_guess[i].word, word_guessed) == 0) {
             tok = "DUP";
             goto no_work;
         }
     }
-    g_serv_game->word_guess[i].word = strdup(word_guessed);
+    g_serv_game->word_guess[i].word = StrSerializeDup(word_guessed);
     VerbosePrintF("New attempted word: %s %i\n", g_serv_game->word_guess[i].word, i);
 
     /* Map with each pos. */
@@ -245,7 +235,6 @@ static Result guess_impl(struct output *outp) {
     if (equal_verifier == false) {
         g_serv_game->errors++;
 
-        puts("buuuut");
         if (g_serv_game->errors == g_serv_game->max_errors) {
             tok = "OVR";
             goto no_work;
@@ -255,24 +244,19 @@ static Result guess_impl(struct output *outp) {
     }
 
     
-    #define suc_buf_sz (STR_SIZEOF("RWG NOK 9 00 ") + STR_SIZEOF("00 ") * 30 - sizeof(char) + sizeof("\n"))
+    #define suc_buf_sz (0x1000)
     char suc_buf[suc_buf_sz];
 
     // RLG OK 1 2 3 6
 
-    snprintf(suc_buf, suc_buf_sz, "RWG WIN %u ", GameTrials());
-    char *p = suc_buf + strlen(suc_buf);
-    *(p-1) = '\n';
+    snprintf(suc_buf, suc_buf_sz, "RWG WIN %u\n", GameTrials());
 
-
-    VerbosePrintF("Sended message: %s\n", suc_buf);
+    VerbosePrintF("Sent message: %s\n", suc_buf);
     const size_t suc_sz = strlen(suc_buf); 
     R_FAIL_RETURN(EXIT_FAILURE, (size_t)udp_sender_send((u8 *)suc_buf, strlen(suc_buf)) != suc_sz, E_FAILED_REPLY);
     return EXIT_SUCCESS;
 
 no_work:
-    len = len + 1; //senao random erro, nao sei como resolver ;-;
-    len = len - 1;
     #define fmt_sz (0x1000)
     char send_buf[fmt_sz];
 

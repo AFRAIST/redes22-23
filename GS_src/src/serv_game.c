@@ -1,7 +1,7 @@
 #include "serv_game.h"
 #include "Dictionary.h"
 
-static __attribute__((aligned(1024))) u8 g_file_arena[0x1000];
+static __attribute__((aligned(1024))) u8 g_file_arena[0x2000];
 ServGame *g_serv_game = (ServGame *)((u8 *)g_file_arena + 8);
 
 int g_file_dat = 0;
@@ -62,9 +62,25 @@ Result StartGame() {
     
         /* Rebase pointers. */
         g_serv_game->word_state = (char *)g_serv_game->word_state + (size_t)g_serv_game;
+        for(u32 i = 0; i < 40 && g_serv_game->word_guess[i].word != 0; ++i) {
+            g_serv_game->word_guess[i].word = g_serv_game->word_guess[i].word + (size_t)g_serv_game; 
+        }
+
     }
 
     return EXIT_SUCCESS;
+}
+
+char *StrSerializeDup(const char *p) {
+    u64 c_sz = *(u64 *)&g_file_arena;
+    char *r = (char*)g_serv_game+c_sz; 
+    
+    const size_t sz = strlen(p);
+    memcpy(r, p, sz);
+    *(r+sz+1) = '\x00';
+    *(u64 *)&g_file_arena += (sz+1);
+
+    return r;
 }
 
 Result ExitAndSerializeGame() {
@@ -72,8 +88,11 @@ Result ExitAndSerializeGame() {
                   "[ERROR] Failed to seek file.\n");
 
     /* Debase pointers. */
-    g_serv_game->word_state = (char *)g_serv_game->word_state - (size_t)g_serv_game;
-    
+    g_serv_game->word_state = (char *)g_serv_game->word_state  - (size_t)g_serv_game;
+    for(u32 i = 0; i < 40 && g_serv_game->word_guess[i].word != 0; ++i) {
+        g_serv_game->word_guess[i].word = g_serv_game->word_guess[i].word - (size_t)g_serv_game; 
+    }
+
     const u64 sz = *(u64 *)&g_file_arena;
 
     Result rc = EXIT_SUCCESS;
