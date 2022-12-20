@@ -185,21 +185,18 @@ Result command_play(struct input *inp) {
         return EXIT_SUCCESS;
     }
 
-    const size_t buf_sz = sizeof("PLG 000000 A 00\n");
-    char buf[buf_sz];
+    char buf[0x1000];
 
     // handle max
     const u32 attempt = ++g_game.cur_attempt;
 
-    size_t sz = (size_t)snprintf(buf, buf_sz, "PLG %06zu %c %u\n", g_game.plid,
+    size_t sz = (size_t)sprintf(buf, "PLG %06zu %c %u\n", g_game.plid,
                                  c, attempt);
 
     R_FAIL_RETURN(EXIT_FAILURE, udp_sender_send((u8 *)buf, sz) != (ssize_t)sz,
                   E_FAILED_REPLY);
 
-    const size_t recv_buf_sz = STR_SIZEOF("RLG NOK 9 00 ") +
-                               STR_SIZEOF("00 ") * 30 - sizeof(char) +
-                               sizeof("\n");
+    const size_t recv_buf_sz = 0x1000;
     char recv_buf[recv_buf_sz];
     R_FAIL_RETURN(EXIT_FAILURE,
                   (sz = udp_sender_recv((u8 *)recv_buf, recv_buf_sz - 1)) ==
@@ -285,8 +282,7 @@ Result command_guess(struct input *inp) {
         }
     }
 
-    const size_t buf_sz =
-        STR_SIZEOF("PWG 000000 ") + sizeof(char) * 30 + sizeof("9\n");
+    const size_t buf_sz = 0x1000;
     char buf[buf_sz];
 
     // handle max
@@ -298,7 +294,7 @@ Result command_guess(struct input *inp) {
     R_FAIL_RETURN(EXIT_FAILURE, udp_sender_send((u8 *)buf, sz) != (ssize_t)sz,
                   E_FAILED_REPLY);
 
-    const size_t recv_buf_sz = sizeof("RWG ERR 9\n");
+    const size_t recv_buf_sz = 0x1000;
     char recv_buf[recv_buf_sz];
     R_FAIL_RETURN(EXIT_FAILURE,
                   (sz = udp_sender_recv((u8 *)recv_buf, recv_buf_sz - 1)) ==

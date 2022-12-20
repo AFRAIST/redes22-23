@@ -29,7 +29,7 @@ static Result start_impl(struct output *outp) {
 
     g_serv_game->max_errors = errs;
 
-    const size_t send_buf_sz = sizeof("RSG ERR 33 9\n");
+    const size_t send_buf_sz = 0x1000;
     char send_buf[send_buf_sz];
     
     snprintf(send_buf, send_buf_sz, "RSG %s %u %u\n",
@@ -95,12 +95,6 @@ static Result play_impl(struct output *outp) {
         goto no_work;
     }
 
-    //o ovr nao tem que ser feito depois de verificar as letras?
-    if (g_serv_game->errors == g_serv_game->max_errors) {
-        tok = "OVR";
-        goto no_work;
-    }
-
     u32 i = 0;
     for(; i < 40 && g_serv_game->letter_guess[i].letter != 0; ++i) {
         if (g_serv_game->letter_guess[i].letter == ch) {
@@ -123,13 +117,16 @@ static Result play_impl(struct output *outp) {
 
     if (cw == 0) {
         g_serv_game->errors++;
-        puts("buuuut");
+        if (g_serv_game->errors > g_serv_game->max_errors) {
+            tok = "OVR";
+            goto no_work;
+        }
         tok = "NOK";
         goto no_work;
     }
 
     
-    #define suc_buf_sz (STR_SIZEOF("RLG NOK 9 00 ") + STR_SIZEOF("00 ") * 30 - sizeof(char) + sizeof("\n"))
+    #define suc_buf_sz 0x1000
     char suc_buf[suc_buf_sz];
 
     // RLG OK 1 2 3 6
@@ -145,21 +142,17 @@ static Result play_impl(struct output *outp) {
 
     printf("lol %s\n", suc_buf);
     const size_t suc_sz = strlen(suc_buf); 
-    R_FAIL_RETURN(EXIT_FAILURE, (size_t)udp_sender_send((u8 *)suc_buf, strlen(suc_buf)) != suc_sz, E_FAILED_REPLY);
+    R_FAIL_RETURN(EXIT_FAILURE, (size_t)udp_sender_send((u8 *)suc_buf, suc_sz) != suc_sz, E_FAILED_REPLY);
     return EXIT_SUCCESS;
 
 no_work:
-    len = len + 1;
-    len = len -1;
-    #define fmt_sz (sizeof("RLG NOK 1\n"))
-    char send_buf[fmt_sz];
+    char send_buf[0x1000];
 
-    snprintf(send_buf, fmt_sz, "RLG %s %u\n", tok, GameTrials());
+    sprintf(send_buf, "RLG %s %u\n", tok, GameTrials());
     const size_t send_buf_sz = strlen(send_buf);
     R_FAIL_RETURN(EXIT_FAILURE, (size_t)udp_sender_send((u8 *)send_buf, send_buf_sz) != send_buf_sz, E_FAILED_REPLY);
 
     return EXIT_SUCCESS;
-    #undef fmt_sz
     #undef suc_buf_sz
 }
 
@@ -280,7 +273,7 @@ static Result guess_impl(struct output *outp) {
 no_work:
     len = len + 1; //senao random erro, nao sei como resolver ;-;
     len = len - 1;
-    #define fmt_sz (sizeof("RWG NOK 1\n"))
+    #define fmt_sz (0x1000)
     char send_buf[fmt_sz];
 
     snprintf(send_buf, fmt_sz, "RWG %s %u\n", tok, GameTrials());
@@ -384,7 +377,6 @@ Result command_state(struct output *outp) {
         perror(E_ACQUIRE_ERROR);
         goto out;
     }
-    
     
     if ((rc = state_impl(outp)) == EXIT_FAILURE) {
         goto out;
