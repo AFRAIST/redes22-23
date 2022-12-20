@@ -20,11 +20,14 @@ static __attribute__((noreturn)) void handle_udp_impl() {
             perror(E_FAILED_REPLY);                                            \
             exit(EXIT_FAILURE); \
         } \
+        exit(EXIT_FAILURE); \
     })
 
-    if (BufNotContainsInvalidNull(recv_buf, sz) == EXIT_FAILURE) {
+    if (recv_buf[sz-1] != '\n') {
         ERROR_RETURN();
     }
+
+    outp.err = false;
 
     char *cmd;
     char *tok;
@@ -38,11 +41,17 @@ static __attribute__((noreturn)) void handle_udp_impl() {
     tok[6] = 0;
     if (strtoul_check((ssize_t *)&outp.plid, tok) == EXIT_FAILURE) {
         outp.err = true;
-    } else {
-        outp.err = false;
     }
 
     tok[6] = back;
+
+    if (BufNotContainsInvalidNull(recv_buf, sz) == EXIT_FAILURE) {
+        outp.err = true;
+    }
+    
+    if (BufNotContainsMoreThanOneLF(recv_buf, sz) == EXIT_FAILURE) {
+        outp.err = true;
+    }
 
     if (COND_COMP_STRINGS_1("SNG", cmd))
         command_start(&outp);

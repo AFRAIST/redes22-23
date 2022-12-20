@@ -69,7 +69,10 @@ Result command_start(struct input *inp) {
     tok = BufTokenizeOpt(next, " ", &next);
 
     /* Check status. */
-    R_FAIL_RETURN(EXIT_FAILURE, !strcmp(tok, "NOK"), E_INVALID_COMMAND);
+    if (!strcmp(tok, "NOK\n")) {
+        printf("There is an already ongoing game, use quit to finish it.\n");
+        return EXIT_SUCCESS;
+    }
 
     R_FAIL_RETURN(EXIT_FAILURE, strcmp(tok, "OK"), E_INVALID_SERVER_REPLY);
 
@@ -341,6 +344,12 @@ static Result get_file(u32 offset, u32 whence, bool show) {
 
     int fd = open(fname, O_WRONLY | O_CREAT, 0644);
     R_FAIL_RETURN(EXIT_FAILURE, fd == -1, "[ERROR] Failed to open file.\n");
+
+    if (flock(fd, LOCK_EX) == -1) {
+        perror("[ERR] Flock.\n");
+        goto error_close;
+    }
+
     printf("Saving file to %s ...\n", fname);
 
     if (show)
@@ -383,15 +392,35 @@ static Result get_file(u32 offset, u32 whence, bool show) {
     }
 
     /* Final packet accuracy assert. */
-    R_FAIL_RETURN(EXIT_FAILURE, big_buffer[sz] != '\n', E_INVALID_SERVER_REPLY);
-    R_FAIL_RETURN(EXIT_FAILURE, !fin, E_FAILED_RECEIVE);
+    if (big_buffer[sz] != '\n') {
+        perror(E_INVALID_SERVER_REPLY);
+        goto error;
+    }
 
-    R_FAIL_RETURN(EXIT_FAILURE, close(fd) == -1,
-                  "[ERROR] Failed to close file.\n");
+    if (!fin) {
+        perror(E_FAILED_RECEIVE);
+        goto error;
+    }
+
+    if (flock(fd, LOCK_UN) == -1) {
+        perror("[ERR] Flock.\n");
+        goto error_close;
+    }
+
+    R_FAIL_RETURN(EXIT_FAILURE, close(fd) == -1, "[ERROR] Failed to close file.\n");
+
     return EXIT_SUCCESS;
 
 error:
-    close(fd);
+    if (flock(fd, LOCK_UN) == -1) {
+        perror("[ERR] Flock.\n");
+    }
+
+error_close: 
+    if (close(fd) == -1) {
+        perror("[ERROR] Failed to close file.\n");
+    }
+
     return EXIT_FAILURE;
 }
 

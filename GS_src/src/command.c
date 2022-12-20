@@ -15,14 +15,8 @@ static inline u32 get_errs(u32 size) {
 
 static Result start_impl(struct output *outp) {
     (void)outp;
-    if (StartGame() == EXIT_FAILURE) {
-        if (udp_sender_send((u8 *)"RSG ERR\n", 8) != 8) {
-            perror(E_FAILED_REPLY);
-        }
-
-        return EXIT_FAILURE;
-    }
-
+    R_FAIL_RETURN(EXIT_FAILURE, StartGame() == EXIT_FAILURE, E_FAILED_SERIAL_READ);
+    
     const char *w = GetCurWord();
     const u32 size = strlen(w);
     const u32 errs = get_errs(size);
@@ -30,12 +24,17 @@ static Result start_impl(struct output *outp) {
     g_serv_game->max_errors = errs;
 
     const size_t send_buf_sz = 0x1000;
-    char send_buf[send_buf_sz];
-    
-    snprintf(send_buf, send_buf_sz, "RSG %s %u %u\n",
-    GameTrials() != 0 ? "NOK" : "OK",
-    size,
-    errs);
+    char r_send_buf[send_buf_sz];
+    char *send_buf = r_send_buf;
+
+    if (GameTrials() != 0 ) {
+        send_buf = "RSG NOK\n";
+    } else {    
+        snprintf(send_buf, send_buf_sz, "RSG OK %u %u\n",
+        size,
+        errs);
+    }
+
     
     const size_t send_len = strlen(send_buf);
     if ((size_t)udp_sender_send((u8 *)send_buf, send_len) != send_len) {
@@ -49,27 +48,31 @@ static Result start_impl(struct output *outp) {
 
 void command_start(struct output *outp) {
     if (outp->err) {
-        R_FAIL_EXIT_IF(udp_sender_send((u8 *)"RSG ERR\n", 8) != 8,
-                      E_INVALID_CLIENT_REPLY);
-
-        exit(EXIT_SUCCESS);
+        goto out;
     }
 
     if (GameAcquire(outp->plid) == EXIT_FAILURE) {
         perror(E_ACQUIRE_ERROR);
-        R_FAIL_EXIT_IF(udp_sender_send((u8 *)"RSG ERR\n", 8) != 8,
-                      E_FAILED_REPLY);
-    
-        exit(EXIT_FAILURE);
+        goto out;
     }
 
     Result rc;
     if((rc = start_impl(outp)) == EXIT_SUCCESS) {
         rc = ExitAndSerializeGame();
+    } else {
+        goto out_release;
     }
 
     R_FAIL_EXIT_IF(GameRelease() == EXIT_FAILURE, E_RELEASE_ERROR);
     exit(rc);
+
+out_release:
+    R_FAIL_EXIT_IF(GameRelease() == EXIT_FAILURE, E_RELEASE_ERROR);
+out:
+    R_FAIL_EXIT_IF(udp_sender_send((u8 *)"RSG ERR\n", 8) != 8,
+                  E_FAILED_REPLY);
+
+    exit(EXIT_FAILURE);
 }
 
 
@@ -182,10 +185,10 @@ Result command_play(struct output *outp) {
     exit(rc);
 
 out:
-    R_FAIL_EXIT_IF(udp_sender_send((u8 *)"RSG ERR\n", 8) != 8,
+    R_FAIL_EXIT_IF(udp_sender_send((u8 *)"RLG ERR\n", 8) != 8,
                       E_FAILED_REPLY);
 
-    exit(EXIT_SUCCESS);
+    exit(EXIT_FAILURE);
 }
 
 static Result guess_impl(struct output *outp) {
@@ -292,11 +295,16 @@ Result command_guess(struct output *outp) {
     if ((rc = guess_impl(outp)) == EXIT_SUCCESS) {
         rc = ExitAndSerializeGame();
     } else {
-        goto out;
+        goto out_release;
     } 
 
     R_FAIL_EXIT_IF(GameRelease() == EXIT_FAILURE, E_RELEASE_ERROR);
     exit(rc);
+
+out_release:
+    if (GameRelease() == EXIT_FAILURE) {
+        perror(E_RELEASE_ERROR);
+    }
 
 out:
     R_FAIL_EXIT_IF(udp_sender_send((u8 *)"RWG ERR\n", 8) != 8,
@@ -318,7 +326,6 @@ static Result hint_impl(struct output *outp) {
 
     u8 *r_buf = malloc(0x1000 + 4 * 1024 * 1024);
 
-    printf("cur entry %lu.\n", g_serv_game->cur_entry);
     const char * const c = dict_instance.entries[g_serv_game->cur_entry].word_class;
     char path[0x1000];
 
@@ -326,9 +333,16 @@ static Result hint_impl(struct output *outp) {
 
     int fd = open(path, O_RDONLY);
 
-    struct stat sb;
-    if (fstat(fd, &sb) == -1)
+    if (flock(fd, LOCK_EX) == -1) {
+        perror("[ERR] Failed to flock.");
         goto error;
+    }
+
+    struct stat sb;
+    if (fstat(fd, &sb) == -1) {
+        perror("[ERR] Failed to stat.");
+        goto error;
+    }
 
     size_t full_size = sb.st_size;
 
@@ -365,6 +379,10 @@ static Result hint_impl(struct output *outp) {
     
     if (tcp_sender_send((u8 *)"\n", 1) == -1)
         perror(E_FAILED_REPLY);
+
+    if (flock(fd, LOCK_UN) == -1) {
+        perror("[ERR] Failed to flock.\n");
+    }
 
 skip:
     free(r_buf);
@@ -475,7 +493,7 @@ Result command_state(struct output *outp) {
     bool game_empty;
     if ((rc = GameEmpty(&game_empty)) == EXIT_FAILURE) {
         perror(E_ACQUIRE_ERROR);
-        goto out;
+        goto out_release;
     }
 
     if (game_empty) {
@@ -486,11 +504,16 @@ Result command_state(struct output *outp) {
     }
 
     if ((rc = state_impl(outp)) == EXIT_FAILURE) {
-        goto out;
+        goto out_release;
     } 
 
     R_FAIL_EXIT_IF(GameRelease() == EXIT_FAILURE, E_RELEASE_ERROR);
     exit(rc);
+
+out_release:
+    if (GameRelease() == EXIT_FAILURE) {
+        perror(E_RELEASE_ERROR);
+    }
 
 out:
     R_FAIL_EXIT_IF(tcp_sender_send((u8 *)"STA ERR\n", 8) != 8,

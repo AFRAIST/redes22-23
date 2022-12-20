@@ -21,9 +21,10 @@ Result BufNotContainsInvalidNull(char *b, size_t sz) {
     if (BRANCH_UNLIKELY(b == NULL || sz < 2))
         return EXIT_SUCCESS;
 
-    for (size_t i = 0; i < (sz - 1); ++i)
+    for (size_t i = 0; i < (sz - 1); ++i) {
         if (b[i] == '\x00' && b[i + 1] != '\x00')
             return EXIT_FAILURE;
+    }
 
     return EXIT_SUCCESS;
 }
@@ -33,6 +34,20 @@ Result BufNotContainsNull(char *b, size_t sz) {
         if (b[i] == '\x00')
             return EXIT_FAILURE;
 
+    return EXIT_SUCCESS;
+}
+
+Result BufNotContainsMoreThanOneLF(char *b, size_t sz) {
+    bool set = false;
+    for (size_t i = 0; i < sz; ++i) {
+        if (b[i] == '\n') {
+            if (set)
+                return EXIT_FAILURE;
+            set = true;
+        }
+    
+    }
+    
     return EXIT_SUCCESS;
 }
 
