@@ -38,3 +38,4 @@ void RegisterWordGuess();
 const char *GetCurWord();
 char *GetCurRepr();
 char *StrSerializeDup(const char *p);
+Result GameEmpty(bool *out);

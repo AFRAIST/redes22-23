@@ -28,6 +28,17 @@ Result GameAcquire(size_t plid) {
     return EXIT_SUCCESS;
 }
 
+Result GameEmpty(bool *out) {
+    struct stat sb;
+
+    if (fstat(g_file_dat, &sb) == -1) {
+        return EXIT_FAILURE;
+    }
+
+    *out = sb.st_size == 0;
+    return EXIT_SUCCESS;
+}
+
 u32 GameRegTrial() {
     return ++g_serv_game->trials;
 }
