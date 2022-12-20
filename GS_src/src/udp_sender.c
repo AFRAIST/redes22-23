@@ -46,6 +46,13 @@ ssize_t udp_sender_recv(u8 *data, size_t sz) {
     const ssize_t res = try_recvfrom(socket_udp_fd, data, sz, 0,
                                      (struct sockaddr *)&addr, &addrlen);
 
+    char* src_ip = inet_ntoa(addr.sin_addr);
+    int src_port = ntohs(addr.sin_port);
+
+    if (res != -1) {
+        VerbosePrintF("Received %ld bytes from %s:%d\n", res, src_ip, src_port);
+    }
+
     return res;
 }
 

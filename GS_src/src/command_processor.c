@@ -29,6 +29,14 @@ static __attribute__((noreturn)) void handle_udp_impl() {
 
     outp.err = false;
 
+    if (BufNotContainsInvalidNull(recv_buf, sz) == EXIT_FAILURE) {
+        outp.err = true;
+    }
+    
+    if (BufNotContainsMoreThanOneLF(recv_buf, sz) == EXIT_FAILURE) {
+        outp.err = true;
+    }
+    
     char *cmd;
     char *tok;
 
@@ -44,14 +52,6 @@ static __attribute__((noreturn)) void handle_udp_impl() {
     }
 
     tok[6] = back;
-
-    if (BufNotContainsInvalidNull(recv_buf, sz) == EXIT_FAILURE) {
-        outp.err = true;
-    }
-    
-    if (BufNotContainsMoreThanOneLF(recv_buf, sz) == EXIT_FAILURE) {
-        outp.err = true;
-    }
 
     if (COND_COMP_STRINGS_1("SNG", cmd))
         command_start(&outp);
@@ -152,7 +152,8 @@ void command_reader() {
 
             const pid_t h_udp = fork();
             if (h_udp == 0) {
-                VerbosePrintF("UDP connection inited.\n");
+                //VerbosePrintF("UDP connection inited.\n");
+                
                 /* Will exit inside. */
                 handle_udp_impl();
             }
