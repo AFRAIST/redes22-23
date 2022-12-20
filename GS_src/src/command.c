@@ -106,11 +106,17 @@ static Result play_impl(struct output *outp) {
     u32 data[31];
     u32 len = strlen(word);
     u32 cw = 0;
+    u32 fespace = 0;
     for(u32 i = 0; i < len; ++i) {
         if (toupper(word[i]) == toupper(ch)) {
             data[cw++] = i+1;
             g_serv_game->word_state[i] = ch;
         }
+        if(g_serv_game->word_state[i] == '-') fespace++;
+    }
+    if(fespace == 0){
+        tok = "WIN";
+        goto no_work;
     }
 
     if (cw == 0) {
@@ -144,6 +150,8 @@ static Result play_impl(struct output *outp) {
     return EXIT_SUCCESS;
 
 no_work:
+    //len = len + 1;
+    //len = len -1;
     char send_buf[0x1000];
 
     sprintf(send_buf, "RLG %s %u\n", tok, GameTrials());
@@ -257,6 +265,8 @@ static Result guess_impl(struct output *outp) {
     return EXIT_SUCCESS;
 
 no_work:
+    //len = len + 1;
+    //len = len -1;
     #define fmt_sz (0x1000)
     char send_buf[fmt_sz];
 
