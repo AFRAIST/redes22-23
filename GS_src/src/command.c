@@ -138,7 +138,6 @@ static Result play_impl(struct output *outp) {
     *(p-1) = '\n';
 
 
-    printf("lol %s\n", suc_buf);
     const size_t suc_sz = strlen(suc_buf); 
     R_FAIL_RETURN(EXIT_FAILURE, (size_t)udp_sender_send((u8 *)suc_buf, suc_sz) != suc_sz, E_FAILED_REPLY);
     return EXIT_SUCCESS;
@@ -305,7 +304,74 @@ Result command_scoreboard(struct output *outp) {
 
 static Result hint_impl(struct output *outp) {
     (void)outp;
+    R_FAIL_RETURN(EXIT_FAILURE, StartGame() == EXIT_FAILURE, E_FAILED_SERIAL_READ);
+
+    u8 *r_buf = malloc(0x1000 + 4 * 1024 * 1024);
+
+    printf("cur entry %lu.\n", g_serv_game->cur_entry);
+    const char * const c = dict_instance.entries[g_serv_game->cur_entry].word_class;
+    char path[0x1000];
+
+    snprintf(path, 0x1000, "assets/%s", c); 
+
+    int fd = open(path, O_RDONLY);
+
+    struct stat sb;
+    if (fstat(fd, &sb) == -1)
+        goto error;
+
+    size_t full_size = sb.st_size;
+
+    u8 *buf = r_buf + 0x1000;
+    u32 sz;
+    if((s32)(sz = read(fd, buf, 4 * 1024 * 1024)) == -1)
+        goto error;
+
+
+    char dat[0x1000];
+    sprintf(dat, "RHL OK %s %zu ", c, full_size);
+
+    const size_t diff = strlen(dat);
+    u8 *send_buf = (u8 *)buf - diff;
+    memcpy(send_buf, dat, diff);
+
+    if (tcp_sender_send(send_buf, diff+sz) == -1)
+        goto error;
+
+    full_size -= sz;
+    while (full_size != 0) {
+        if((s32)(sz = read(fd, buf, 4 * 1024 * 1024)) == -1) {
+            perror(E_FAILED_REPLY);
+            goto skip;
+        }
+    
+        if (tcp_sender_send(buf, sz) == -1) {
+            perror(E_FAILED_REPLY);
+            goto skip;
+        }
+        
+        full_size -= sz;
+    }
+    
+    if (tcp_sender_send((u8 *)"\n", 1) == -1)
+        perror(E_FAILED_REPLY);
+
+skip:
+    free(r_buf);
+    if (close(fd) == -1) {
+        perror("[ERR] Failed to close file.\n");
+    }
     return EXIT_SUCCESS;
+
+error:
+    free(r_buf);
+    perror(E_FAILED_REPLY);
+
+    if (close(fd) == -1) {
+        perror("[ERR] Failed to close file.\n");
+    }
+
+    return EXIT_FAILURE;
 }
 
 Result command_hint(struct output *outp) {

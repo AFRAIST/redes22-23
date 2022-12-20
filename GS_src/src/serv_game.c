@@ -68,6 +68,7 @@ Result StartGame() {
         *(u64 *)&g_file_arena += s_sz+1;
     } else {
         const ssize_t rd = read(g_file_dat, g_serv_game, 0x1000);
+
         R_FAIL_RETURN(EXIT_FAILURE, rd == -1 || rd == 0, "[ERROR] Failed to read serial file.\n");
         *(u64 *)&g_file_arena = rd;
     

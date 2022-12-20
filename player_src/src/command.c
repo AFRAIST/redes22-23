@@ -344,9 +344,9 @@ static Result get_file(u32 offset, u32 whence, bool show) {
     printf("Saving file to %s ...\n", fname);
 
     if (show)
-        write(1, next, fin ? cur_sz : cur_sz - 1);
+        write(1, next, !fin ? cur_sz : cur_sz - 1);
 
-    if (write(fd, next, fin ? cur_sz : cur_sz - 1) == -1) {
+    if (write(fd, next, !fin ? cur_sz : cur_sz - 1) == -1) {
         perror("[ERROR] Failed to write file.\n");
         goto error;
     }
@@ -354,7 +354,7 @@ static Result get_file(u32 offset, u32 whence, bool show) {
     /* In caise it does not get looped, to validate the restriction. */
     sz += whence - 1;
 
-    while (cur_sz != full_size + 1) {
+    while (cur_sz != (full_size+1)) {
         if (fin) {
             /* Contradiction with the packet info... */
             perror(E_INVALID_SERVER_REPLY);
@@ -369,8 +369,9 @@ static Result get_file(u32 offset, u32 whence, bool show) {
         }
 
         cur_sz += sz;
-        if (fin)
+        if (fin) {
             sz -= 1;
+        }
 
         if (show)
             write(1, big_buffer, sz);
@@ -426,7 +427,7 @@ static Result scoreboard_impl() {
                   E_INVALID_SERVER_REPLY);
 
     /* Save file. */
-    if (get_file(7, lim, true) != EXIT_SUCCESS)
+    if (get_file(7, sz, true) != EXIT_SUCCESS)
         return EXIT_FAILURE;
 
     return EXIT_SUCCESS;
@@ -478,7 +479,7 @@ static Result hint_impl() {
                   E_INVALID_SERVER_REPLY);
 
     /* Save file. */
-    if (get_file(7, lim, false) != EXIT_SUCCESS) {
+    if (get_file(7, sz, false) != EXIT_SUCCESS) {
         return EXIT_FAILURE;
     }
 
@@ -487,6 +488,7 @@ static Result hint_impl() {
 
 Result command_hint(struct input *inp) {
     (void)inp;
+    puts("ufeuefg");
     R_FAIL_RETURN(EXIT_FAILURE, tcp_sender_try_init() != EXIT_SUCCESS,
                   E_FAILED_SOCKET);
 

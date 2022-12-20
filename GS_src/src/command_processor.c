@@ -63,9 +63,6 @@ static __attribute__((noreturn)) void handle_tcp_impl() {
     char recv_buf[COMMAND_BUF_SZ] = "";
     struct output outp;
 
-    R_FAIL_EXIT_IF(tcp_sender_handshake() == -1, E_HANDSHAKE_FAILED);
-    VerbosePrintF("Handshake done...\n");
-
 #define ERROR_RETURN()                                                         \
     ({                                                                         \
         VerbosePrintF("Data received: %s\n", recv_buf); \
@@ -155,22 +152,44 @@ void command_reader() {
 
         exit(EXIT_SUCCESS);
     } else {
+        VerbosePrintF("TCP ready."); 
         const pid_t tcp_pid = fork();
+        VerbosePrintF("TCP %u.\n", tcp_pid);
 
         if (tcp_pid == 0) {
             /* Listen for TCP in parent. */
+            VerbosePrintF("TCP in.\n");
             tcp_sender_try_init();
+            VerbosePrintF("Inited.\n");
 
             fd_set set;
             while (true) {
+                int rc;
+                /*
                 FD_ZERO(&set);
                 FD_SET(socket_tcp_fd, &set);
 
+                VerbosePrintF("Going to SELECT.\n");
                 int rc = try_select(socket_tcp_fd + 1, &set, NULL, NULL, NULL);
+                VerbosePrintF("TCP Select done...\n");
 
-                if (rc == -1)
+                if (rc == -1) {
+                    tcp_sender_fini();
                     continue;
-            
+                }
+                */
+ 
+                R_FAIL_EXIT_IF(tcp_sender_handshake() == -1, E_HANDSHAKE_FAILED);
+                VerbosePrintF("TCP Handshake done...\n");
+                FD_ZERO(&set);
+                FD_SET(socket_tcp_fd, &set);
+                rc = try_select(socket_tcp_fd + 1, &set, NULL, NULL, NULL);
+                VerbosePrintF("TCP Post Handshake done...\n");
+                
+                if (rc == -1) {
+                    tcp_sender_fini();
+                    continue;
+                }
                 
                 const pid_t h_tcp = fork();
                 if (h_tcp == 0) {
