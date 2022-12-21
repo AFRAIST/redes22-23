@@ -310,9 +310,9 @@ Result scoreboard_impl(){
     u8 *r_buf = malloc(0xA000);    
     //R_FAIL_RETURN(EXIT_FAILURE, StartGame() == EXIT_FAILURE, E_FAILED_SERIAL_READ);
     
-    printf("%i", count_scores());
     if(count_scores() == 0){
-        if (tcp_sender_send((u8 *)"RSB EMPTY\n", 11) != 11) {
+        printf("%i", count_scores());
+        if (tcp_sender_send((u8 *)"RSB EMPTY\n", 10) != 10) {
             perror(E_FAILED_REPLY);
             return EXIT_SUCCESS;
         }
