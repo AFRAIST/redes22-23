@@ -9,6 +9,14 @@ bool exists;
 
 Result GameAcquire(size_t plid) {
     char dat[19];
+
+    const char *dir = "sv_data";
+    if (access(dir, F_OK) == 0) {
+        VerbosePrintF("Directory %s exists\n", dir);
+    } else {
+        if(mkdir(dir, S_IRWXU) != 0) perror(E_SERVER_ERROR);
+    }
+
     sprintf(dat, "sv_data/DAT_%06zu", plid);
 
     /* Check if file exists. */

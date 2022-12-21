@@ -90,8 +90,7 @@ static __attribute__((noreturn)) void handle_tcp_impl() {
         ERROR_RETURN();
 
     if (!strcmp(recv_buf, "GSB\n")) {
-        perror("Not yet implemented!");
-        exit(EXIT_FAILURE);
+        command_scoreboard(&outp);
     }
 
     char *cmd, *tok; 

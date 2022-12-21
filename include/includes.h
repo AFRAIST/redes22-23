@@ -13,6 +13,8 @@
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
+#include <dirent.h>
+#include <math.h>
 
 #include <arpa/inet.h>
 #include <ctype.h>
