@@ -1,0 +1,9 @@
+{
+    "files.associations": {
+        "udp_instance.h": "c",
+        "command.h": "c",
+        "command_processor.h": "c",
+        "io.h": "c",
+        "content.h": "c"
+    }
+}

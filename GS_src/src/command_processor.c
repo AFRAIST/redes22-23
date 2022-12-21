@@ -62,6 +62,8 @@ static __attribute__((noreturn)) void handle_udp_impl() {
         command_play(&outp);
     } else if (COND_COMP_STRINGS_1("PWG", cmd)) {
         command_guess(&outp);
+    } else if (COND_COMP_STRINGS_1("QUT", cmd)) {
+        command_quit(&outp);
     } else {
         perror("No command.\n");
         ERROR_RETURN();
@@ -96,12 +98,15 @@ static __attribute__((noreturn)) void handle_tcp_impl() {
         ERROR_RETURN();
     VerbosePrintF("Received %u bytes from TCP.\n", sz);
 
-    if (!fin)
+    if (!fin || recv_buf[sz-1] != '\n')
         ERROR_RETURN();
 
     recv_buf[sz] = '\x00';
 
-    if (BufNotContainsInvalidNull(recv_buf, recv_buf_sz - 1) == EXIT_FAILURE)
+    if (BufNotContainsInvalidNull(recv_buf, sz) == EXIT_FAILURE)
+        ERROR_RETURN();
+
+    if (BufNotContainsMoreThanOneLF(recv_buf, sz) == EXIT_FAILURE)
         ERROR_RETURN();
 
     if (!strcmp(recv_buf, "GSB\n")) {

@@ -16,11 +16,24 @@ Result GameAcquire(size_t plid) {
         VerbosePrintF("%s exists.\n", dat);
 
         g_file_dat = open(dat, O_RDWR, 0644);
-        exists = true;
+        
+        if (g_file_dat == -1) {
+            perror("Open.\n");
+        }
+
+        if (GameEmpty(&exists) == -1)
+            return EXIT_FAILURE;
+
+        exists = !exists;
     } else {
         VerbosePrintF("%s does not exist.\n", dat);
 
         g_file_dat = open(dat, O_RDWR | O_CREAT, 0644);
+        
+        if (g_file_dat == -1) {
+            perror("Open.\n");
+        }
+
         exists = false;
     }
 
@@ -32,6 +45,7 @@ Result GameEmpty(bool *out) {
     struct stat sb;
 
     if (fstat(g_file_dat, &sb) == -1) {
+        perror("Fstat.\n");
         return EXIT_FAILURE;
     }
 

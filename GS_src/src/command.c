@@ -79,6 +79,10 @@ out:
 static Result play_impl(struct output *outp) {
     R_FAIL_RETURN(EXIT_FAILURE, StartGame() == EXIT_FAILURE, E_FAILED_SERIAL_READ);
 
+    if (g_serv_game->finished != 0) {
+        return EXIT_FAILURE;
+    }
+
     const char *word = GetCurWord();
     char *tok;
 
@@ -118,6 +122,7 @@ static Result play_impl(struct output *outp) {
         if(g_serv_game->word_state[i] == '-') fespace++;
     }
     if(fespace == 0){
+        g_serv_game->finished = 1;
         tok = "WIN";
         goto no_work;
     }
@@ -125,6 +130,7 @@ static Result play_impl(struct output *outp) {
     if (cw == 0) {
         g_serv_game->errors++;
         if (g_serv_game->errors > g_serv_game->max_errors) {
+            g_serv_game->finished = 2;
             tok = "OVR";
             goto no_work;
         }
@@ -193,6 +199,9 @@ out:
 static Result guess_impl(struct output *outp) {
     R_FAIL_RETURN(EXIT_FAILURE, StartGame() == EXIT_FAILURE, E_FAILED_SERIAL_READ);
 
+    if (g_serv_game->finished != 0)
+        return EXIT_FAILURE;
+    
     const char *word = GetCurWord();
     char *tok;
     char word_guessed[31];
@@ -245,6 +254,7 @@ static Result guess_impl(struct output *outp) {
         g_serv_game->errors++;
 
         if (g_serv_game->errors == g_serv_game->max_errors) {
+            g_serv_game->finished = 2;
             tok = "OVR";
             goto no_work;
         }
@@ -258,6 +268,7 @@ static Result guess_impl(struct output *outp) {
 
     // RLG OK 1 2 3 6
 
+    g_serv_game->finished = 1;
     snprintf(suc_buf, suc_buf_sz, "RWG WIN %u\n", GameTrials());
 
     VerbosePrintF("Sent message: %s\n", suc_buf);
@@ -366,7 +377,7 @@ static Result hint_impl(struct output *outp) {
             perror(E_FAILED_REPLY);
             goto skip;
         }
-    
+
         if (tcp_sender_send(buf, sz) == -1) {
             perror(E_FAILED_REPLY);
             goto skip;
@@ -425,7 +436,7 @@ Result command_hint(struct output *outp) {
     exit(rc);
 
 out:
-    if(tcp_sender_send((u8 *)"STA ERR\n", 8) != 8) {
+    if(tcp_sender_send((u8 *)"ERR\n", 4) != 4) {
         perror(E_FAILED_REPLY);
     }
 
@@ -435,6 +446,7 @@ out:
 
 static Result state_impl(struct output *outp) {
     u8 *r_buf = malloc(0xA000);
+    
     if(StartGame() == EXIT_FAILURE)
         goto no_work;
 
@@ -460,6 +472,12 @@ static Result state_impl(struct output *outp) {
 
     sprintf(buf, "     Solved so far: %s\n", g_serv_game->word_state);
     buf += strlen(buf);
+
+    if (g_serv_game->finished != 0) {
+        static const char *terms[] = {NULL, "WIN", "GAME OVER", "QUIT"};
+        sprintf(buf, "     Termination: %s\n", terms[g_serv_game->finished]);
+        buf += strlen(buf);
+    } 
 
     const size_t file_sz = strlen(a_buf);
     buf[0] = '\n';
@@ -525,12 +543,38 @@ out_release:
     }
 
 out:
-    if (tcp_sender_send((u8 *)"STA ERR\n", 8) != 8) {
+    if (tcp_sender_send((u8 *)"ERR\n", 4) != 4) {
         perror(E_FAILED_REPLY);
     }
     
     if (tcp_sender_fini() == -1) perror("[ERR] Closing TCP.\n");
     exit(EXIT_FAILURE);
+}
+
+static Result quit_impl(struct output *outp) {
+    (void)outp;
+    R_FAIL_RETURN(EXIT_FAILURE, StartGame() == EXIT_FAILURE, E_FAILED_SERIAL_READ);
+
+    char *p;
+
+    bool empty;
+    if (GameEmpty(&empty) == EXIT_FAILURE)
+        return EXIT_FAILURE;
+
+    p = empty ? "RQT NOK\n" : "RQT OK\n";
+
+    if(!empty) {
+        g_serv_game->finished = 3;
+        R_FAIL_RETURN(EXIT_FAILURE, ExitAndSerializeGame() == EXIT_FAILURE, "[ERR] Failed serial write.\n");
+    }
+
+    const size_t suc_sz = strlen(p);
+    if((size_t)udp_sender_send((u8 *)p, suc_sz) != suc_sz) {
+        perror(E_FAILED_REPLY);
+        return EXIT_FAILURE;
+    }
+
+    return EXIT_SUCCESS;
 }
 
 Result command_quit(struct output *outp) {
@@ -545,7 +589,17 @@ Result command_quit(struct output *outp) {
         goto out;
     }
     
+    if ((rc = quit_impl(outp)) == EXIT_FAILURE) {
+        goto out_release;
+    } 
+    
+    R_FAIL_EXIT_IF(GameRelease() == EXIT_FAILURE, E_RELEASE_ERROR);
     exit(rc);
+
+out_release:
+    if (GameRelease() == EXIT_FAILURE) {
+        perror(E_RELEASE_ERROR);
+    }
 
 out:
     R_FAIL_EXIT_IF(udp_sender_send((u8 *)"RQT ERR\n", 8) != 8,

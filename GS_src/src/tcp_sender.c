@@ -14,6 +14,46 @@ static struct addrinfo *own_data;
 static socklen_t addrlen;
 static struct sockaddr_in addr;
 
+static int tcp_sender_has_data() {
+    if (socket_tcp_new_fd != -1) {
+        Result rc;
+
+        /* We can yield a little. */
+        struct timeval tv;
+        memset(&tv, 0, sizeof(tv));
+        tv.tv_usec = 1;
+        rc = setsockopt(socket_tcp_new_fd, SOL_SOCKET, SO_RCVTIMEO, (const void*)&tv, sizeof tv);
+        
+        if (rc == -1) {
+            perror("Setsockopt.\n");
+            return -1;
+        }
+
+        fd_set set;
+        FD_ZERO(&set);
+        FD_SET(socket_tcp_new_fd, &set);
+
+        u8 dummy;
+        rc = recv(socket_tcp_new_fd, &dummy, sizeof(dummy), MSG_PEEK);
+        if (rc == -1) {
+            if (errno == EWOULDBLOCK) {
+                rc = 0;
+                errno = 0;
+            }
+        }
+
+        memset(&tv, 0, sizeof(tv));
+        if (setsockopt(socket_tcp_new_fd, SOL_SOCKET, SO_RCVTIMEO, (const void*)&tv, sizeof tv) == -1) {
+            perror("Setsockopt.\n");
+            return -1;
+        }
+
+        return (int)rc;
+    }
+
+    return -1;
+}
+
 ssize_t tcp_sender_try_init() {
     if (BRANCH_LIKELY(socket_tcp_fd != -1))
         return EXIT_SUCCESS;
@@ -75,23 +115,7 @@ ssize_t tcp_sender_handshake() {
 }
 
 ssize_t tcp_sender_recv(u8 *data, size_t sz) {
-    
-    struct timeval tmout;
-    memset((char *)&tmout,0,sizeof(tmout)); /* Clear time structure. */
-    tmout.tv_sec = 2;
-    if (setsockopt(socket_tcp_new_fd, SOL_SOCKET, SO_RCVTIMEO, (struct timeval *)&tmout,sizeof(struct timeval)) == -1) {
-        perror("Setsockopt.\n");
-        return -1;
-    }
-    
     const ssize_t res = try_read(socket_tcp_new_fd, data, sz);
-
-    memset((char *)&tmout,0,sizeof(tmout)); /* Clear time structure. */
-    tmout.tv_sec = 0;
-    if (setsockopt(socket_tcp_new_fd, SOL_SOCKET, SO_RCVTIMEO, (struct timeval *)&tmout,sizeof(struct timeval)) == -1) {
-        perror("Setsockopt.\n");
-        return -1;
-    }
     
     return res;
 }
@@ -101,29 +125,23 @@ ssize_t tcp_sender_recv_all(u8 *buf, size_t sz, bool *finished) {
 
     VerbosePrintF("Recv TCP data. %d\n", socket_tcp_new_fd);
     do {
-        struct timeval tmout;
-        memset((char *)&tmout,0,sizeof(tmout)); /* Clear time structure. */
-        tmout.tv_sec = 2;
-        if (setsockopt(socket_tcp_new_fd, SOL_SOCKET, SO_RCVTIMEO, (struct timeval *)&tmout,sizeof(struct timeval)) == -1) {
-            perror("Setsockopt.\n");
-            return -1;
-        }
-        
         ssize_t rc = try_read(socket_tcp_new_fd, (void *)((char *)buf + bytes),
                               sz - (size_t)bytes);
 
-        memset((char *)&tmout,0,sizeof(tmout)); /* Clear time structure. */
-        tmout.tv_sec = 0;
-        if (setsockopt(socket_tcp_new_fd, SOL_SOCKET, SO_RCVTIMEO, (struct timeval *)&tmout,sizeof(struct timeval)) == -1) {
-            perror("Setsockopt.\n");
-            return -1;
-        }
     
         if (rc > 0) {
             /* We can't check for 0 now because we are the ones replying and that would
             mean a broken pipe. */
-            if(*((char *)buf + bytes + rc - 1) == '\n') {
-                *finished = true;                
+
+            Result data = tcp_sender_has_data();
+            if (data == -1) {
+                perror("Data error.\n");
+                return -1;
+            }
+
+            if (!data) {
+                /* We are done, I guess... */
+                *finished = true;
                 return bytes + rc;
             }
         }
@@ -142,6 +160,7 @@ ssize_t tcp_sender_recv_all(u8 *buf, size_t sz, bool *finished) {
         bytes += (size_t)rc;
     } while (bytes != sz);
 
+    printf("AHHH!\n");
     *finished = false;
     return bytes;
 }
@@ -149,23 +168,8 @@ ssize_t tcp_sender_recv_all(u8 *buf, size_t sz, bool *finished) {
 ssize_t tcp_sender_send(const u8 *data, size_t sz) {
     VerbosePrintF("Sending TCP data. %d\n", socket_tcp_new_fd);
 
-    struct timeval tmout;
-    memset((char *)&tmout,0,sizeof(tmout)); /* Clear time structure. */
-    tmout.tv_sec = 2;
-    if (setsockopt(socket_tcp_new_fd, SOL_SOCKET, SO_SNDTIMEO, (struct timeval *)&tmout,sizeof(struct timeval)) == -1) {
-        perror("Setsockopt.\n");
-        return -1;
-    }
-    
     const ssize_t res = try_write(socket_tcp_new_fd, data, sz);
 
-    memset((char *)&tmout,0,sizeof(tmout)); /* Clear time structure. */
-    tmout.tv_sec = 0;
-    if (setsockopt(socket_tcp_new_fd, SOL_SOCKET, SO_SNDTIMEO, (struct timeval *)&tmout,sizeof(struct timeval))) {
-        perror("Setsockopt.\n");
-        return -1;
-    }
-    
     return res;
 }
 

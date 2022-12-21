@@ -352,6 +352,34 @@ static Result get_file(u32 offset, u32 whence, bool show) {
 
     printf("Saving file to %s ...\n", fname);
 
+    if (fin) {
+        if (cur_sz < (full_size+1)) {
+            /* Delay 2 secs and return to reading. */
+            int del = tcp_sender_delay();
+            
+            if (del == -1) {
+                perror("[ERR] TCP delay.\n");
+                goto error_close;
+            }
+
+            if (del == 0) {
+                perror("[ERR] Timed out. Downloaded data is corrupted.\n");
+                goto error_close;
+            }
+
+            fin = false;
+        } else if (cur_sz > (full_size+1)) {
+            perror("[ERR] File overflow.\n");
+            goto error;
+        } else {
+            /* EOF ourselves. */
+            u8 dummy;
+            if (tcp_sender_recv(&dummy, sizeof(dummy)) != 0) {
+                perror("While EOFing.\n");
+            }
+        }
+    }
+    
     if (show)
         write(1, next, !fin ? cur_sz : cur_sz - 1);
 
@@ -379,7 +407,35 @@ static Result get_file(u32 offset, u32 whence, bool show) {
 
         cur_sz += sz;
         if (fin) {
-            sz -= 1;
+            if (cur_sz < (full_size+1)) {
+                /* Delay 2 secs and return to reading. */
+                int del = tcp_sender_delay();
+                
+                if (del == -1) {
+                    perror("[ERR] TCP delay.\n");
+                    goto error_close;
+                }
+
+                if (del == 0) {
+                    perror("[ERR] Timed out. Downloaded data is corrupted.\n");
+                    goto error_close;
+                }
+
+                fin = false;
+            } else if (cur_sz > (full_size+1)) {
+                perror("[ERR] File overflow.\n");
+                goto error;
+            } else {
+                /* EOF ourselves. */
+                u8 dummy;
+                if (tcp_sender_recv(&dummy, sizeof(dummy)) != 0) {
+                    perror("While EOFing.\n");
+                    goto error;
+                }
+
+                /* So that we do not write the LF. */
+                sz -= 1;
+            }
         }
 
         if (show)
@@ -398,6 +454,7 @@ static Result get_file(u32 offset, u32 whence, bool show) {
     }
 
     if (!fin) {
+        fprintf(stderr, "%zu %zu\n", cur_sz, full_size+1);
         perror(E_FAILED_RECEIVE);
         goto error;
     }
