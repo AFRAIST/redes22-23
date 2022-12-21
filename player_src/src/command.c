@@ -352,6 +352,34 @@ static Result get_file(u32 offset, u32 whence, bool show) {
 
     printf("Saving file to %s ...\n", fname);
 
+    if (fin) {
+        if (cur_sz < (full_size+1)) {
+            /* Delay 2 secs and return to reading. */
+            int del = tcp_sender_delay();
+            
+            if (del == -1) {
+                perror("[ERR] TCP delay.\n");
+                goto error_close;
+            }
+
+            if (del == 0) {
+                perror("[ERR] Timed out. Downloaded data is corrupted.\n");
+                goto error_close;
+            }
+
+            fin = false;
+        } else if (cur_sz > (full_size+1)) {
+            perror("[ERR] File overflow.\n");
+            goto error;
+        } else {
+            /* EOF ourselves. */
+            u8 dummy;
+            if (tcp_sender_recv(&dummy, sizeof(dummy)) != 0) {
+                perror("While EOFing.\n");
+            }
+        }
+    }
+    
     if (show)
         write(1, next, !fin ? cur_sz : cur_sz - 1);
 
@@ -379,7 +407,35 @@ static Result get_file(u32 offset, u32 whence, bool show) {
 
         cur_sz += sz;
         if (fin) {
-            sz -= 1;
+            if (cur_sz < (full_size+1)) {
+                /* Delay 2 secs and return to reading. */
+                int del = tcp_sender_delay();
+                
+                if (del == -1) {
+                    perror("[ERR] TCP delay.\n");
+                    goto error_close;
+                }
+
+                if (del == 0) {
+                    perror("[ERR] Timed out. Downloaded data is corrupted.\n");
+                    goto error_close;
+                }
+
+                fin = false;
+            } else if (cur_sz > (full_size+1)) {
+                perror("[ERR] File overflow.\n");
+                goto error;
+            } else {
+                /* EOF ourselves. */
+                u8 dummy;
+                if (tcp_sender_recv(&dummy, sizeof(dummy)) != 0) {
+                    perror("While EOFing.\n");
+                    goto error;
+                }
+
+                /* So that we do not write the LF. */
+                sz -= 1;
+            }
         }
 
         if (show)
@@ -398,6 +454,7 @@ static Result get_file(u32 offset, u32 whence, bool show) {
     }
 
     if (!fin) {
+        fprintf(stderr, "%zu %zu\n", cur_sz, full_size+1);
         perror(E_FAILED_RECEIVE);
         goto error;
     }
@@ -425,6 +482,9 @@ error_close:
 }
 
 static Result scoreboard_impl() {
+    R_FAIL_RETURN(EXIT_FAILURE, tcp_sender_handshake() == -1,
+                  E_HANDSHAKE_FAILED);
+    
     R_FAIL_RETURN(EXIT_FAILURE, tcp_sender_send((u8 *)"GSB\n", 4) == -1,
                   E_FAILED_REPLY);
 
@@ -473,22 +533,29 @@ Result command_scoreboard(struct input *inp) {
 }
 
 static Result hint_impl() {
+    R_FAIL_RETURN(EXIT_FAILURE, tcp_sender_handshake() == -1,
+                  E_HANDSHAKE_FAILED);
+
     const size_t send_buf_sz = sizeof("GHL 000000\n");
     char send_buf[send_buf_sz];
     snprintf(send_buf, send_buf_sz, "GHL %06zu\n", g_game.plid);
 
+    printf("Going to send...\n");
     R_FAIL_RETURN(EXIT_FAILURE,
                   tcp_sender_send((u8 *)send_buf, send_buf_sz - 1) == -1,
                   E_FAILED_REPLY);
+    printf("Done?\n");
 
     const u32 lim = STR_SIZEOF("RHL NOK\n") + 1; // for EOF detct
 
     u32 sz;
     bool fin;
     /* It is safe to assume there is no data incoming shorter than EMPTY. */
+    printf("Going to receive...\n");
     R_FAIL_RETURN(EXIT_FAILURE,
                   (s32)(sz = tcp_sender_recv_all(big_buffer, lim, &fin)) == -1,
                   E_INVALID_SERVER_REPLY);
+    printf("Done?\n");
 
     big_buffer[sz] = '\x00';
 
@@ -502,9 +569,11 @@ static Result hint_impl() {
                   E_INVALID_SERVER_REPLY);
 
     /* Save file. */
+    printf("File...\n");
     if (get_file(7, sz, false) != EXIT_SUCCESS) {
         return EXIT_FAILURE;
     }
+    printf("Done...\n");
 
     return EXIT_SUCCESS;
 }
@@ -521,7 +590,10 @@ Result command_hint(struct input *inp) {
     return rc;
 }
 
-static Result state_impl() {
+static Result state_impl() { 
+    R_FAIL_RETURN(EXIT_FAILURE, tcp_sender_handshake() == -1,
+                  E_HANDSHAKE_FAILED);
+    
     const size_t send_buf_sz = sizeof("STA 000000\n");
     char send_buf[send_buf_sz];
     snprintf(send_buf, send_buf_sz, "STA %06zu\n", g_game.plid);

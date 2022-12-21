@@ -9,6 +9,14 @@ bool exists;
 
 Result GameAcquire(size_t plid) {
     char dat[19];
+
+    const char *dir = "sv_data";
+    if (access(dir, F_OK) == 0) {
+        VerbosePrintF("Directory %s exists\n", dir);
+    } else {
+        if(mkdir(dir, S_IRWXU) != 0) perror(E_SERVER_ERROR);
+    }
+
     sprintf(dat, "sv_data/DAT_%06zu", plid);
 
     /* Check if file exists. */
@@ -16,11 +24,24 @@ Result GameAcquire(size_t plid) {
         VerbosePrintF("%s exists.\n", dat);
 
         g_file_dat = open(dat, O_RDWR, 0644);
-        exists = true;
+        
+        if (g_file_dat == -1) {
+            perror("Open.\n");
+        }
+
+        if (GameEmpty(&exists) == -1)
+            return EXIT_FAILURE;
+
+        exists = !exists;
     } else {
         VerbosePrintF("%s does not exist.\n", dat);
 
         g_file_dat = open(dat, O_RDWR | O_CREAT, 0644);
+        
+        if (g_file_dat == -1) {
+            perror("Open.\n");
+        }
+
         exists = false;
     }
 
@@ -32,6 +53,7 @@ Result GameEmpty(bool *out) {
     struct stat sb;
 
     if (fstat(g_file_dat, &sb) == -1) {
+        perror("Fstat.\n");
         return EXIT_FAILURE;
     }
 

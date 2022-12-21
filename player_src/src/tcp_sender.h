@@ -3,6 +3,7 @@
 
 extern int socket_tcp_fd;
 
+int tcp_sender_delay();
 ssize_t tcp_sender_try_init();
 int tcp_sender_handshake();
 ssize_t tcp_sender_recv(u8 *data, size_t sz);

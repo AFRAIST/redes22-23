@@ -22,6 +22,7 @@ typedef struct __attribute__((packed)) {
     /* Number of games. */
     u32 trials;
     /* Then, we'll have to array wordguess too.*/
+    u8 finished;
 } ServGame;
 
 extern ServGame *g_serv_game;

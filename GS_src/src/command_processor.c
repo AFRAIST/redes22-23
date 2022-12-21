@@ -3,6 +3,10 @@
 #include "tcp_sender.h"
 #include "udp_sender.h"
 
+#ifdef FOR_TEST
+int g_num_test = 0;
+#endif
+
 static __attribute__((noreturn)) void handle_udp_impl() {
     const size_t recv_buf_sz = COMMAND_BUF_SZ;
     char recv_buf[COMMAND_BUF_SZ] = "";
@@ -62,6 +66,8 @@ static __attribute__((noreturn)) void handle_udp_impl() {
         command_play(&outp);
     } else if (COND_COMP_STRINGS_1("PWG", cmd)) {
         command_guess(&outp);
+    } else if (COND_COMP_STRINGS_1("QUT", cmd)) {
+        command_quit(&outp);
     } else {
         perror("No command.\n");
         ERROR_RETURN();
@@ -96,19 +102,19 @@ static __attribute__((noreturn)) void handle_tcp_impl() {
         ERROR_RETURN();
     VerbosePrintF("Received %u bytes from TCP.\n", sz);
 
-    if (!fin)
+    if (!fin || recv_buf[sz-1] != '\n')
         ERROR_RETURN();
 
     recv_buf[sz] = '\x00';
 
-    if (BufNotContainsInvalidNull(recv_buf, recv_buf_sz - 1) == EXIT_FAILURE)
+    if (BufNotContainsInvalidNull(recv_buf, sz) == EXIT_FAILURE)
+        ERROR_RETURN();
+
+    if (BufNotContainsMoreThanOneLF(recv_buf, sz) == EXIT_FAILURE)
         ERROR_RETURN();
 
     if (!strcmp(recv_buf, "GSB\n")) {
-        perror("Not yet implemented!");
-        if (tcp_sender_fini())
-            perror("[ERR] Closing TCP.\n");
-        exit(EXIT_FAILURE);
+        command_scoreboard(&outp);
     }
 
     char *cmd, *tok;
@@ -162,7 +168,11 @@ void command_reader() {
                 continue;
 
             /* Spin the seeds. */
+            #ifndef FOR_TEST
             rand();
+            #else
+            g_num_test = (g_num_test == 0) ? 1 : (g_num_test + 1);
+            #endif
 
             const pid_t h_udp = fork();
             if (h_udp == 0) {
@@ -184,11 +194,13 @@ void command_reader() {
             fd_set set;
             /* Listen for TCP in parent. */
             VerbosePrintF("TCP in.\n");
-            tcp_sender_try_init();
-            perror("hm");
+            while (tcp_sender_try_init() == -1) {
+                perror("Socket init.\n");
+            }
+            //while(1) {perror("Worked.\n");}
             VerbosePrintF("Inited.\n");
             while (true) {
-
+                
                 int rc;
                 FD_ZERO(&set);
                 FD_SET(socket_tcp_fd, &set);
@@ -198,13 +210,11 @@ void command_reader() {
                 VerbosePrintF("TCP Select done...\n");
                
                 if (rc == -1) {
-                    tcp_sender_fini();
                     continue;
                 }
 
                 if (tcp_sender_handshake() == -1) {
                     perror(E_HANDSHAKE_FAILED);
-                    tcp_sender_fini();
                     continue;
                 }
 
@@ -227,6 +237,10 @@ void command_reader() {
                     /* Will exit inside. */
                     handle_tcp_impl();
                 }
+            }
+
+            if (tcp_sender_fini_global() == -1) {
+                perror("Failed to close global socket.\n");
             }
 
             exit(EXIT_SUCCESS);

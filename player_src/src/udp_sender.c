@@ -17,13 +17,7 @@ ssize_t udp_sender_try_init() {
 
     if (socket_udp_fd == -1)
         return -1;
-
-    int dummy = 1;
-    if (setsockopt(socket_udp_fd, SOL_SOCKET, SO_REUSEADDR, &dummy, sizeof(int)) == -1) {
-        perror("[ERR] Setsockopt.\n");
-        return -1;
-    }
-    
+ 
     struct addrinfo hints;
     memset(&hints, 0, sizeof(hints));
     hints.ai_family = AF_INET;      // IPv4
@@ -36,16 +30,46 @@ ssize_t udp_sender_try_init() {
 }
 
 ssize_t udp_sender_send(const u8 *data, size_t sz) {
+    struct timeval tmout;
+    memset((char *)&tmout,0,sizeof(tmout)); /* Clear time structure. */
+    tmout.tv_sec = 2;
+    if (setsockopt(socket_udp_fd, SOL_SOCKET, SO_SNDTIMEO, (struct timeval *)&tmout,sizeof(struct timeval)) == -1) {
+        perror("Setsockopt.\n");
+        return -1;
+    }
+  
     const Result res = try_sendto(socket_udp_fd, data, sz, 0,
-                                  peer_data->ai_addr, peer_data->ai_addrlen);
+                        peer_data->ai_addr, peer_data->ai_addrlen);
+
+    memset((char *)&tmout,0,sizeof(tmout)); /* Clear time structure. */
+    tmout.tv_sec = 0;
+    if (setsockopt(socket_udp_fd, SOL_SOCKET, SO_SNDTIMEO, (struct timeval *)&tmout,sizeof(struct timeval))) {
+        perror("Setsockopt.\n");
+        return -1;
+    }
 
     return res;
 }
 
 ssize_t udp_sender_recv(u8 *data, size_t sz) {
+    struct timeval tmout;
+    memset((char *)&tmout,0,sizeof(tmout)); /* Clear time structure. */
+    tmout.tv_sec = 2;
+    if (setsockopt(socket_udp_fd, SOL_SOCKET, SO_RCVTIMEO, (struct timeval *)&tmout,sizeof(struct timeval)) == -1) {
+        perror("Setsockopt.\n");
+        return -1;
+    }
+    
     const Result res = try_recvfrom(socket_udp_fd, data, sz, 0,
                                     peer_data->ai_addr, &peer_data->ai_addrlen);
 
+    memset((char *)&tmout,0,sizeof(tmout)); /* Clear time structure. */
+    tmout.tv_sec = 0;
+    if (setsockopt(socket_udp_fd, SOL_SOCKET, SO_RCVTIMEO, (struct timeval *)&tmout,sizeof(struct timeval)) == -1) {
+        perror("Setsockopt.\n");
+        return -1;
+    }
+    
     return res;
 }
 
