@@ -1,7 +1,7 @@
 #include "command_processor.h"
 #include "proc.h"
-#include "udp_sender.h"
 #include "tcp_sender.h"
+#include "udp_sender.h"
 
 static __attribute__((noreturn)) void handle_udp_impl() {
     const size_t recv_buf_sz = COMMAND_BUF_SZ;
@@ -16,14 +16,14 @@ static __attribute__((noreturn)) void handle_udp_impl() {
 
 #define ERROR_RETURN()                                                         \
     ({                                                                         \
-        if (udp_sender_send((u8 *)"ERR\n", 4) != 4) {                            \
+        if (udp_sender_send((u8 *)"ERR\n", 4) != 4) {                          \
             perror(E_FAILED_REPLY);                                            \
-            exit(EXIT_FAILURE); \
-        } \
-        exit(EXIT_FAILURE); \
+            exit(EXIT_FAILURE);                                                \
+        }                                                                      \
+        exit(EXIT_FAILURE);                                                    \
     })
 
-    if (recv_buf[sz-1] != '\n') {
+    if (recv_buf[sz - 1] != '\n') {
         ERROR_RETURN();
     }
 
@@ -32,11 +32,11 @@ static __attribute__((noreturn)) void handle_udp_impl() {
     if (BufNotContainsInvalidNull(recv_buf, sz) == EXIT_FAILURE) {
         outp.err = true;
     }
-    
+
     if (BufNotContainsMoreThanOneLF(recv_buf, sz) == EXIT_FAILURE) {
         outp.err = true;
     }
-    
+
     char *cmd;
     char *tok;
 
@@ -53,6 +53,9 @@ static __attribute__((noreturn)) void handle_udp_impl() {
 
     tok[6] = back;
 
+    VerbosePrintF("Command: %s.\n", cmd);
+    VerbosePrintF("PLID: %zu.\n", outp.plid);
+
     if (COND_COMP_STRINGS_1("SNG", cmd))
         command_start(&outp);
     else if (COND_COMP_STRINGS_1("PLG", cmd)) {
@@ -63,7 +66,7 @@ static __attribute__((noreturn)) void handle_udp_impl() {
         perror("No command.\n");
         ERROR_RETURN();
     }
-    exit(EXIT_SUCCESS); 
+    exit(EXIT_SUCCESS);
 #undef ERROR_RETURN
 }
 
@@ -74,36 +77,43 @@ static __attribute__((noreturn)) void handle_tcp_impl() {
 
 #define ERROR_RETURN()                                                         \
     ({                                                                         \
-        VerbosePrintF("Data received: %s\n", recv_buf); \
-        if (tcp_sender_send((u8 *)"ERR\n", 4) != 4) {                            \
+        VerbosePrintF("Data received: %s\n", recv_buf);                        \
+        if (tcp_sender_send((u8 *)"ERR\n", 4) != 4) {                          \
             perror(E_FAILED_REPLY);                                            \
-            exit(EXIT_FAILURE); \
-        } \
+            if (tcp_sender_fini() == -1)                                       \
+                perror("[ERR] Closing TCP.\n");                                \
+            exit(EXIT_FAILURE);                                                \
+        }                                                                      \
+        if (tcp_sender_fini() == -1)                                           \
+            perror("[ERR] Closing TCP.\n");                                    \
+        exit(EXIT_FAILURE);                                                    \
     })
 
     u32 sz;
     bool fin;
-    if((s32)(sz = tcp_sender_recv_all((u8 *)recv_buf, recv_buf_sz-1, &fin)) == -1)
+    if ((s32)(sz = tcp_sender_recv_all((u8 *)recv_buf, recv_buf_sz - 1,
+                                       &fin)) == -1)
         ERROR_RETURN();
     VerbosePrintF("Received %u bytes from TCP.\n", sz);
 
     if (!fin)
         ERROR_RETURN();
 
-    recv_buf[sz] = '\x00'; 
+    recv_buf[sz] = '\x00';
 
-    if(BufNotContainsInvalidNull(recv_buf, recv_buf_sz-1) == EXIT_FAILURE)
+    if (BufNotContainsInvalidNull(recv_buf, recv_buf_sz - 1) == EXIT_FAILURE)
         ERROR_RETURN();
 
     if (!strcmp(recv_buf, "GSB\n")) {
         perror("Not yet implemented!");
+        if (tcp_sender_fini())
+            perror("[ERR] Closing TCP.\n");
         exit(EXIT_FAILURE);
     }
 
-    char *cmd, *tok; 
+    char *cmd, *tok;
     cmd = BufTokenizeOpt(recv_buf, " ", &outp.next);
     tok = BufTokenizeOpt(outp.next, " ", &outp.next);
-
 
     /* Dirty backup, but we have 128 of free space. */
     char back = tok[6];
@@ -117,16 +127,19 @@ static __attribute__((noreturn)) void handle_tcp_impl() {
     tok[6] = back;
 
     VerbosePrintF("Command: %s.\n", cmd);
+    VerbosePrintF("PLID: %zu.\n", outp.plid);
 
     if (COND_COMP_STRINGS_1("GHL", cmd)) {
         command_hint(&outp);
     } else if (COND_COMP_STRINGS_1("STA", cmd)) {
-        command_state(&outp); 
+        command_state(&outp);
     } else {
         perror("No command.\n");
         ERROR_RETURN();
     }
 
+    if (tcp_sender_fini())
+        perror("[ERR] Closing TCP.\n");
     exit(EXIT_SUCCESS);
 #undef ERROR_RETURN
 }
@@ -135,7 +148,8 @@ void command_reader() {
     const pid_t udp_pid = fork();
     if (udp_pid == 0) {
         /* Listen for UDP in parent. */
-        R_FAIL_EXIT_IF(udp_sender_try_init() == -1, "[ERROR] Broken UDP sockets.\n");
+        R_FAIL_EXIT_IF(udp_sender_try_init() == -1,
+                       "[ERROR] Broken UDP sockets.\n");
 
         fd_set set;
         while (true) {
@@ -152,8 +166,8 @@ void command_reader() {
 
             const pid_t h_udp = fork();
             if (h_udp == 0) {
-                //VerbosePrintF("UDP connection inited.\n");
-                
+                // VerbosePrintF("UDP connection inited.\n");
+
                 /* Will exit inside. */
                 handle_udp_impl();
             }
@@ -162,45 +176,51 @@ void command_reader() {
 
         exit(EXIT_SUCCESS);
     } else {
-        VerbosePrintF("TCP ready."); 
+        VerbosePrintF("TCP ready.");
         const pid_t tcp_pid = fork();
         VerbosePrintF("TCP %u.\n", tcp_pid);
 
         if (tcp_pid == 0) {
+            fd_set set;
             /* Listen for TCP in parent. */
             VerbosePrintF("TCP in.\n");
             tcp_sender_try_init();
+            perror("hm");
             VerbosePrintF("Inited.\n");
-
-            fd_set set;
             while (true) {
+
                 int rc;
-                /*
                 FD_ZERO(&set);
                 FD_SET(socket_tcp_fd, &set);
 
-                VerbosePrintF("Going to SELECT.\n");
-                int rc = try_select(socket_tcp_fd + 1, &set, NULL, NULL, NULL);
+                VerbosePrintF("Going to SELECT %d.\n", socket_tcp_fd);
+                rc = try_select(socket_tcp_fd + 1, &set, NULL, NULL, NULL);
                 VerbosePrintF("TCP Select done...\n");
+               
+                if (rc == -1) {
+                    tcp_sender_fini();
+                    continue;
+                }
+
+                if (tcp_sender_handshake() == -1) {
+                    perror(E_HANDSHAKE_FAILED);
+                    tcp_sender_fini();
+                    continue;
+                }
+
+                /*
+                VerbosePrintF("TCP Handshake done...\n");
+                FD_ZERO(&set);
+                FD_SET(socket_tcp_fd, &set);
+                rc = try_select(socket_tcp_fd + 1, &set, NULL, NULL, NULL);
+                VerbosePrintF("TCP Post Handshake done...\n");
 
                 if (rc == -1) {
                     tcp_sender_fini();
                     continue;
                 }
                 */
- 
-                R_FAIL_EXIT_IF(tcp_sender_handshake() == -1, E_HANDSHAKE_FAILED);
-                VerbosePrintF("TCP Handshake done...\n");
-                FD_ZERO(&set);
-                FD_SET(socket_tcp_fd, &set);
-                rc = try_select(socket_tcp_fd + 1, &set, NULL, NULL, NULL);
-                VerbosePrintF("TCP Post Handshake done...\n");
-                
-                if (rc == -1) {
-                    tcp_sender_fini();
-                    continue;
-                }
-                
+
                 const pid_t h_tcp = fork();
                 if (h_tcp == 0) {
                     VerbosePrintF("TCP connection inited.\n");

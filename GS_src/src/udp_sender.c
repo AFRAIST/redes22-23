@@ -24,19 +24,30 @@ ssize_t udp_sender_try_init() {
     if (socket_udp_fd == -1)
         return -1;
 
+    int dummy = 1;
+    if (setsockopt(socket_udp_fd, SOL_SOCKET, SO_REUSEADDR, &dummy, sizeof(int)) == -1) {
+        perror("[ERR] Setsockopt.\n");
+        return -1;
+    }
+
+
     struct addrinfo hints;
     memset(&hints, 0, sizeof(hints));
     hints.ai_family = AF_INET;      // IPv4
     hints.ai_socktype = SOCK_DGRAM; // UDP socket
     hints.ai_flags = AI_PASSIVE;
 
-    if (getaddrinfo(NULL, GSport, &hints, &own_data) != 0)
+    if (getaddrinfo(NULL, GSport, &hints, &own_data) != 0) {
+        perror("[ERR] Gettaddrinfo.\n");
         return -1;
+    }
 
     ssize_t n = bind(socket_udp_fd, own_data->ai_addr, own_data->ai_addrlen);
 
-    if (n == -1)
-        return EXIT_FAILURE;
+    if (n == -1) {
+        perror("[ERR] Bind.\n");
+        return -1;
+    }
 
     return EXIT_SUCCESS;
 }
@@ -50,7 +61,7 @@ ssize_t udp_sender_recv(u8 *data, size_t sz) {
     int src_port = ntohs(addr.sin_port);
 
     if (res != -1) {
-        VerbosePrintF("Received %ld bytes from %s:%d\n", res, src_ip, src_port);
+        VerbosePrintF("Received UDP from %s:%d\n", src_ip, src_port);
     }
 
     return res;

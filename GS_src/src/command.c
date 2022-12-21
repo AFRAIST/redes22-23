@@ -417,13 +417,19 @@ Result command_hint(struct output *outp) {
         goto out;
     } 
     
-    R_FAIL_EXIT_IF(GameRelease() == EXIT_FAILURE, E_RELEASE_ERROR);
+    if (GameRelease() == EXIT_FAILURE) {
+        perror(E_RELEASE_ERROR);
+    }
+    
+    if (tcp_sender_fini() == -1) perror("[ERR] Closing TCP.\n");
     exit(rc);
 
 out:
-    R_FAIL_EXIT_IF(tcp_sender_send((u8 *)"STA ERR\n", 8) != 8,
-                      E_FAILED_REPLY);
+    if(tcp_sender_send((u8 *)"STA ERR\n", 8) != 8) {
+        perror(E_FAILED_REPLY);
+    }
 
+    if (tcp_sender_fini() == -1) perror("[ERR] Closing TCP.\n");
     exit(EXIT_FAILURE);
 }
 
@@ -497,9 +503,11 @@ Result command_state(struct output *outp) {
     }
 
     if (game_empty) {
-        R_FAIL_EXIT_IF(tcp_sender_send((u8 *)"STA NOK\n", 8) != 8,
-                      E_FAILED_REPLY);
+        if (tcp_sender_send((u8 *)"STA NOK\n", 8) != 8) {
+            perror(E_FAILED_REPLY);
+        }
 
+        if (tcp_sender_fini() == -1) perror("[ERR] Closing TCP.\n"); \
         exit(EXIT_SUCCESS);
     }
 
@@ -508,6 +516,7 @@ Result command_state(struct output *outp) {
     } 
 
     R_FAIL_EXIT_IF(GameRelease() == EXIT_FAILURE, E_RELEASE_ERROR);
+    if (tcp_sender_fini() == -1) perror("[ERR] Closing TCP.\n"); \
     exit(rc);
 
 out_release:
@@ -516,9 +525,11 @@ out_release:
     }
 
 out:
-    R_FAIL_EXIT_IF(tcp_sender_send((u8 *)"STA ERR\n", 8) != 8,
-                      E_FAILED_REPLY);
-
+    if (tcp_sender_send((u8 *)"STA ERR\n", 8) != 8) {
+        perror(E_FAILED_REPLY);
+    }
+    
+    if (tcp_sender_fini() == -1) perror("[ERR] Closing TCP.\n"); \
     exit(EXIT_FAILURE);
 }
 

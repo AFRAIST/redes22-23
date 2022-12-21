@@ -425,9 +425,6 @@ error_close:
 }
 
 static Result scoreboard_impl() {
-    R_FAIL_RETURN(EXIT_FAILURE, tcp_sender_handshake() == -1,
-                  E_HANDSHAKE_FAILED);
-
     R_FAIL_RETURN(EXIT_FAILURE, tcp_sender_send((u8 *)"GSB\n", 4) == -1,
                   E_FAILED_REPLY);
 
@@ -476,9 +473,6 @@ Result command_scoreboard(struct input *inp) {
 }
 
 static Result hint_impl() {
-    R_FAIL_RETURN(EXIT_FAILURE, tcp_sender_handshake() == -1,
-                  E_HANDSHAKE_FAILED);
-
     const size_t send_buf_sz = sizeof("GHL 000000\n");
     char send_buf[send_buf_sz];
     snprintf(send_buf, send_buf_sz, "GHL %06zu\n", g_game.plid);
@@ -517,7 +511,6 @@ static Result hint_impl() {
 
 Result command_hint(struct input *inp) {
     (void)inp;
-    puts("ufeuefg");
     R_FAIL_RETURN(EXIT_FAILURE, tcp_sender_try_init() != EXIT_SUCCESS,
                   E_FAILED_SOCKET);
 
@@ -529,9 +522,6 @@ Result command_hint(struct input *inp) {
 }
 
 static Result state_impl() {
-    R_FAIL_RETURN(EXIT_FAILURE, tcp_sender_handshake() == -1,
-                  E_HANDSHAKE_FAILED);
-
     const size_t send_buf_sz = sizeof("STA 000000\n");
     char send_buf[send_buf_sz];
     snprintf(send_buf, send_buf_sz, "STA %06zu\n", g_game.plid);

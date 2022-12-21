@@ -18,6 +18,12 @@ ssize_t tcp_sender_try_init() {
     if (socket_tcp_fd == -1)
         goto error;
 
+    int dummy = 1;
+    if (setsockopt(socket_tcp_fd, SOL_SOCKET, SO_REUSEADDR, &dummy, sizeof(int)) == -1) {
+        perror("[ERR] Setsockopt.\n");
+        return -1;
+    }
+    
     struct addrinfo hints;
     memset(&hints, 0, sizeof(hints));
     hints.ai_family = AF_INET;

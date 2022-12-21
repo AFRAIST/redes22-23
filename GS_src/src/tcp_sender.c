@@ -22,6 +22,12 @@ ssize_t tcp_sender_try_init() {
     if (socket_tcp_fd == -1)
         goto error;
 
+    int dummy = 1;
+    if (setsockopt(socket_tcp_fd, SOL_SOCKET, SO_REUSEADDR, &dummy, sizeof(int)) == -1) {
+        perror("[ERR] Setsockopt.\n");
+        return -1;
+    }
+
     struct addrinfo hints;
     memset(&hints, 0, sizeof(hints));
     hints.ai_family = AF_INET;
@@ -50,6 +56,14 @@ error:
 ssize_t tcp_sender_handshake() {
     addrlen = sizeof(addr);
     socket_tcp_fd = accept(socket_tcp_fd, (struct sockaddr *)&addr, &addrlen); 
+
+    char* client_ip = inet_ntoa(addr.sin_addr);
+    int client_port = ntohs(addr.sin_port);
+
+    if (socket_tcp_fd != -1) {
+        VerbosePrintF("Received TCP from %s:%d.\n", client_ip, client_port);
+    }
+
     return socket_tcp_fd;
 }
 
@@ -70,7 +84,7 @@ ssize_t tcp_sender_recv_all(u8 *buf, size_t sz, bool *finished) {
             /* We can't check for 0 now because we are the ones replying and that would
             mean a broken pipe. */
             if(*((char *)buf + bytes + rc - 1) == '\n') {
-                *finished = true;
+                *finished = true;                
                 return bytes + rc;
             }
         }
