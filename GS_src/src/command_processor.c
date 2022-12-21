@@ -184,11 +184,13 @@ void command_reader() {
             fd_set set;
             /* Listen for TCP in parent. */
             VerbosePrintF("TCP in.\n");
-            tcp_sender_try_init();
-            perror("hm");
+            while (tcp_sender_try_init() == -1) {
+                perror("Socket init.\n");
+            }
+            //while(1) {perror("Worked.\n");}
             VerbosePrintF("Inited.\n");
             while (true) {
-
+                
                 int rc;
                 FD_ZERO(&set);
                 FD_SET(socket_tcp_fd, &set);
@@ -198,13 +200,11 @@ void command_reader() {
                 VerbosePrintF("TCP Select done...\n");
                
                 if (rc == -1) {
-                    tcp_sender_fini();
                     continue;
                 }
 
                 if (tcp_sender_handshake() == -1) {
                     perror(E_HANDSHAKE_FAILED);
-                    tcp_sender_fini();
                     continue;
                 }
 
@@ -227,6 +227,10 @@ void command_reader() {
                     /* Will exit inside. */
                     handle_tcp_impl();
                 }
+            }
+
+            if (tcp_sender_fini_global() == -1) {
+                perror("Failed to close global socket.\n");
             }
 
             exit(EXIT_SUCCESS);

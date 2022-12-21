@@ -417,10 +417,12 @@ Result command_hint(struct output *outp) {
         goto out;
     } 
     
+    VerbosePrintF("Hint 1.\n");
     if (GameRelease() == EXIT_FAILURE) {
         perror(E_RELEASE_ERROR);
     }
-    
+
+    VerbosePrintF("Hint 2.\n");
     if (tcp_sender_fini() == -1) perror("[ERR] Closing TCP.\n");
     exit(rc);
 
@@ -507,7 +509,7 @@ Result command_state(struct output *outp) {
             perror(E_FAILED_REPLY);
         }
 
-        if (tcp_sender_fini() == -1) perror("[ERR] Closing TCP.\n"); \
+        if (tcp_sender_fini() == -1) perror("[ERR] Closing TCP.\n");
         exit(EXIT_SUCCESS);
     }
 
@@ -516,7 +518,7 @@ Result command_state(struct output *outp) {
     } 
 
     R_FAIL_EXIT_IF(GameRelease() == EXIT_FAILURE, E_RELEASE_ERROR);
-    if (tcp_sender_fini() == -1) perror("[ERR] Closing TCP.\n"); \
+    if (tcp_sender_fini() == -1) perror("[ERR] Closing TCP.\n");
     exit(rc);
 
 out_release:
@@ -529,18 +531,27 @@ out:
         perror(E_FAILED_REPLY);
     }
     
-    if (tcp_sender_fini() == -1) perror("[ERR] Closing TCP.\n"); \
+    if (tcp_sender_fini() == -1) perror("[ERR] Closing TCP.\n");
     exit(EXIT_FAILURE);
 }
 
 Result command_quit(struct output *outp) {
-    (void)(outp);
-    R_NOT_IMPLEMENTED();
-    return EXIT_SUCCESS;
-}
+    Result rc = EXIT_SUCCESS;
+    
+    if (outp->err) {
+        goto out;
+    }
+    
+    if ((rc = GameAcquire(outp->plid)) == EXIT_FAILURE) {
+        perror(E_ACQUIRE_ERROR);
+        goto out;
+    }
+    
+    exit(rc);
 
-Result command_exit(struct output *outp) {
-    (void)(outp);
-    R_NOT_IMPLEMENTED();
-    return EXIT_SUCCESS;
+out:
+    R_FAIL_EXIT_IF(udp_sender_send((u8 *)"RQT ERR\n", 8) != 8,
+                  E_FAILED_REPLY);
+
+    exit(EXIT_FAILURE);
 }

@@ -17,13 +17,7 @@ ssize_t tcp_sender_try_init() {
 
     if (socket_tcp_fd == -1)
         goto error;
-
-    int dummy = 1;
-    if (setsockopt(socket_tcp_fd, SOL_SOCKET, SO_REUSEADDR, &dummy, sizeof(int)) == -1) {
-        perror("[ERR] Setsockopt.\n");
-        return -1;
-    }
-    
+ 
     struct addrinfo hints;
     memset(&hints, 0, sizeof(hints));
     hints.ai_family = AF_INET;
@@ -43,8 +37,10 @@ error:
 }
 
 int tcp_sender_handshake() {
+    printf("Doing HS.\n");
     const int rc = connect(socket_tcp_fd, tcp_peer_data->ai_addr,
                            tcp_peer_data->ai_addrlen);
+    printf("HS done. %d\n", rc);
 
     return rc;
 }
@@ -58,18 +54,22 @@ ssize_t tcp_sender_recv(u8 *data, size_t sz) {
 ssize_t tcp_sender_recv_all(u8 *buf, size_t sz, bool *finished) {
     size_t bytes = 0;
 
+    printf("Receiving data.\n");
     do {
         ssize_t rc = try_read(socket_tcp_fd, (void *)((char *)buf + bytes),
                               sz - (size_t)bytes);
 
+        printf("Recvd %zu %zu.\n", rc, sz);
+
         /* EOF... */
         if (rc == 0) {
             *finished = true;
-            return bytes;
+            goto done;
         }
 
         if (rc == -1) {
             *finished = false;
+            printf("Failed.\n");
             return -1;
         }
 
@@ -77,6 +77,8 @@ ssize_t tcp_sender_recv_all(u8 *buf, size_t sz, bool *finished) {
     } while (bytes != sz);
 
     *finished = false;
+done:
+    printf("Done.\n");
     return bytes;
 }
 

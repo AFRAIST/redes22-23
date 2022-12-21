@@ -1,6 +1,7 @@
 #include "tcp_sender.h"
 
 int socket_tcp_fd = -1;
+int socket_tcp_new_fd = -1;
 struct addrinfo *tcp_peer_data = NULL;
 
 extern char *GSip;
@@ -16,17 +17,11 @@ static struct sockaddr_in addr;
 ssize_t tcp_sender_try_init() {
     if (BRANCH_LIKELY(socket_tcp_fd != -1))
         return EXIT_SUCCESS;
-
+ 
     socket_tcp_fd = socket(AF_INET, SOCK_STREAM, 0);
 
     if (socket_tcp_fd == -1)
         goto error;
-
-    int dummy = 1;
-    if (setsockopt(socket_tcp_fd, SOL_SOCKET, SO_REUSEADDR, &dummy, sizeof(int)) == -1) {
-        perror("[ERR] Setsockopt.\n");
-        return -1;
-    }
 
     struct addrinfo hints;
     memset(&hints, 0, sizeof(hints));
@@ -34,14 +29,26 @@ ssize_t tcp_sender_try_init() {
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_flags = AI_PASSIVE;
 
-    if (getaddrinfo(NULL, GSport, &hints, &own_data) != 0)
+    if (getaddrinfo(NULL, GSport, &hints, &own_data) != 0) {
+        perror("Getaddrinfo.\n");
         goto error;
+    }
 
-    if (bind(socket_tcp_fd, own_data->ai_addr, own_data->ai_addrlen) == -1)
+    int optval = 1;
+    if(setsockopt(socket_tcp_fd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval)) == -1) {
+        perror("setsockopt");
+        return -1;
+    }
+    
+    if (bind(socket_tcp_fd, own_data->ai_addr, own_data->ai_addrlen) == -1) {
+        perror("Bind.\n");
         goto error;
+    }
 
-    if (listen(socket_tcp_fd, 5) == -1)
+    if (listen(socket_tcp_fd, 5) == -1) {
+        perror("Listen.\n");
         goto error;
+    }
 
     return EXIT_SUCCESS;
 
@@ -55,31 +62,63 @@ error:
 
 ssize_t tcp_sender_handshake() {
     addrlen = sizeof(addr);
-    socket_tcp_fd = accept(socket_tcp_fd, (struct sockaddr *)&addr, &addrlen); 
+    socket_tcp_new_fd = accept(socket_tcp_fd, (struct sockaddr *)&addr, &addrlen); 
 
     char* client_ip = inet_ntoa(addr.sin_addr);
     int client_port = ntohs(addr.sin_port);
 
-    if (socket_tcp_fd != -1) {
+    if (socket_tcp_new_fd != -1) {
         VerbosePrintF("Received TCP from %s:%d.\n", client_ip, client_port);
     }
 
-    return socket_tcp_fd;
+    return socket_tcp_new_fd;
 }
 
 ssize_t tcp_sender_recv(u8 *data, size_t sz) {
-    const ssize_t res = try_read(socket_tcp_fd, data, sz);
+    
+    struct timeval tmout;
+    memset((char *)&tmout,0,sizeof(tmout)); /* Clear time structure. */
+    tmout.tv_sec = 2;
+    if (setsockopt(socket_tcp_new_fd, SOL_SOCKET, SO_RCVTIMEO, (struct timeval *)&tmout,sizeof(struct timeval)) == -1) {
+        perror("Setsockopt.\n");
+        return -1;
+    }
+    
+    const ssize_t res = try_read(socket_tcp_new_fd, data, sz);
 
+    memset((char *)&tmout,0,sizeof(tmout)); /* Clear time structure. */
+    tmout.tv_sec = 0;
+    if (setsockopt(socket_tcp_new_fd, SOL_SOCKET, SO_RCVTIMEO, (struct timeval *)&tmout,sizeof(struct timeval)) == -1) {
+        perror("Setsockopt.\n");
+        return -1;
+    }
+    
     return res;
 }
 
 ssize_t tcp_sender_recv_all(u8 *buf, size_t sz, bool *finished) {
     size_t bytes = 0;
 
+    VerbosePrintF("Recv TCP data. %d\n", socket_tcp_new_fd);
     do {
-        ssize_t rc = try_read(socket_tcp_fd, (void *)((char *)buf + bytes),
+        struct timeval tmout;
+        memset((char *)&tmout,0,sizeof(tmout)); /* Clear time structure. */
+        tmout.tv_sec = 2;
+        if (setsockopt(socket_tcp_new_fd, SOL_SOCKET, SO_RCVTIMEO, (struct timeval *)&tmout,sizeof(struct timeval)) == -1) {
+            perror("Setsockopt.\n");
+            return -1;
+        }
+        
+        ssize_t rc = try_read(socket_tcp_new_fd, (void *)((char *)buf + bytes),
                               sz - (size_t)bytes);
 
+        memset((char *)&tmout,0,sizeof(tmout)); /* Clear time structure. */
+        tmout.tv_sec = 0;
+        if (setsockopt(socket_tcp_new_fd, SOL_SOCKET, SO_RCVTIMEO, (struct timeval *)&tmout,sizeof(struct timeval)) == -1) {
+            perror("Setsockopt.\n");
+            return -1;
+        }
+    
         if (rc > 0) {
             /* We can't check for 0 now because we are the ones replying and that would
             mean a broken pipe. */
@@ -108,12 +147,43 @@ ssize_t tcp_sender_recv_all(u8 *buf, size_t sz, bool *finished) {
 }
 
 ssize_t tcp_sender_send(const u8 *data, size_t sz) {
-    const ssize_t res = try_write(socket_tcp_fd, data, sz);
+    VerbosePrintF("Sending TCP data. %d\n", socket_tcp_new_fd);
 
+    struct timeval tmout;
+    memset((char *)&tmout,0,sizeof(tmout)); /* Clear time structure. */
+    tmout.tv_sec = 2;
+    if (setsockopt(socket_tcp_new_fd, SOL_SOCKET, SO_SNDTIMEO, (struct timeval *)&tmout,sizeof(struct timeval)) == -1) {
+        perror("Setsockopt.\n");
+        return -1;
+    }
+    
+    const ssize_t res = try_write(socket_tcp_new_fd, data, sz);
+
+    memset((char *)&tmout,0,sizeof(tmout)); /* Clear time structure. */
+    tmout.tv_sec = 0;
+    if (setsockopt(socket_tcp_new_fd, SOL_SOCKET, SO_SNDTIMEO, (struct timeval *)&tmout,sizeof(struct timeval))) {
+        perror("Setsockopt.\n");
+        return -1;
+    }
+    
     return res;
 }
 
 ssize_t tcp_sender_fini() {
+    VerbosePrintF("Closing. %d\n", socket_tcp_new_fd);
+    if (tcp_peer_data != NULL) {
+        freeaddrinfo(tcp_peer_data);
+        tcp_peer_data = NULL;
+    }
+    
+    shutdown(socket_tcp_new_fd, SHUT_RDWR);
+    const ssize_t rc = try_close(socket_tcp_new_fd);
+
+    socket_tcp_new_fd = -1;
+    return rc;
+}
+
+ssize_t tcp_sender_fini_global() {
     if (tcp_peer_data != NULL) {
         freeaddrinfo(tcp_peer_data);
         tcp_peer_data = NULL;

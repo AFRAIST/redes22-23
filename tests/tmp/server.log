@@ -1,0 +1,1052 @@
+58045
+Received UDP from 193.136.138.142:47993
+Command: SNG.
+PLID: 100001.
+sv_data/DAT_100001 exists.
+goggomobil ----------
+58045
+Received UDP from 193.136.138.142:41906
+Command: SNG.
+PLID: 100002.
+sv_data/DAT_100002 exists.
+ferromagnetism ferromagne-i-m
+58045
+Received UDP from 193.136.138.142:59967
+Command: SNG.
+PLID: 100003.
+sv_data/DAT_100003 exists.
+ferromagnetism ferromagne-i-m
+58045
+Received UDP from 193.136.138.142:50072
+Command: SNG.
+PLID: 100004.
+sv_data/DAT_100004 exists.
+roentgenography -----------a--y
+58045
+Received UDP from 193.136.138.142:57776
+Command: SNG.
+PLID: 100005.
+sv_data/DAT_100005 exists.
+vaccine -a----e
+58045
+Received UDP from 193.136.138.142:41576
+Command: SNG.
+PLID: 100006.
+sv_data/DAT_100006 exists.
+thunderbird -----------
+58045
+Received UDP from 193.136.138.142:53180
+Command: SNG.
+PLID: 100007.
+sv_data/DAT_100007 does not exist.
+goggomobil ----------
+58045
+TCP ready.TCP 0.
+TCP in.
+Inited.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60856.
+TCP connection inited.
+Recv TCP data. 4
+Received 11 bytes from TCP.
+Command: GHL.
+PLID: 100007.
+sv_data/DAT_100007 exists.
+Sending TCP data. 4
+Sending TCP data. 4
+Hint 1.
+Hint 2.
+Closing. 4
+58045
+Received UDP from 193.136.138.142:60584
+Command: QUT.
+PLID: 100007.
+58045
+TCP ready.TCP 0.
+TCP in.
+Inited.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60856.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60868.
+TCP connection inited.
+Recv TCP data. 5
+Received 11 bytes from TCP.
+Command: GHL.
+PLID: 100007.
+sv_data/DAT_100007 exists.
+Sending TCP data. 5
+Sending TCP data. 5
+Hint 1.
+Hint 2.
+Closing. 5
+58045
+Received UDP from 193.136.138.142:52647
+Command: QUT.
+PLID: 100007.
+58045
+TCP ready.TCP 0.
+TCP in.
+Inited.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60856.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60868.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60874.
+TCP connection inited.
+Recv TCP data. 6
+Received 11 bytes from TCP.
+Command: GHL.
+PLID: 100007.
+sv_data/DAT_100007 exists.
+Sending TCP data. 6
+Sending TCP data. 6
+Hint 1.
+Hint 2.
+Closing. 6
+58045
+Received UDP from 193.136.138.142:35736
+Command: QUT.
+PLID: 100007.
+58045
+TCP ready.TCP 0.
+TCP in.
+Inited.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60856.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60868.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60874.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60886.
+TCP connection inited.
+Recv TCP data. 7
+Received 11 bytes from TCP.
+Command: GHL.
+PLID: 100007.
+sv_data/DAT_100007 exists.
+Sending TCP data. 7
+Sending TCP data. 7
+Hint 1.
+Hint 2.
+Closing. 7
+58045
+Received UDP from 193.136.138.142:49018
+Command: QUT.
+PLID: 100007.
+58045
+TCP ready.TCP 0.
+TCP in.
+Inited.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60856.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60868.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60874.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60886.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60894.
+TCP connection inited.
+Recv TCP data. 8
+Received 11 bytes from TCP.
+Command: GHL.
+PLID: 100007.
+sv_data/DAT_100007 exists.
+Sending TCP data. 8
+Sending TCP data. 8
+Hint 1.
+Hint 2.
+Closing. 8
+58045
+Received UDP from 193.136.138.142:36340
+Command: QUT.
+PLID: 100007.
+58045
+TCP ready.TCP 0.
+TCP in.
+Inited.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60856.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60868.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60874.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60886.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60894.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60896.
+TCP connection inited.
+Recv TCP data. 9
+Received 11 bytes from TCP.
+Command: GHL.
+PLID: 100007.
+sv_data/DAT_100007 exists.
+Sending TCP data. 9
+Sending TCP data. 9
+Hint 1.
+Hint 2.
+Closing. 9
+58045
+Received UDP from 193.136.138.142:39776
+Command: QUT.
+PLID: 100007.
+58045
+TCP ready.TCP 0.
+TCP in.
+Inited.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60856.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60868.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60874.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60886.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60894.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60896.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60906.
+TCP connection inited.
+Recv TCP data. 10
+Received 11 bytes from TCP.
+Command: GHL.
+PLID: 100007.
+sv_data/DAT_100007 exists.
+Sending TCP data. 10
+Sending TCP data. 10
+Hint 1.
+Hint 2.
+Closing. 10
+58045
+Received UDP from 193.136.138.142:38597
+Command: QUT.
+PLID: 100007.
+58045
+TCP ready.TCP 0.
+TCP in.
+Inited.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60856.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60868.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60874.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60886.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60894.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60896.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60906.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60910.
+TCP connection inited.
+Recv TCP data. 11
+Received 11 bytes from TCP.
+Command: GHL.
+PLID: 100007.
+sv_data/DAT_100007 exists.
+Sending TCP data. 11
+Sending TCP data. 11
+Hint 1.
+Hint 2.
+Closing. 11
+58045
+Received UDP from 193.136.138.142:35149
+Command: QUT.
+PLID: 100007.
+58045
+TCP ready.TCP 0.
+TCP in.
+Inited.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60856.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60868.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60874.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60886.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60894.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60896.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60906.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60910.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60922.
+TCP connection inited.
+Recv TCP data. 12
+Received 11 bytes from TCP.
+Command: GHL.
+PLID: 100007.
+sv_data/DAT_100007 exists.
+Sending TCP data. 12
+Sending TCP data. 12
+Hint 1.
+Hint 2.
+Closing. 12
+58045
+Received UDP from 193.136.138.142:60661
+Command: QUT.
+PLID: 100007.
+58045
+TCP ready.TCP 0.
+TCP in.
+Inited.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60856.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60868.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60874.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60886.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60894.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60896.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60906.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60910.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60922.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60934.
+TCP connection inited.
+Recv TCP data. 13
+Received 11 bytes from TCP.
+Command: GHL.
+PLID: 100007.
+sv_data/DAT_100007 exists.
+Sending TCP data. 13
+Sending TCP data. 13
+Hint 1.
+Hint 2.
+Closing. 13
+58045
+Received UDP from 193.136.138.142:50985
+Command: QUT.
+PLID: 100007.
+58045
+TCP ready.TCP 0.
+TCP in.
+Inited.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60856.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60868.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60874.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60886.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60894.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60896.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60906.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60910.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60922.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60934.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60950.
+TCP connection inited.
+Recv TCP data. 14
+Received 11 bytes from TCP.
+Command: GHL.
+PLID: 100007.
+sv_data/DAT_100007 exists.
+Sending TCP data. 14
+Sending TCP data. 14
+Hint 1.
+Hint 2.
+Closing. 14
+58045
+Received UDP from 193.136.138.142:42082
+Command: QUT.
+PLID: 100007.
+58045
+TCP ready.TCP 0.
+TCP in.
+Inited.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60856.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60868.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60874.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60886.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60894.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60896.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60906.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60910.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60922.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60934.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60950.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60958.
+TCP connection inited.
+Recv TCP data. 15
+Received 11 bytes from TCP.
+Command: GHL.
+PLID: 100007.
+sv_data/DAT_100007 exists.
+Sending TCP data. 15
+Sending TCP data. 15
+Hint 1.
+Hint 2.
+Closing. 15
+58045
+Received UDP from 193.136.138.142:40240
+Command: QUT.
+PLID: 100007.
+58045
+TCP ready.TCP 0.
+TCP in.
+Inited.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60856.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60868.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60874.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60886.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60894.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60896.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60906.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60910.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60922.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60934.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60950.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60958.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60960.
+TCP connection inited.
+Recv TCP data. 16
+Received 11 bytes from TCP.
+Command: GHL.
+PLID: 100007.
+sv_data/DAT_100007 exists.
+Sending TCP data. 16
+Sending TCP data. 16
+Hint 1.
+Hint 2.
+Closing. 16
+58045
+Received UDP from 193.136.138.142:55569
+Command: QUT.
+PLID: 100007.
+58045
+TCP ready.TCP 0.
+TCP in.
+Inited.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60856.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60868.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60874.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60886.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60894.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60896.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60906.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60910.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60922.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60934.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60950.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60958.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60960.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60962.
+TCP connection inited.
+Recv TCP data. 17
+Received 11 bytes from TCP.
+Command: GHL.
+PLID: 100007.
+sv_data/DAT_100007 exists.
+Sending TCP data. 17
+Sending TCP data. 17
+Hint 1.
+Hint 2.
+Closing. 17
+58045
+Received UDP from 193.136.138.142:38957
+Command: QUT.
+PLID: 100007.
+58045
+TCP ready.TCP 0.
+TCP in.
+Inited.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60856.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60868.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60874.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60886.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60894.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60896.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60906.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60910.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60922.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60934.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60950.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60958.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60960.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60962.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60966.
+TCP connection inited.
+Recv TCP data. 18
+Received 11 bytes from TCP.
+Command: GHL.
+PLID: 100007.
+sv_data/DAT_100007 exists.
+Sending TCP data. 18
+Sending TCP data. 18
+Hint 1.
+Hint 2.
+Closing. 18
+58045
+Received UDP from 193.136.138.142:60840
+Command: QUT.
+PLID: 100007.
+58045
+TCP ready.TCP 0.
+TCP in.
+Inited.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60856.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60868.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60874.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60886.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60894.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60896.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60906.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60910.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60922.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60934.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60950.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60958.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60960.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60962.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60966.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60974.
+TCP connection inited.
+Recv TCP data. 19
+Received 11 bytes from TCP.
+Command: GHL.
+PLID: 100007.
+sv_data/DAT_100007 exists.
+Sending TCP data. 19
+Sending TCP data. 19
+Hint 1.
+Hint 2.
+Closing. 19
+58045
+Received UDP from 193.136.138.142:51039
+Command: QUT.
+PLID: 100007.
+58045
+TCP ready.TCP 0.
+TCP in.
+Inited.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60856.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60868.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60874.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60886.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60894.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60896.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60906.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60910.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60922.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60934.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60950.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60958.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60960.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60962.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60966.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60974.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60990.
+TCP connection inited.
+Recv TCP data. 20
+Received 11 bytes from TCP.
+Command: GHL.
+PLID: 100007.
+sv_data/DAT_100007 exists.
+Sending TCP data. 20
+Sending TCP data. 20
+Hint 1.
+Hint 2.
+Closing. 20
+58045
+Received UDP from 193.136.138.142:39919
+Command: QUT.
+PLID: 100007.
+58045
+TCP ready.TCP 0.
+TCP in.
+Inited.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60856.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60868.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60874.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60886.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60894.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60896.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60906.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60910.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60922.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60934.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60950.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60958.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60960.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60962.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60966.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60974.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60990.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60994.
+TCP connection inited.
+Recv TCP data. 21
+Received 11 bytes from TCP.
+Command: GHL.
+PLID: 100007.
+sv_data/DAT_100007 exists.
+Sending TCP data. 21
+Sending TCP data. 21
+Hint 1.
+Hint 2.
+Closing. 21
+58045
+Received UDP from 193.136.138.142:43806
+Command: QUT.
+PLID: 100007.
+58045
+TCP ready.TCP 0.
+TCP in.
+Inited.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60856.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60868.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60874.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60886.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60894.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60896.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60906.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60910.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60922.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60934.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60950.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60958.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60960.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60962.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60966.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60974.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60990.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60994.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:32778.
+TCP connection inited.
+Recv TCP data. 22
+Received 11 bytes from TCP.
+Command: GHL.
+PLID: 100007.
+sv_data/DAT_100007 exists.
+Sending TCP data. 22
+Sending TCP data. 22
+Hint 1.
+Hint 2.
+Closing. 22
+58045
+Received UDP from 193.136.138.142:40570
+Command: QUT.
+PLID: 100007.
+58045
+TCP ready.TCP 0.
+TCP in.
+Inited.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60856.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60868.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60874.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60886.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60894.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60896.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60906.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60910.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60922.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60934.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60950.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60958.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60960.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60962.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60966.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60974.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60990.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:60994.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:32778.
+Going to SELECT 3.
+TCP Select done...
+Received TCP from 193.136.138.142:32790.
+TCP connection inited.
+Recv TCP data. 23
+Received 11 bytes from TCP.
+Command: GHL.
+PLID: 100007.
+sv_data/DAT_100007 exists.
+Sending TCP data. 23
+Sending TCP data. 23
+Hint 1.
+Hint 2.
+Closing. 23
+58045
+Received UDP from 193.136.138.142:60403
+Command: QUT.
+PLID: 100007.
