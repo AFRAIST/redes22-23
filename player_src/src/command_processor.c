@@ -1,6 +1,7 @@
 #include "command_processor.h"
 #include "command.h"
 #include "udp_sender.h"
+#include "tcp_sender.h"
 
 static Result process_buffer(char buffer[], size_t sz, struct input *inp) {
 #define MAX_CMD_OP1_SZ 10
@@ -60,6 +61,9 @@ static void sig_exit() {
 
     extern int __get_file_fd;
     handle_fd_close(__get_file_fd);
+
+    tcp_sender_fini();
+    udp_sender_fini();
 
     fflush(stderr);
     fflush(stdout);

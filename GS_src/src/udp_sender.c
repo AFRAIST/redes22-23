@@ -70,11 +70,14 @@ ssize_t udp_sender_send(const u8 *data, size_t sz) {
 }
 
 void udp_sender_fini() {
-    if (socket_udp_fd != -1) {
+    if (UDPown_data == NULL) {
+        freeaddrinfo(UDPown_data);
+        UDPown_data = NULL;
+    }
+    
+    if (socket_udp_fd == -1) {        
+        try_close(socket_udp_fd); 
+        
         socket_udp_fd = -1;
-        if (UDPown_data == NULL) {
-            freeaddrinfo(UDPown_data);
-            UDPown_data = NULL;
-        }
     }
 }
