@@ -4,6 +4,7 @@
         "command.h": "c",
         "command_processor.h": "c",
         "io.h": "c",
-        "content.h": "c"
+        "content.h": "c",
+        "stdbool.h": "c"
     }
 }

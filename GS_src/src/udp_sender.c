@@ -48,23 +48,9 @@ ssize_t udp_sender_try_init() {
 ssize_t udp_sender_recv(u8 *data, size_t sz) {
     addrlen = sizeof(addr);
 
-    struct timeval tmout;
-    memset((char *)&tmout,0,sizeof(tmout)); /* Clear time structure. */
-    tmout.tv_sec = 2;
-    if (setsockopt(socket_udp_fd, SOL_SOCKET, SO_RCVTIMEO, (struct timeval *)&tmout,sizeof(struct timeval)) == -1) {
-        perror("Setsockopt.\n");
-        return -1;
-    }
     const ssize_t res = try_recvfrom(socket_udp_fd, data, sz, 0,
                                      (struct sockaddr *)&addr, &addrlen);
 
-    memset((char *)&tmout,0,sizeof(tmout)); /* Clear time structure. */
-    tmout.tv_sec = 0;
-    if (setsockopt(socket_udp_fd, SOL_SOCKET, SO_RCVTIMEO, (struct timeval *)&tmout,sizeof(struct timeval)) == -1) {
-        perror("Setsockopt.\n");
-        return -1;
-    }
-    
     char* src_ip = inet_ntoa(addr.sin_addr);
     int src_port = ntohs(addr.sin_port);
 
@@ -76,23 +62,9 @@ ssize_t udp_sender_recv(u8 *data, size_t sz) {
 }
 
 ssize_t udp_sender_send(const u8 *data, size_t sz) { 
-    struct timeval tmout;
-    memset((char *)&tmout,0,sizeof(tmout)); /* Clear time structure. */
-    tmout.tv_sec = 2;
-    if (setsockopt(socket_udp_fd, SOL_SOCKET, SO_SNDTIMEO, (struct timeval *)&tmout,sizeof(struct timeval)) == -1) {
-        perror("Setsockopt.\n");
-        return -1;
-    }
     
     const ssize_t res = try_sendto(socket_udp_fd, data, sz, 0,
                                    (struct sockaddr *)&addr, addrlen);
-
-    memset((char *)&tmout,0,sizeof(tmout)); /* Clear time structure. */
-    tmout.tv_sec = 0;
-    if (setsockopt(socket_udp_fd, SOL_SOCKET, SO_SNDTIMEO, (struct timeval *)&tmout,sizeof(struct timeval))) {
-        perror("Setsockopt.\n");
-        return -1;
-    }
 
     return res;
 }

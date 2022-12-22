@@ -15,7 +15,8 @@ typedef struct {
 } Dictionary;
 
 #ifdef FOR_TEST
-extern int g_num_test;
+extern int g_shmid;
+extern int g_shm_fd;
 #endif
 
 extern Dictionary dict_instance;

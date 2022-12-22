@@ -286,7 +286,7 @@ static Result guess_impl(struct output *outp) {
     #define suc_buf_sz (0x1000)
     char suc_buf[suc_buf_sz];
 
-
+    GameRegTrial();
     g_serv_game->finished = 1;
     snprintf(suc_buf, suc_buf_sz, "RWG WIN %u\n", GameTrials());
     save_score(outp, word);

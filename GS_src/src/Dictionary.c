@@ -31,7 +31,19 @@ static inline void ParseDataFromFile(Dictionary *dict, FILE *fp, char **data,
 }
 
 size_t random_entry(Dictionary *dict) {
+    #ifndef FOR_TEST
     return rand() % dict->amt;
+    #else
+    u32 cur_id;
+    R_FAIL_EXIT_IF(flock(g_shm_fd, LOCK_SH) == -1, "[ERROR] Shared memory flock.\n");
+    u32 *shmptr = (u32*)shmat(g_shmid, NULL, 0);
+    cur_id = *shmptr;
+    *shmptr = *shmptr + 1;
+    msync(shmptr, 0x1000, MS_SYNC);
+    munmap(shmptr, 0x1000);
+    R_FAIL_EXIT_IF(flock(g_shm_fd, LOCK_UN) == -1, "[ERROR] Shared memory flock.\n");
+    return cur_id % dict->amt; 
+    #endif
 }
 
 void InitDictionary(Dictionary *dict, FILE *fp) {

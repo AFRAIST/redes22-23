@@ -4,7 +4,8 @@
 #include "udp_sender.h"
 
 #ifdef FOR_TEST
-int g_num_test = 0;
+int g_shmid;
+int g_shm_fd;
 #endif
 
 static __attribute__((noreturn)) void handle_udp_impl() {
@@ -151,6 +152,11 @@ static __attribute__((noreturn)) void handle_tcp_impl() {
 }
 
 void command_reader() {
+    #ifdef FOR_TEST
+    g_shmid = shmget(IPC_PRIVATE, 1024, 0666 | IPC_CREAT);
+    int *shmptr = (int *)shmat(g_shmid, NULL, 0);
+    R_FAIL_EXIT_IF(open("./locks", O_CREAT | O_RDWR, 0666) == -1, "[ERROR] Shmemlock file.\n");
+    #endif
     const pid_t udp_pid = fork();
     if (udp_pid == 0) {
         /* Listen for UDP in parent. */
@@ -171,7 +177,7 @@ void command_reader() {
             #ifndef FOR_TEST
             rand();
             #else
-            g_num_test = (g_num_test == 0) ? 1 : (g_num_test + 1);
+            msync(shmptr, 0x1000, MS_SYNC);
             #endif
 
             const pid_t h_udp = fork();
@@ -249,6 +255,15 @@ void command_reader() {
         /* Hunt the zombies! */
         proc_start_zombie_hunter();
     }
+
+    #ifdef FOR_TEST
+    // Detach and destroy the shared memory segment
+    shmdt(shmptr);
+    
+    // Close the file descriptor
+    close(g_shm_fd);
+
+    #endif
 
     udp_sender_fini();
 #undef ERROR_RETURN
