@@ -28,12 +28,27 @@ static Result start_impl(struct output *outp) {
     char r_send_buf[send_buf_sz];
     char *send_buf = r_send_buf;
 
-    if (GameTrials() != 0 ) {
-        send_buf = "RSG NOK\n";
-    } else {    
-        snprintf(send_buf, send_buf_sz, "RSG OK %u %u\n",
-        size,
-        errs);
+    if(g_serv_game->finished == 0){
+        if (GameTrials() != 0 ) {
+            send_buf = "RSG NOK\n";
+        } else {    
+            snprintf(send_buf, send_buf_sz, "RSG OK %u %u\n",
+            size,
+            errs);
+        }
+    } else {
+        if (RemoveFile(outp->plid) == EXIT_FAILURE) {
+            perror("Failed to remove file\n");
+            return EXIT_FAILURE;
+        }
+        if (GameAcquire(outp->plid) == EXIT_FAILURE) {
+            perror(E_ACQUIRE_ERROR);
+            return EXIT_FAILURE;
+        }
+        if(start_impl(outp) == EXIT_FAILURE){
+            return EXIT_FAILURE;
+        };
+        return EXIT_SUCCESS;
     }
 
     
