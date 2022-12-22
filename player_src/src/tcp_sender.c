@@ -176,12 +176,17 @@ ssize_t tcp_sender_send(const u8 *data, size_t sz) {
 }
 
 ssize_t tcp_sender_fini() {
+    ssize_t rc = EXIT_SUCCESS;
+
     if (tcp_peer_data != NULL) {
         freeaddrinfo(tcp_peer_data);
         tcp_peer_data = NULL;
     }
-    const ssize_t rc = try_close(socket_tcp_fd);
+    
+    if (socket_tcp_fd != -1) {
+        rc = try_close(socket_tcp_fd);
+        socket_tcp_fd = -1;
+    }
 
-    socket_tcp_fd = -1;
     return rc;
 }
