@@ -574,6 +574,21 @@ Result command_hint(struct output *outp) {
         goto out;
     }
 
+    bool game_empty;
+    if ((rc = GameEmpty(&game_empty)) == EXIT_FAILURE) {
+        perror(E_ACQUIRE_ERROR);
+        goto out_release;
+    }
+    
+    if (game_empty) { 
+        if (tcp_sender_send((u8 *)"RHL NOK\n", 8) != 8) {
+            perror(E_FAILED_REPLY);
+        }
+
+        if (tcp_sender_fini() == -1) perror("[ERR] Closing TCP.\n");
+        exit(EXIT_SUCCESS);
+    }
+
     if ((rc = hint_impl(outp)) == EXIT_FAILURE) {
         goto out;
     } 
@@ -584,6 +599,11 @@ Result command_hint(struct output *outp) {
 
     if (tcp_sender_fini() == -1) perror("[ERR] Closing TCP.\n");
     exit(rc);
+
+out_release:
+    if (GameRelease() == EXIT_FAILURE) {
+        perror(E_RELEASE_ERROR);
+    }
 
 out:
     if(tcp_sender_send((u8 *)"ERR\n", 4) != 4) {
