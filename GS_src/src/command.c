@@ -348,9 +348,15 @@ Result scoreboard_impl(){
         perror("[ERR] Getting Scoreboard"); 
         return EXIT_FAILURE;
     }
+    
+    sprintf(buf, "-------------------------------- TOP 10 SCORES --------------------------------\n\n");
+    buf += strlen(buf);
+
+    sprintf(buf, "    SCORE PLAYER     WORD                             GOOD TRIALS  TOTAL TRIALS\n\n");
+    buf += strlen(buf);
 
     for(u32 i = total_scores; i > 0; i--){
-        sprintf(buf, "TOP %i: %s\n",total_scores - i + 1, scoreboard_list[i - 1].score_str);
+        sprintf(buf," %i - %s\n",total_scores - i + 1, scoreboard_list[i - 1].score_str);
         buf += strlen(buf);
     }
 
@@ -381,23 +387,21 @@ no_work:
 Result command_scoreboard(struct output *outp) {
     Result rc = EXIT_SUCCESS;
 
-    printf("AAAAAAAAAAAAAAA\n");
     if (outp->err)
         goto out;
-
-    printf("BBBBBBBB\n");
-
 
     if ((rc = scoreboard_impl()) == EXIT_FAILURE) {
         goto out;
     } 
 
-    R_FAIL_EXIT_IF(GameRelease() == EXIT_FAILURE, E_RELEASE_ERROR);
+    if (tcp_sender_fini() == -1) perror("[ERR] Closing TCP.\n");
     exit(rc);
 
 out:
     R_FAIL_EXIT_IF(tcp_sender_send((u8 *)"RSB ERR\n", 8) != 8,
                       E_FAILED_REPLY);
+
+    if (tcp_sender_fini() == -1) perror("[ERR] Closing TCP.\n");
 
     exit(EXIT_FAILURE);
 }

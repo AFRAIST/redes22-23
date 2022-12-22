@@ -126,8 +126,10 @@ Result save_score(struct output *outp, const char* word){
     if (fp == NULL) {
         perror("Error while opening the file.\n");
      }
+    int str_spisze = strlen(word);
+    
 
-    fprintf(fp, "%03i %06zu %s %u %u",score, outp->plid, word, n_succ, g_serv_game->trials);
+    fprintf(fp, "%03i  %06zu  %s %*u             %u",score, outp->plid, word,SPACES-str_spisze ,n_succ, g_serv_game->trials);
 
     fclose(fp);
 

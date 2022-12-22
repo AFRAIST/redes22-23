@@ -502,7 +502,7 @@ static Result scoreboard_impl() {
 
     // memset(big_buffer, 0, 1024);
     // strcpy(big_buffer, "RSB OK wwww");
-
+    
     if (!strcmp((char *)big_buffer, "RSB EMPTY\n")) {
         R_FAIL_RETURN(EXIT_FAILURE, fin == false, E_INVALID_SERVER_REPLY);
         printf("The scoreboard is empty...\n");

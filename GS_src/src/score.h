@@ -5,6 +5,7 @@
 #define PATH_SIZE 256
 #define SCORE_STR_SIZE 256
 #define DATE_SIZE 64
+#define SPACES 40
 
 typedef struct {
     char score_str[256];
