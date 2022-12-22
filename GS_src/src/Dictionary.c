@@ -96,4 +96,9 @@ void InitDictionary(Dictionary *dict, FILE *fp) {
     dict->amt = amt;
 }
 
-void FiniDictionary(Dictionary *dict) { free(dict->buffer); }
+void FiniDictionary(Dictionary *dict) {
+    if (dict->buffer != NULL) {
+        free(dict->buffer);
+        dict->buffer = NULL;
+    }
+}

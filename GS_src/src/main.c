@@ -43,6 +43,34 @@ char GSport_GSip_reader(int argc, char **argv, FILE **word_file,
     return EXIT_SUCCESS;
 }
 
+
+static void sig_exit_parent() { 
+    if (GSport != NULL)
+        free(GSport);
+    FiniDictionary(&dict_instance);
+
+
+    #ifdef FOR_TEST
+    extern int *shmptr;
+    extern int g_shmid;
+    extern int g_shm_fd;
+
+
+    // Detach and destroy the shared memory segment
+    shmdt(shmptr);
+    
+    shmctl(g_shmid, IPC_RMID, NULL);
+    
+    // Close the file descriptor
+    handle_fd_close(g_shm_fd);
+    #endif
+
+    fflush(stderr);
+    fflush(stdout);
+
+    exit(EXIT_SUCCESS);
+}
+
 int main(int argc, char *argv[]) {
     FILE *word_file = NULL;
 
@@ -56,6 +84,8 @@ int main(int argc, char *argv[]) {
     /* Init randomizer. */
     srand(time(NULL));
 
+    signal(SIGINT, sig_exit_parent);
+    
     InitDictionary(&dict_instance, word_file);
 
     VerbosePrintF("%s\n", GSport);

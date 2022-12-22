@@ -4,8 +4,9 @@
 #include "udp_sender.h"
 
 #ifdef FOR_TEST
-int g_shmid;
-int g_shm_fd;
+int g_shmid = 0;
+int g_shm_fd = 0;
+int *shmptr;
 #endif
 
 static __attribute__((noreturn)) void handle_udp_impl() {
@@ -151,14 +152,22 @@ static __attribute__((noreturn)) void handle_tcp_impl() {
 #undef ERROR_RETURN
 }
 
+static void sig_exit_subudp() {
+
+    udp_sender_fini();
+}
+
 void command_reader() {
     #ifdef FOR_TEST
     g_shmid = shmget(IPC_PRIVATE, 1024, 0666 | IPC_CREAT);
-    int *shmptr = (int *)shmat(g_shmid, NULL, 0);
-    R_FAIL_EXIT_IF(open("./locks", O_CREAT | O_RDWR, 0666) == -1, "[ERROR] Shmemlock file.\n");
+    shmptr = (int *)shmat(g_shmid, NULL, 0);
+    R_FAIL_EXIT_IF((g_shm_fd = open("./locks", O_CREAT | O_RDWR, 0666)) == -1, "[ERROR] Shmemlock file.\n");
     #endif
     const pid_t udp_pid = fork();
     if (udp_pid == 0) {
+
+        signal(SIGINT, sig_exit_subudp);
+        
         /* Listen for UDP in parent. */
         R_FAIL_EXIT_IF(udp_sender_try_init() == -1,
                        "[ERROR] Broken UDP sockets.\n");
@@ -259,9 +268,12 @@ void command_reader() {
     #ifdef FOR_TEST
     // Detach and destroy the shared memory segment
     shmdt(shmptr);
-    
+
+    shmctl(g_shmid, IPC_RMID, NULL);
+
     // Close the file descriptor
-    close(g_shm_fd);
+    handle_fd_close(g_shm_fd);
+    g_shm_fd = -1;
 
     #endif
 

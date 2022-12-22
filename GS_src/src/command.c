@@ -396,7 +396,8 @@ out:
 }
 
 Result scoreboard_impl(){
-    u8 *r_buf = malloc(0xA000);    
+    static u8 _r_buf[0xA000];
+    u8 *r_buf = _r_buf;
     //R_FAIL_RETURN(EXIT_FAILURE, StartGame() == EXIT_FAILURE, E_FAILED_SERIAL_READ);
     
     if(count_scores() == 0){
@@ -406,7 +407,6 @@ Result scoreboard_impl(){
             return EXIT_SUCCESS;
         }
 
-        free(r_buf);
         if (tcp_sender_fini() == -1) perror("[ERR] Closing TCP.\n"); \
         exit(EXIT_SUCCESS);
     }
@@ -418,7 +418,6 @@ Result scoreboard_impl(){
 
     if(get_scoreboard(scoreboard_list) == EXIT_FAILURE){
         perror("[ERR] Getting Scoreboard"); 
-        free(r_buf);
         return EXIT_FAILURE;
     }
     
@@ -449,14 +448,12 @@ Result scoreboard_impl(){
         goto no_work;
     }
 
-    free(r_buf);
     return EXIT_SUCCESS;
 
 no_work:
-    free(r_buf);
     return EXIT_FAILURE;
-
 }
+
 Result command_scoreboard(struct output *outp) {
     Result rc = EXIT_SUCCESS;
 
@@ -484,7 +481,8 @@ static Result hint_impl(struct output *outp) {
     (void)outp;
     R_FAIL_RETURN(EXIT_FAILURE, StartGame() == EXIT_FAILURE, E_FAILED_SERIAL_READ);
 
-    u8 *r_buf = malloc(0x1000 + 4 * 1024 * 1024);
+    static u8 _r_buf[0x1000 + 4*1024*1024];
+    u8 *r_buf = _r_buf;
 
     const char * const c = dict_instance.entries[g_serv_game->cur_entry].word_class;
     char path[0x1000];
@@ -546,14 +544,12 @@ static Result hint_impl(struct output *outp) {
     }
 
 skip:
-    free(r_buf);
     if (close(fd) == -1) {
         perror("[ERR] Failed to close file.\n");
     }
     return EXIT_SUCCESS;
 
 error:
-    free(r_buf);
     perror(E_FAILED_REPLY);
 
     if (close(fd) == -1) {
@@ -615,7 +611,8 @@ out:
 }
 
 static Result state_impl(struct output *outp) {
-    u8 *r_buf = malloc(0xA000);
+    static u8 _r_buf[0xA000];
+    u8 *r_buf = _r_buf;
     
     if(StartGame() == EXIT_FAILURE)
         goto no_work;
@@ -665,11 +662,9 @@ static Result state_impl(struct output *outp) {
         goto no_work;
     }
 
-    free(r_buf);
     return EXIT_SUCCESS;
 
 no_work:
-    free(r_buf);
     return EXIT_FAILURE;
 }
 

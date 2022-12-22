@@ -11,3 +11,8 @@ macro. You can add the flag -DFOR_TEST to the Makefile CFLAGS
 variable to enable the macro and remove the flag to keep it disabled.
 The project ships with the macro enabled and picks the words
 sequentially to avoid non-determinism.
+
+Both peers will create subprocesses using fork. The memory that is
+not touched on child processes will not be free'd because the
+operating system automatically cleans up, but the parent does free
+its own virtual addresses.
