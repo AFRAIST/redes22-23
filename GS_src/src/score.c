@@ -154,6 +154,9 @@ Result save_score(struct output *outp, const char* word){
 }
 
 Result get_scoreboard(ScoreEntry* scoreboard_list){
+    struct dirent **filelist;
+    int n_entries, i = 0;
+
     const char *dir_path = "sv_data/score";
     if (access(dir_path, F_OK) == 0) {
         printf("Directory %s exists\n", dir_path);
@@ -168,49 +171,50 @@ Result get_scoreboard(ScoreEntry* scoreboard_list){
     }
 
     DIR* dir = opendir(dir_path);
-    struct dirent* iter;
     FILE* fp;
     char path[PATH_SIZE*2];
     if(dir == NULL){
         perror("There is no File");
         return -1;
     }
-    int i = 0;
-    while ((iter = readdir(dir)) != NULL) {
-    // Skip the "." and ".." entries
-        if (strcmp(iter->d_name, ".") == 0 || strcmp(iter->d_name, "..") == 0) {
-            continue;
-        }
 
-        sprintf(path, "sv_data/score/%s", iter->d_name);
-        if ((fp = fopen(path, "r")) == NULL) {
-            perror("[ERR] Error opening file");
-            return EXIT_FAILURE;
-        }
-        else {
-            if (flock(fileno(fp), LOCK_SH) == -1) {
-                perror("Flock.\n");
+    n_entries = scandir("sv_data/score/" , &filelist , 0 , alphasort) ;
+    if ( n_entries < 0 ){
+        return EXIT_FAILURE;
+    }
+    else{
+        while (n_entries--) {
+        // Skip the "." and ".." entries
+            if (filelist[n_entries]->d_name[0] == '.') {
+                continue;
+            }
+
+            sprintf(path, "sv_data/score/%s", filelist[n_entries]->d_name);
+            if ((fp = fopen(path, "r")) == NULL) {
+                perror("[ERR] Error opening file");
                 return EXIT_FAILURE;
             }
-            
-            if(fgets(scoreboard_list[i].score_str, sizeof(scoreboard_list[i].score_str), fp) == NULL){
-                perror("[ERR] Error reading the score file");
-                return EXIT_FAILURE;
-            };
-            i++;
-            
-            if (flock(fileno(fp), LOCK_UN) == -1) {
-                perror("Flock.\n");
-                return EXIT_FAILURE;
-            }
-            fclose(fp);
+            else {
+                if (flock(fileno(fp), LOCK_SH) == -1) {
+                    perror("Flock.\n");
+                    return EXIT_FAILURE;
+                }
 
-        }
+                if(fgets(scoreboard_list[i].score_str, sizeof(scoreboard_list[i].score_str), fp) == NULL){
+                    perror("[ERR] Error reading the score file");
+                    return EXIT_FAILURE;
+                };
+            
+                if (flock(fileno(fp), LOCK_UN) == -1) {
+                    perror("Flock.\n");
+                    return EXIT_FAILURE;
+                }
+                fclose(fp);
+                i++;
+
+            }
 
     }
-
-    for(i = total_scores; i > 0; i--){
-        VerbosePrintF( "TOP %i: %s\n",total_scores - i + 1, scoreboard_list[i - 1].score_str);
     }
 
     return EXIT_SUCCESS;

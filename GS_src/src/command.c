@@ -373,8 +373,8 @@ Result scoreboard_impl(){
     sprintf(buf, "    SCORE PLAYER     WORD                             GOOD TRIALS  TOTAL TRIALS\n\n");
     buf += strlen(buf);
 
-    for(u32 i = total_scores; i > 0; i--){
-        sprintf(buf," %i - %s\n",total_scores - i + 1, scoreboard_list[i - 1].score_str);
+    for(u32 i = 0; i < total_scores; i++){
+        sprintf(buf," %i - %s\n",i + 1, scoreboard_list[i].score_str);
         buf += strlen(buf);
     }
 
