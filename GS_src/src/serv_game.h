@@ -23,6 +23,7 @@ typedef struct __attribute__((packed)) {
     u32 trials;
     /* Then, we'll have to array wordguess too.*/
     u8 finished;
+    bool last_was_incremental;
 } ServGame;
 
 extern ServGame *g_serv_game;
@@ -32,6 +33,7 @@ Result GameAcquire(size_t plid);
 Result ExitAndSerializeGame();
 bool GameHasMoves();
 u32 GameRegTrial();
+u32 GameUnregTrial();
 u32 GameTrials();
 Result GameRelease();
 void RegisterLetterTrial();
