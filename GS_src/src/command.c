@@ -353,6 +353,7 @@ Result scoreboard_impl(){
             return EXIT_SUCCESS;
         }
 
+        free(r_buf);
         if (tcp_sender_fini() == -1) perror("[ERR] Closing TCP.\n"); \
         exit(EXIT_SUCCESS);
     }
@@ -364,6 +365,7 @@ Result scoreboard_impl(){
 
     if(get_scoreboard(scoreboard_list) == EXIT_FAILURE){
         perror("[ERR] Getting Scoreboard"); 
+        free(r_buf);
         return EXIT_FAILURE;
     }
     

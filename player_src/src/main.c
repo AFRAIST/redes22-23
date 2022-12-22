@@ -54,4 +54,7 @@ int main(int argc, char *argv[]) {
     // validate_port();
 
     command_reader();
+
+    free(GSip);
+    free(GSport);
 }
