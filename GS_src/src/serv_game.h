@@ -40,3 +40,4 @@ const char *GetCurWord();
 char *GetCurRepr();
 char *StrSerializeDup(const char *p);
 Result GameEmpty(bool *out);
+Result RemoveFile(size_t plid);

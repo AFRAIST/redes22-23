@@ -157,3 +157,12 @@ char *GetCurRepr() { return g_serv_game->word_state; }
 void RegisterLetterTrial() {}
 
 void RegisterWordGuess() {}
+
+Result RemoveFile(size_t plid){
+    char path[256];
+    sprintf(path, "sv_data/DAT_%06zu", plid);
+    if (remove(path) == 0)
+        return EXIT_SUCCESS;
+    perror("[ERR] Couldnt delete the file\n");
+    return EXIT_FAILURE;
+}
