@@ -490,7 +490,7 @@ static Result hint_impl(struct output *outp) {
 
     snprintf(path, 0x1000, "assets/%s", c); 
 
-    fprintf(stderr, "Path: %s.\n", path);
+    VerbosePrintF("Path: %s.\n", path);
     __hint_fd = open(path, O_RDONLY);
 
     if (flock(__hint_fd, LOCK_SH) == -1) {
