@@ -56,7 +56,7 @@ int tcp_sender_delay() {
         /* We wait 2 seconds. */
         struct timeval tv;
         memset(&tv, 0, sizeof(tv));
-        tv.tv_sec = 2;
+        tv.tv_sec = TIMEOUT_VALUE_TCP;
         rc = setsockopt(socket_tcp_fd, SOL_SOCKET, SO_RCVTIMEO, (const void*)&tv, sizeof tv);
         
         if (rc == -1) {
