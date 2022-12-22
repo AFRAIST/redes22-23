@@ -125,12 +125,23 @@ Result save_score(struct output *outp, const char* word){
     // Check if the file was successfully created
     if (fp == NULL) {
         perror("Error while opening the file.\n");
-     }
+        return EXIT_FAILURE;
+    }
+
+    if (flock(fileno(fp), LOCK_EX) == -1) {
+        perror("Flock.\n");
+        return EXIT_FAILURE;
+    }
+
     int str_spisze = strlen(word);
     
 
     fprintf(fp, "%03i  %06zu  %s %*u             %u",score, outp->plid, word,SPACES-str_spisze ,n_succ, g_serv_game->trials);
 
+    if (flock(fileno(fp), LOCK_UN) == -1) {
+        perror("Flock.\n");
+        return EXIT_FAILURE;
+    }
     fclose(fp);
 
     if(filter_scoreboard() == EXIT_FAILURE){
@@ -176,11 +187,22 @@ Result get_scoreboard(ScoreEntry* scoreboard_list){
             perror("[ERR] Error opening file");
             return EXIT_FAILURE;
         }
-        else {if(fgets(scoreboard_list[i].score_str, sizeof(scoreboard_list[i].score_str), fp) == NULL){
+        else {
+            if (flock(fileno(fp), LOCK_SH) == -1) {
+                perror("Flock.\n");
+                return EXIT_FAILURE;
+            }
+            
+            if(fgets(scoreboard_list[i].score_str, sizeof(scoreboard_list[i].score_str), fp) == NULL){
                 perror("[ERR] Error reading the score file");
                 return EXIT_FAILURE;
             };
             i++;
+            
+            if (flock(fileno(fp), LOCK_UN) == -1) {
+                perror("Flock.\n");
+                return EXIT_FAILURE;
+            }
             fclose(fp);
 
         }

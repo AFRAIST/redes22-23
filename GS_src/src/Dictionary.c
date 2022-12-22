@@ -35,7 +35,7 @@ size_t random_entry(Dictionary *dict) {
     return rand() % dict->amt;
     #else
     u32 cur_id;
-    R_FAIL_EXIT_IF(flock(g_shm_fd, LOCK_SH) == -1, "[ERROR] Shared memory flock.\n");
+    R_FAIL_EXIT_IF(flock(g_shm_fd, LOCK_EX) == -1, "[ERROR] Shared memory flock.\n");
     u32 *shmptr = (u32*)shmat(g_shmid, NULL, 0);
     cur_id = *shmptr;
     *shmptr = *shmptr + 1;

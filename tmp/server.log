@@ -1,0 +1,1863 @@
+58045
+Received UDP from 193.136.138.142:37684
+Command: SNG.
+PLID: 100001.
+Directory sv_data exists
+sv_data/DAT_100001 exists.
+Directory sv_data exists
+sv_data/DAT_100001 does not exist.
+abracadabra -----------
+58045
+TCP ready.TCP 0.
+TCP in.
+Inited.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50504.
+TCP connection inited.
+Recv TCP data. 5
+Received 11 bytes from TCP.
+Command: GHL.
+PLID: 100001.
+Directory sv_data exists
+sv_data/DAT_100001 exists.
+Sending TCP data. 5
+Sending TCP data. 5
+Hint 1.
+Hint 2.
+Closing. 5
+58045
+Received UDP from 193.136.138.142:48790
+Command: QUT.
+PLID: 100001.
+Directory sv_data exists
+sv_data/DAT_100001 exists.
+58045
+Received UDP from 193.136.138.142:43710
+Command: SNG.
+PLID: 100002.
+Directory sv_data exists
+sv_data/DAT_100002 exists.
+Directory sv_data exists
+sv_data/DAT_100002 does not exist.
+barracuda ---------
+58045
+TCP ready.TCP 0.
+TCP in.
+Inited.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50504.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50520.
+TCP connection inited.
+Recv TCP data. 6
+Received 11 bytes from TCP.
+Command: GHL.
+PLID: 100002.
+Directory sv_data exists
+sv_data/DAT_100002 exists.
+Sending TCP data. 6
+Sending TCP data. 6
+Hint 1.
+Hint 2.
+Closing. 6
+58045
+Received UDP from 193.136.138.142:36084
+Command: QUT.
+PLID: 100002.
+Directory sv_data exists
+sv_data/DAT_100002 exists.
+58045
+Received UDP from 193.136.138.142:41480
+Command: SNG.
+PLID: 100003.
+Directory sv_data exists
+sv_data/DAT_100003 exists.
+Directory sv_data exists
+sv_data/DAT_100003 does not exist.
+chlorobenzylidenemalononitrile ------------------------------
+58045
+TCP ready.TCP 0.
+TCP in.
+Inited.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50504.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50520.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50530.
+TCP connection inited.
+Recv TCP data. 7
+Received 11 bytes from TCP.
+Command: GHL.
+PLID: 100003.
+Directory sv_data exists
+sv_data/DAT_100003 exists.
+Sending TCP data. 7
+Sending TCP data. 7
+Hint 1.
+Hint 2.
+Closing. 7
+58045
+Received UDP from 193.136.138.142:33488
+Command: QUT.
+PLID: 100003.
+Directory sv_data exists
+sv_data/DAT_100003 exists.
+58045
+Received UDP from 193.136.138.142:35164
+Command: SNG.
+PLID: 100004.
+Directory sv_data exists
+sv_data/DAT_100004 exists.
+Directory sv_data exists
+sv_data/DAT_100004 does not exist.
+decarbonization ---------------
+58045
+TCP ready.TCP 0.
+TCP in.
+Inited.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50504.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50520.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50530.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50536.
+TCP connection inited.
+Recv TCP data. 8
+Received 11 bytes from TCP.
+Command: GHL.
+PLID: 100004.
+Directory sv_data exists
+sv_data/DAT_100004 exists.
+Sending TCP data. 8
+Sending TCP data. 8
+Sending TCP data. 8
+Sending TCP data. 8
+Sending TCP data. 8
+Hint 1.
+Hint 2.
+Closing. 8
+58045
+Received UDP from 193.136.138.142:34208
+Command: QUT.
+PLID: 100004.
+Directory sv_data exists
+sv_data/DAT_100004 exists.
+58045
+Received UDP from 193.136.138.142:58603
+Command: SNG.
+PLID: 100005.
+Directory sv_data exists
+sv_data/DAT_100005 exists.
+Directory sv_data exists
+sv_data/DAT_100005 does not exist.
+electroencephalographical -------------------------
+58045
+TCP ready.TCP 0.
+TCP in.
+Inited.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50504.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50520.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50530.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50536.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50550.
+TCP connection inited.
+Recv TCP data. 9
+Received 11 bytes from TCP.
+Command: GHL.
+PLID: 100005.
+Directory sv_data exists
+sv_data/DAT_100005 exists.
+Sending TCP data. 9
+Sending TCP data. 9
+Hint 1.
+Hint 2.
+Closing. 9
+58045
+Received UDP from 193.136.138.142:49022
+Command: QUT.
+PLID: 100005.
+Directory sv_data exists
+sv_data/DAT_100005 exists.
+58045
+Received UDP from 193.136.138.142:51861
+Command: SNG.
+PLID: 100006.
+Directory sv_data exists
+sv_data/DAT_100006 exists.
+Directory sv_data exists
+sv_data/DAT_100006 does not exist.
+ferromagnetism --------------
+58045
+TCP ready.TCP 0.
+TCP in.
+Inited.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50504.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50520.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50530.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50536.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50550.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50552.
+TCP connection inited.
+Recv TCP data. 10
+Received 11 bytes from TCP.
+Command: GHL.
+PLID: 100006.
+Directory sv_data exists
+sv_data/DAT_100006 exists.
+Sending TCP data. 10
+Sending TCP data. 10
+Hint 1.
+Hint 2.
+Closing. 10
+58045
+Received UDP from 193.136.138.142:40312
+Command: QUT.
+PLID: 100006.
+Directory sv_data exists
+sv_data/DAT_100006 exists.
+58045
+Received UDP from 193.136.138.142:45539
+Command: SNG.
+PLID: 100007.
+Directory sv_data exists
+sv_data/DAT_100007 exists.
+Directory sv_data exists
+sv_data/DAT_100007 does not exist.
+goggomobil ----------
+58045
+TCP ready.TCP 0.
+TCP in.
+Inited.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50504.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50520.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50530.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50536.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50550.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50552.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50560.
+TCP connection inited.
+Recv TCP data. 11
+Received 11 bytes from TCP.
+Command: GHL.
+PLID: 100007.
+Directory sv_data exists
+sv_data/DAT_100007 exists.
+Sending TCP data. 11
+Sending TCP data. 11
+Hint 1.
+Hint 2.
+Closing. 11
+58045
+Received UDP from 193.136.138.142:57201
+Command: QUT.
+PLID: 100007.
+Directory sv_data exists
+sv_data/DAT_100007 exists.
+58045
+Received UDP from 193.136.138.142:53891
+Command: SNG.
+PLID: 100008.
+Directory sv_data exists
+sv_data/DAT_100008 exists.
+Directory sv_data exists
+sv_data/DAT_100008 does not exist.
+helicoidal ----------
+58045
+TCP ready.TCP 0.
+TCP in.
+Inited.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50504.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50520.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50530.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50536.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50550.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50552.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50560.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50574.
+TCP connection inited.
+Recv TCP data. 12
+Received 11 bytes from TCP.
+Command: GHL.
+PLID: 100008.
+Directory sv_data exists
+sv_data/DAT_100008 exists.
+Sending TCP data. 12
+Sending TCP data. 12
+Hint 1.
+Hint 2.
+Closing. 12
+58045
+Received UDP from 193.136.138.142:38304
+Command: QUT.
+PLID: 100008.
+Directory sv_data exists
+sv_data/DAT_100008 exists.
+58045
+Received UDP from 193.136.138.142:41399
+Command: SNG.
+PLID: 100009.
+Directory sv_data exists
+sv_data/DAT_100009 exists.
+Directory sv_data exists
+sv_data/DAT_100009 does not exist.
+island ------
+58045
+TCP ready.TCP 0.
+TCP in.
+Inited.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50504.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50520.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50530.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50536.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50550.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50552.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50560.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50574.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50588.
+TCP connection inited.
+Recv TCP data. 13
+Received 11 bytes from TCP.
+Command: GHL.
+PLID: 100009.
+Directory sv_data exists
+sv_data/DAT_100009 exists.
+Sending TCP data. 13
+Sending TCP data. 13
+Hint 1.
+Hint 2.
+Closing. 13
+58045
+Received UDP from 193.136.138.142:36810
+Command: QUT.
+PLID: 100009.
+Directory sv_data exists
+sv_data/DAT_100009 exists.
+58045
+Received UDP from 193.136.138.142:46560
+Command: SNG.
+PLID: 100010.
+Directory sv_data exists
+sv_data/DAT_100010 exists.
+Directory sv_data exists
+sv_data/DAT_100010 does not exist.
+joker -----
+58045
+TCP ready.TCP 0.
+TCP in.
+Inited.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50504.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50520.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50530.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50536.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50550.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50552.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50560.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50574.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50588.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50592.
+TCP connection inited.
+Recv TCP data. 14
+Received 11 bytes from TCP.
+Command: GHL.
+PLID: 100010.
+Directory sv_data exists
+sv_data/DAT_100010 exists.
+Sending TCP data. 14
+Sending TCP data. 14
+Hint 1.
+Hint 2.
+Closing. 14
+58045
+Received UDP from 193.136.138.142:49980
+Command: QUT.
+PLID: 100010.
+Directory sv_data exists
+sv_data/DAT_100010 exists.
+58045
+Received UDP from 193.136.138.142:42067
+Command: SNG.
+PLID: 100011.
+Directory sv_data exists
+sv_data/DAT_100011 exists.
+Directory sv_data exists
+sv_data/DAT_100011 does not exist.
+knowledge ---------
+58045
+TCP ready.TCP 0.
+TCP in.
+Inited.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50504.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50520.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50530.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50536.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50550.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50552.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50560.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50574.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50588.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50592.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50600.
+TCP connection inited.
+Recv TCP data. 15
+Received 11 bytes from TCP.
+Command: GHL.
+PLID: 100011.
+Directory sv_data exists
+sv_data/DAT_100011 exists.
+Sending TCP data. 15
+Sending TCP data. 15
+Hint 1.
+Hint 2.
+Closing. 15
+58045
+Received UDP from 193.136.138.142:45496
+Command: QUT.
+PLID: 100011.
+Directory sv_data exists
+sv_data/DAT_100011 exists.
+58045
+Received UDP from 193.136.138.142:44482
+Command: SNG.
+PLID: 100012.
+Directory sv_data exists
+sv_data/DAT_100012 exists.
+Directory sv_data exists
+sv_data/DAT_100012 does not exist.
+lighthouse ----------
+58045
+TCP ready.TCP 0.
+TCP in.
+Inited.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50504.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50520.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50530.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50536.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50550.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50552.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50560.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50574.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50588.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50592.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50600.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50608.
+TCP connection inited.
+Recv TCP data. 16
+Received 11 bytes from TCP.
+Command: GHL.
+PLID: 100012.
+Directory sv_data exists
+sv_data/DAT_100012 exists.
+Sending TCP data. 16
+Sending TCP data. 16
+Hint 1.
+Hint 2.
+Closing. 16
+58045
+Received UDP from 193.136.138.142:55995
+Command: QUT.
+PLID: 100012.
+Directory sv_data exists
+sv_data/DAT_100012 exists.
+58045
+Received UDP from 193.136.138.142:36836
+Command: SNG.
+PLID: 100013.
+Directory sv_data exists
+sv_data/DAT_100013 exists.
+Directory sv_data exists
+sv_data/DAT_100013 does not exist.
+manipulator -----------
+58045
+TCP ready.TCP 0.
+TCP in.
+Inited.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50504.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50520.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50530.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50536.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50550.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50552.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50560.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50574.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50588.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50592.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50600.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50608.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50610.
+TCP connection inited.
+Recv TCP data. 17
+Received 11 bytes from TCP.
+Command: GHL.
+PLID: 100013.
+Directory sv_data exists
+sv_data/DAT_100013 exists.
+Sending TCP data. 17
+Sending TCP data. 17
+Hint 1.
+Hint 2.
+Closing. 17
+58045
+Received UDP from 193.136.138.142:40909
+Command: QUT.
+PLID: 100013.
+Directory sv_data exists
+sv_data/DAT_100013 exists.
+58045
+Received UDP from 193.136.138.142:51245
+Command: SNG.
+PLID: 100014.
+Directory sv_data exists
+sv_data/DAT_100014 exists.
+Directory sv_data exists
+sv_data/DAT_100014 does not exist.
+nanotechnology --------------
+58045
+TCP ready.TCP 0.
+TCP in.
+Inited.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50504.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50520.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50530.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50536.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50550.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50552.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50560.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50574.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50588.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50592.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50600.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50608.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50610.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50612.
+TCP connection inited.
+Recv TCP data. 18
+Received 11 bytes from TCP.
+Command: GHL.
+PLID: 100014.
+Directory sv_data exists
+sv_data/DAT_100014 exists.
+Sending TCP data. 18
+Sending TCP data. 18
+Hint 1.
+Hint 2.
+Closing. 18
+58045
+Received UDP from 193.136.138.142:58277
+Command: QUT.
+PLID: 100014.
+Directory sv_data exists
+sv_data/DAT_100014 exists.
+58045
+Received UDP from 193.136.138.142:55334
+Command: SNG.
+PLID: 100015.
+Directory sv_data exists
+sv_data/DAT_100015 exists.
+Directory sv_data exists
+sv_data/DAT_100015 does not exist.
+observation -----------
+58045
+TCP ready.TCP 0.
+TCP in.
+Inited.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50504.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50520.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50530.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50536.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50550.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50552.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50560.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50574.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50588.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50592.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50600.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50608.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50610.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50612.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50618.
+TCP connection inited.
+Recv TCP data. 19
+Received 11 bytes from TCP.
+Command: GHL.
+PLID: 100015.
+Directory sv_data exists
+sv_data/DAT_100015 exists.
+Sending TCP data. 19
+Sending TCP data. 19
+Hint 1.
+Hint 2.
+Closing. 19
+58045
+Received UDP from 193.136.138.142:60342
+Command: QUT.
+PLID: 100015.
+Directory sv_data exists
+sv_data/DAT_100015 exists.
+58045
+Received UDP from 193.136.138.142:41234
+Command: SNG.
+PLID: 100016.
+Directory sv_data exists
+sv_data/DAT_100016 exists.
+Directory sv_data exists
+sv_data/DAT_100016 does not exist.
+platypus --------
+58045
+TCP ready.TCP 0.
+TCP in.
+Inited.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50504.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50520.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50530.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50536.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50550.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50552.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50560.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50574.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50588.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50592.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50600.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50608.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50610.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50612.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50618.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50620.
+TCP connection inited.
+Recv TCP data. 20
+Received 11 bytes from TCP.
+Command: GHL.
+PLID: 100016.
+Directory sv_data exists
+sv_data/DAT_100016 exists.
+Sending TCP data. 20
+Sending TCP data. 20
+Hint 1.
+Hint 2.
+Closing. 20
+58045
+Received UDP from 193.136.138.142:51141
+Command: QUT.
+PLID: 100016.
+Directory sv_data exists
+sv_data/DAT_100016 exists.
+58045
+Received UDP from 193.136.138.142:57312
+Command: SNG.
+PLID: 100017.
+Directory sv_data exists
+sv_data/DAT_100017 exists.
+Directory sv_data exists
+sv_data/DAT_100017 does not exist.
+quadraphonic ------------
+58045
+TCP ready.TCP 0.
+TCP in.
+Inited.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50504.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50520.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50530.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50536.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50550.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50552.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50560.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50574.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50588.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50592.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50600.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50608.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50610.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50612.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50618.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50620.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50622.
+TCP connection inited.
+Recv TCP data. 21
+Received 11 bytes from TCP.
+Command: GHL.
+PLID: 100017.
+Directory sv_data exists
+sv_data/DAT_100017 exists.
+Sending TCP data. 21
+Sending TCP data. 21
+Hint 1.
+Hint 2.
+Closing. 21
+58045
+Received UDP from 193.136.138.142:35333
+Command: QUT.
+PLID: 100017.
+Directory sv_data exists
+sv_data/DAT_100017 exists.
+58045
+Received UDP from 193.136.138.142:47977
+Command: SNG.
+PLID: 100018.
+Directory sv_data exists
+sv_data/DAT_100018 exists.
+Directory sv_data exists
+sv_data/DAT_100018 does not exist.
+roentgenography ---------------
+58045
+TCP ready.TCP 0.
+TCP in.
+Inited.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50504.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50520.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50530.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50536.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50550.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50552.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50560.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50574.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50588.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50592.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50600.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50608.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50610.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50612.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50618.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50620.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50622.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50636.
+TCP connection inited.
+Recv TCP data. 22
+Received 11 bytes from TCP.
+Command: GHL.
+PLID: 100018.
+Directory sv_data exists
+sv_data/DAT_100018 exists.
+Sending TCP data. 22
+Sending TCP data. 22
+Hint 1.
+Hint 2.
+Closing. 22
+58045
+Received UDP from 193.136.138.142:41214
+Command: QUT.
+PLID: 100018.
+Directory sv_data exists
+sv_data/DAT_100018 exists.
+58045
+Received UDP from 193.136.138.142:59530
+Command: SNG.
+PLID: 100019.
+Directory sv_data exists
+sv_data/DAT_100019 exists.
+Directory sv_data exists
+sv_data/DAT_100019 does not exist.
+stratocruiser -------------
+58045
+TCP ready.TCP 0.
+TCP in.
+Inited.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50504.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50520.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50530.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50536.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50550.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50552.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50560.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50574.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50588.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50592.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50600.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50608.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50610.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50612.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50618.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50620.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50622.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50636.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50646.
+TCP connection inited.
+Recv TCP data. 23
+Received 11 bytes from TCP.
+Command: GHL.
+PLID: 100019.
+Directory sv_data exists
+sv_data/DAT_100019 exists.
+Sending TCP data. 23
+Sending TCP data. 23
+Hint 1.
+Hint 2.
+Closing. 23
+58045
+Received UDP from 193.136.138.142:41307
+Command: QUT.
+PLID: 100019.
+Directory sv_data exists
+sv_data/DAT_100019 exists.
+58045
+Received UDP from 193.136.138.142:54487
+Command: SNG.
+PLID: 100020.
+Directory sv_data exists
+sv_data/DAT_100020 exists.
+Directory sv_data exists
+sv_data/DAT_100020 does not exist.
+thunderbird -----------
+58045
+TCP ready.TCP 0.
+TCP in.
+Inited.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50504.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50520.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50530.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50536.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50550.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50552.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50560.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50574.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50588.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50592.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50600.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50608.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50610.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50612.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50618.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50620.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50622.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50636.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50646.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50654.
+TCP connection inited.
+Recv TCP data. 24
+Received 11 bytes from TCP.
+Command: GHL.
+PLID: 100020.
+Directory sv_data exists
+sv_data/DAT_100020 exists.
+Sending TCP data. 24
+Sending TCP data. 24
+Hint 1.
+Hint 2.
+Closing. 24
+58045
+Received UDP from 193.136.138.142:55996
+Command: QUT.
+PLID: 100020.
+Directory sv_data exists
+sv_data/DAT_100020 exists.
+58045
+Received UDP from 193.136.138.142:41552
+Command: SNG.
+PLID: 100021.
+Directory sv_data exists
+sv_data/DAT_100021 exists.
+Directory sv_data exists
+sv_data/DAT_100021 does not exist.
+usb ---
+58045
+TCP ready.TCP 0.
+TCP in.
+Inited.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50504.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50520.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50530.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50536.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50550.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50552.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50560.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50574.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50588.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50592.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50600.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50608.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50610.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50612.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50618.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50620.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50622.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50636.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50646.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50654.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50670.
+TCP connection inited.
+Recv TCP data. 25
+Received 11 bytes from TCP.
+Command: GHL.
+PLID: 100021.
+Directory sv_data exists
+sv_data/DAT_100021 exists.
+Sending TCP data. 25
+Sending TCP data. 25
+Hint 1.
+Hint 2.
+Closing. 25
+58045
+Received UDP from 193.136.138.142:47143
+Command: QUT.
+PLID: 100021.
+Directory sv_data exists
+sv_data/DAT_100021 exists.
+58045
+Received UDP from 193.136.138.142:41902
+Command: SNG.
+PLID: 100022.
+Directory sv_data exists
+sv_data/DAT_100022 exists.
+Directory sv_data exists
+sv_data/DAT_100022 does not exist.
+vaccine -------
+58045
+TCP ready.TCP 0.
+TCP in.
+Inited.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50504.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50520.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50530.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50536.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50550.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50552.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50560.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50574.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50588.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50592.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50600.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50608.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50610.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50612.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50618.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50620.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50622.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50636.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50646.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50654.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50670.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50676.
+TCP connection inited.
+Recv TCP data. 26
+Received 11 bytes from TCP.
+Command: GHL.
+PLID: 100022.
+Directory sv_data exists
+sv_data/DAT_100022 exists.
+Sending TCP data. 26
+Sending TCP data. 26
+Sending TCP data. 26
+Hint 1.
+Hint 2.
+Closing. 26
+58045
+Received UDP from 193.136.138.142:38222
+Command: QUT.
+PLID: 100022.
+Directory sv_data exists
+sv_data/DAT_100022 exists.
+58045
+Received UDP from 193.136.138.142:52790
+Command: SNG.
+PLID: 100023.
+Directory sv_data exists
+sv_data/DAT_100023 exists.
+Directory sv_data exists
+sv_data/DAT_100023 does not exist.
+winning -------
+58045
+TCP ready.TCP 0.
+TCP in.
+Inited.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50504.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50520.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50530.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50536.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50550.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50552.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50560.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50574.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50588.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50592.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50600.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50608.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50610.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50612.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50618.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50620.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50622.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50636.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50646.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50654.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50670.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50676.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50680.
+TCP connection inited.
+Recv TCP data. 27
+Received 11 bytes from TCP.
+Command: GHL.
+PLID: 100023.
+Directory sv_data exists
+sv_data/DAT_100023 exists.
+Sending TCP data. 27
+Sending TCP data. 27
+Hint 1.
+Hint 2.
+Closing. 27
+58045
+Received UDP from 193.136.138.142:39118
+Command: QUT.
+PLID: 100023.
+Directory sv_data exists
+sv_data/DAT_100023 exists.
+58045
+Received UDP from 193.136.138.142:54555
+Command: SNG.
+PLID: 100024.
+Directory sv_data exists
+sv_data/DAT_100024 exists.
+Directory sv_data exists
+sv_data/DAT_100024 does not exist.
+xiphophorus -----------
+58045
+TCP ready.TCP 0.
+TCP in.
+Inited.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50504.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50520.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50530.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50536.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50550.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50552.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50560.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50574.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50588.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50592.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50600.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50608.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50610.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50612.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50618.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50620.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50622.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50636.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50646.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50654.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50670.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50676.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50680.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50684.
+TCP connection inited.
+Recv TCP data. 28
+Received 11 bytes from TCP.
+Command: GHL.
+PLID: 100024.
+Directory sv_data exists
+sv_data/DAT_100024 exists.
+Sending TCP data. 28
+Sending TCP data. 28
+Hint 1.
+Hint 2.
+Closing. 28
+58045
+Received UDP from 193.136.138.142:36099
+Command: QUT.
+PLID: 100024.
+Directory sv_data exists
+sv_data/DAT_100024 exists.
+58045
+Received UDP from 193.136.138.142:47779
+Command: SNG.
+PLID: 100025.
+Directory sv_data exists
+sv_data/DAT_100025 exists.
+Directory sv_data exists
+sv_data/DAT_100025 does not exist.
+yellowstone -----------
+58045
+TCP ready.TCP 0.
+TCP in.
+Inited.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50504.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50520.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50530.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50536.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50550.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50552.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50560.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50574.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50588.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50592.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50600.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50608.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50610.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50612.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50618.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50620.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50622.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50636.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50646.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50654.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50670.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50676.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50680.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50684.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50700.
+TCP connection inited.
+Recv TCP data. 29
+Received 11 bytes from TCP.
+Command: GHL.
+PLID: 100025.
+Directory sv_data exists
+sv_data/DAT_100025 exists.
+Sending TCP data. 29
+Sending TCP data. 29
+Hint 1.
+Hint 2.
+Closing. 29
+58045
+Received UDP from 193.136.138.142:37251
+Command: QUT.
+PLID: 100025.
+Directory sv_data exists
+sv_data/DAT_100025 exists.
+58045
+Received UDP from 193.136.138.142:57884
+Command: SNG.
+PLID: 100026.
+Directory sv_data exists
+sv_data/DAT_100026 exists.
+Directory sv_data exists
+sv_data/DAT_100026 does not exist.
+zoroastrianism --------------
+58045
+TCP ready.TCP 0.
+TCP in.
+Inited.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50504.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50520.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50530.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50536.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50550.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50552.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50560.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50574.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50588.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50592.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50600.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50608.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50610.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50612.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50618.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50620.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50622.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50636.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50646.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50654.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50670.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50676.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50680.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50684.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50700.
+Going to SELECT 4.
+TCP Select done...
+Received TCP from 193.136.138.142:50712.
+TCP connection inited.
+Recv TCP data. 30
+Received 11 bytes from TCP.
+Command: GHL.
+PLID: 100026.
+Directory sv_data exists
+sv_data/DAT_100026 exists.
+Sending TCP data. 30
+Sending TCP data. 30
+Hint 1.
+Hint 2.
+Closing. 30
+58045
+Received UDP from 193.136.138.142:57489
+Command: QUT.
+PLID: 100026.
+Directory sv_data exists
+sv_data/DAT_100026 exists.

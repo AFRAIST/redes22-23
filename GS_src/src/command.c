@@ -436,9 +436,10 @@ static Result hint_impl(struct output *outp) {
 
     snprintf(path, 0x1000, "assets/%s", c); 
 
+    fprintf(stderr, "Path: %s.\n", path);
     int fd = open(path, O_RDONLY);
 
-    if (flock(fd, LOCK_EX) == -1) {
+    if (flock(fd, LOCK_SH) == -1) {
         perror("[ERR] Failed to flock.");
         goto error;
     }
@@ -522,12 +523,10 @@ Result command_hint(struct output *outp) {
         goto out;
     } 
     
-    VerbosePrintF("Hint 1.\n");
     if (GameRelease() == EXIT_FAILURE) {
         perror(E_RELEASE_ERROR);
     }
 
-    VerbosePrintF("Hint 2.\n");
     if (tcp_sender_fini() == -1) perror("[ERR] Closing TCP.\n");
     exit(rc);
 
