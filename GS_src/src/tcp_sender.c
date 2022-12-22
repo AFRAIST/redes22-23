@@ -173,26 +173,39 @@ ssize_t tcp_sender_send(const u8 *data, size_t sz) {
 }
 
 ssize_t tcp_sender_fini() {
-    VerbosePrintF("Closing. %d\n", socket_tcp_new_fd);
+    ssize_t rc = EXIT_SUCCESS;
+
     if (tcp_peer_data != NULL) {
         freeaddrinfo(tcp_peer_data);
         tcp_peer_data = NULL;
     }
     
-    shutdown(socket_tcp_new_fd, SHUT_RDWR);
-    const ssize_t rc = try_close(socket_tcp_new_fd);
+    if (socket_tcp_new_fd != -1) {
+        VerbosePrintF("Closing. %d\n", socket_tcp_new_fd);
+        
+        shutdown(socket_tcp_new_fd, SHUT_RDWR);
+        rc = try_close(socket_tcp_new_fd);
 
-    socket_tcp_new_fd = -1;
+        socket_tcp_new_fd = -1;
+    } else {
+        rc = -1;
+    }
+
     return rc;
 }
 
 ssize_t tcp_sender_fini_global() {
+    ssize_t rc = tcp_sender_fini();
+
     if (tcp_peer_data != NULL) {
         freeaddrinfo(tcp_peer_data);
         tcp_peer_data = NULL;
     }
-    const ssize_t rc = try_close(socket_tcp_fd);
 
-    socket_tcp_fd = -1;
+    if (socket_tcp_fd != -1) {    
+        rc = try_close(socket_tcp_fd);
+        socket_tcp_fd = -1;
+    }
+
     return rc;
 }

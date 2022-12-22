@@ -10,6 +10,7 @@ int score_function(u32 n_succ){
     return round(score_value);
 }
 
+DIR *dir1 = NULL;
 int count_scores(){
     int count = 0;
 
@@ -19,14 +20,14 @@ int count_scores(){
         return count;
     } 
 
-    DIR* dir = opendir(dir_path);
-    if(dir == NULL){
+    dir1 = opendir(dir_path);
+    if(dir1 == NULL){
         return count;
     }
 
     // Read each directory entry one by one
     struct dirent* iter;
-    while ((iter = readdir(dir)) != NULL) {
+    while ((iter = readdir(dir1)) != NULL) {
         // Increment the counter for each entry
         if (strcmp(iter->d_name, ".") == 0 || strcmp(iter->d_name, "..") == 0) {
             continue;
@@ -35,14 +36,16 @@ int count_scores(){
     }
 
     // Close the directory stream
-    closedir(dir);
+    closedir(dir1);
+    dir1 = NULL;
     return count;
 }
 
+DIR *dir2;
 int remove_lowest_alphabetic(){
 
-    DIR* dir = opendir("sv_data/score");
-    if(dir == NULL){
+    dir2 = opendir("sv_data/score");
+    if(dir2 == NULL){
         perror("There is no File");
         return EXIT_FAILURE;
     }
@@ -53,7 +56,7 @@ int remove_lowest_alphabetic(){
 
     lowest_name[0] = '\0';
 
-    while ((iter = readdir(dir)) != NULL) {
+    while ((iter = readdir(dir2)) != NULL) {
     // Skip the "." and ".." entries
         if (strcmp(iter->d_name, ".") == 0 || strcmp(iter->d_name, "..") == 0) {
             continue;
@@ -74,7 +77,7 @@ int remove_lowest_alphabetic(){
     }
     VerbosePrintF("Deleted file: %s\n", full_link);
 
-    closedir(dir);
+    closedir(dir2);
 
     return EXIT_SUCCESS;
 }
@@ -96,6 +99,7 @@ Result filter_scoreboard(){
     return EXIT_SUCCESS;
 }
 
+FILE *__score_fp2 = NULL;
 Result save_score(struct output *outp, const char* word){
 
     const char *dir = "sv_data/score";
@@ -106,7 +110,6 @@ Result save_score(struct output *outp, const char* word){
         if(mkdir(dir, S_IRWXU) != 0) perror(E_SERVER_ERROR);
     }
 
-    FILE *fp;
     int score = score_function(n_succ);
     time_t t = time(NULL); 
     struct tm current_time = *localtime(&t);
@@ -120,15 +123,15 @@ Result save_score(struct output *outp, const char* word){
     snprintf(file_name, sizeof(file_name), "sv_data/score/%03i_%06zu_%s.txt", score, outp->plid, date);
     printf("%lu",strlen(file_name));
 
-    fp = fopen(file_name, "w");
+    __score_fp2 = fopen(file_name, "w");
 
     // Check if the file was successfully created
-    if (fp == NULL) {
+    if (__score_fp2 == NULL) {
         perror("Error while opening the file.\n");
         return EXIT_FAILURE;
     }
 
-    if (flock(fileno(fp), LOCK_EX) == -1) {
+    if (flock(fileno(__score_fp2), LOCK_EX) == -1) {
         perror("Flock.\n");
         return EXIT_FAILURE;
     }
@@ -136,13 +139,14 @@ Result save_score(struct output *outp, const char* word){
     int str_spisze = strlen(word);
     
 
-    fprintf(fp, "%03i  %06zu  %s %*u             %u",score, outp->plid, word,SPACES-str_spisze ,n_succ, g_serv_game->trials);
+    fprintf(__score_fp2, "%03i  %06zu  %s %*u             %u",score, outp->plid, word,SPACES-str_spisze ,n_succ, g_serv_game->trials);
 
-    if (flock(fileno(fp), LOCK_UN) == -1) {
+    if (flock(fileno(__score_fp2), LOCK_UN) == -1) {
         perror("Flock.\n");
         return EXIT_FAILURE;
     }
-    fclose(fp);
+    fclose(__score_fp2);
+    __score_fp2 = NULL;
 
     if(filter_scoreboard() == EXIT_FAILURE){
         perror("[ERR] Something Went Wrong");
@@ -153,6 +157,8 @@ Result save_score(struct output *outp, const char* word){
 
 }
 
+DIR* __score_dir = NULL;
+FILE* __score_fp = NULL;
 Result get_scoreboard(ScoreEntry* scoreboard_list){
     struct dirent **filelist;
     int n_entries, i = 0;
@@ -170,10 +176,9 @@ Result get_scoreboard(ScoreEntry* scoreboard_list){
         return EXIT_FAILURE;
     }
 
-    DIR* dir = opendir(dir_path);
-    FILE* fp;
+    __score_dir = opendir(dir_path);
     char path[PATH_SIZE*2];
-    if(dir == NULL){
+    if(__score_dir == NULL){
         perror("There is no File");
         return -1;
     }
@@ -190,26 +195,27 @@ Result get_scoreboard(ScoreEntry* scoreboard_list){
             }
 
             sprintf(path, "sv_data/score/%s", filelist[n_entries]->d_name);
-            if ((fp = fopen(path, "r")) == NULL) {
+            if ((__score_fp = fopen(path, "r")) == NULL) {
                 perror("[ERR] Error opening file");
                 return EXIT_FAILURE;
             }
             else {
-                if (flock(fileno(fp), LOCK_SH) == -1) {
+                if (flock(fileno(__score_fp), LOCK_SH) == -1) {
                     perror("Flock.\n");
                     return EXIT_FAILURE;
                 }
 
-                if(fgets(scoreboard_list[i].score_str, sizeof(scoreboard_list[i].score_str), fp) == NULL){
+                if(fgets(scoreboard_list[i].score_str, sizeof(scoreboard_list[i].score_str), __score_fp) == NULL){
                     perror("[ERR] Error reading the score file");
                     return EXIT_FAILURE;
                 };
             
-                if (flock(fileno(fp), LOCK_UN) == -1) {
+                if (flock(fileno(__score_fp), LOCK_UN) == -1) {
                     perror("Flock.\n");
                     return EXIT_FAILURE;
                 }
-                fclose(fp);
+                fclose(__score_fp);
+                __score_fp = NULL;
                 i++;
 
             }

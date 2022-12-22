@@ -396,7 +396,8 @@ out:
 }
 
 Result scoreboard_impl(){
-    u8 *r_buf = malloc(0xA000);    
+    static u8 _r_buf[0xA000];
+    u8 *r_buf = _r_buf;
     //R_FAIL_RETURN(EXIT_FAILURE, StartGame() == EXIT_FAILURE, E_FAILED_SERIAL_READ);
     
     if(count_scores() == 0){
@@ -406,7 +407,6 @@ Result scoreboard_impl(){
             return EXIT_SUCCESS;
         }
 
-        free(r_buf);
         if (tcp_sender_fini() == -1) perror("[ERR] Closing TCP.\n"); \
         exit(EXIT_SUCCESS);
     }
@@ -418,7 +418,6 @@ Result scoreboard_impl(){
 
     if(get_scoreboard(scoreboard_list) == EXIT_FAILURE){
         perror("[ERR] Getting Scoreboard"); 
-        free(r_buf);
         return EXIT_FAILURE;
     }
     
@@ -449,14 +448,12 @@ Result scoreboard_impl(){
         goto no_work;
     }
 
-    free(r_buf);
     return EXIT_SUCCESS;
 
 no_work:
-    free(r_buf);
     return EXIT_FAILURE;
-
 }
+
 Result command_scoreboard(struct output *outp) {
     Result rc = EXIT_SUCCESS;
 
@@ -480,27 +477,29 @@ out:
 }
 
 
+int __hint_fd = -1;
 static Result hint_impl(struct output *outp) {
     (void)outp;
     R_FAIL_RETURN(EXIT_FAILURE, StartGame() == EXIT_FAILURE, E_FAILED_SERIAL_READ);
 
-    u8 *r_buf = malloc(0x1000 + 4 * 1024 * 1024);
+    static u8 _r_buf[0x1000 + 4*1024*1024];
+    u8 *r_buf = _r_buf;
 
     const char * const c = dict_instance.entries[g_serv_game->cur_entry].word_class;
     char path[0x1000];
 
     snprintf(path, 0x1000, "assets/%s", c); 
 
-    fprintf(stderr, "Path: %s.\n", path);
-    int fd = open(path, O_RDONLY);
+    VerbosePrintF("Path: %s.\n", path);
+    __hint_fd = open(path, O_RDONLY);
 
-    if (flock(fd, LOCK_SH) == -1) {
+    if (flock(__hint_fd, LOCK_SH) == -1) {
         perror("[ERR] Failed to flock.");
         goto error;
     }
 
     struct stat sb;
-    if (fstat(fd, &sb) == -1) {
+    if (fstat(__hint_fd, &sb) == -1) {
         perror("[ERR] Failed to stat.");
         goto error;
     }
@@ -509,7 +508,7 @@ static Result hint_impl(struct output *outp) {
 
     u8 *buf = r_buf + 0x1000;
     u32 sz;
-    if((s32)(sz = read(fd, buf, 4 * 1024 * 1024)) == -1)
+    if((s32)(sz = read(__hint_fd, buf, 4 * 1024 * 1024)) == -1)
         goto error;
 
 
@@ -525,7 +524,7 @@ static Result hint_impl(struct output *outp) {
 
     full_size -= sz;
     while (full_size != 0) {
-        if((s32)(sz = read(fd, buf, 4 * 1024 * 1024)) == -1) {
+        if((s32)(sz = read(__hint_fd, buf, 4 * 1024 * 1024)) == -1) {
             perror(E_FAILED_REPLY);
             goto skip;
         }
@@ -541,22 +540,16 @@ static Result hint_impl(struct output *outp) {
     if (tcp_sender_send((u8 *)"\n", 1) == -1)
         perror(E_FAILED_REPLY);
 
-    if (flock(fd, LOCK_UN) == -1) {
-        perror("[ERR] Failed to flock.\n");
-    }
-
 skip:
-    free(r_buf);
-    if (close(fd) == -1) {
+    if (handle_fd_close(__hint_fd) == -1) {
         perror("[ERR] Failed to close file.\n");
     }
     return EXIT_SUCCESS;
 
 error:
-    free(r_buf);
     perror(E_FAILED_REPLY);
 
-    if (close(fd) == -1) {
+    if (handle_fd_close(__hint_fd) == -1) {
         perror("[ERR] Failed to close file.\n");
     }
 
@@ -615,7 +608,8 @@ out:
 }
 
 static Result state_impl(struct output *outp) {
-    u8 *r_buf = malloc(0xA000);
+    static u8 _r_buf[0xA000];
+    u8 *r_buf = _r_buf;
     
     if(StartGame() == EXIT_FAILURE)
         goto no_work;
@@ -665,11 +659,9 @@ static Result state_impl(struct output *outp) {
         goto no_work;
     }
 
-    free(r_buf);
     return EXIT_SUCCESS;
 
 no_work:
-    free(r_buf);
     return EXIT_FAILURE;
 }
 

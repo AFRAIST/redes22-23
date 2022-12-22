@@ -316,6 +316,7 @@ Result command_guess(struct input *inp) {
 #define BIG_BUF_SZ (4 * 1024 * 1024)
 static u8 big_buffer[BIG_BUF_SZ];
 
+int __get_file_fd = -1;
 static Result get_file(u32 offset, u32 whence, bool show) {
     /* Data right after status. */
     u8 *buf = big_buffer + offset;
@@ -342,10 +343,10 @@ static Result get_file(u32 offset, u32 whence, bool show) {
     /* Derive out. */
     size_t cur_sz = (size_t)((big_buffer + whence + sz) - (u8 *)next);
 
-    int fd = open(fname, O_WRONLY | O_CREAT, 0644);
-    R_FAIL_RETURN(EXIT_FAILURE, fd == -1, "[ERROR] Failed to open file.\n");
+    __get_file_fd = open(fname, O_WRONLY | O_CREAT, 0644);
+    R_FAIL_RETURN(EXIT_FAILURE, __get_file_fd == -1, "[ERROR] Failed to open file.\n");
 
-    if (flock(fd, LOCK_EX) == -1) {
+    if (flock(__get_file_fd, LOCK_EX) == -1) {
         perror("[ERR] Flock.\n");
         goto error_close;
     }
@@ -383,7 +384,7 @@ static Result get_file(u32 offset, u32 whence, bool show) {
     if (show)
         write(1, next, !fin ? cur_sz : cur_sz - 1);
 
-    if (write(fd, next, !fin ? cur_sz : cur_sz - 1) == -1) {
+    if (write(__get_file_fd, next, !fin ? cur_sz : cur_sz - 1) == -1) {
         perror("[ERROR] Failed to write file.\n");
         goto error;
     }
@@ -441,7 +442,7 @@ static Result get_file(u32 offset, u32 whence, bool show) {
         if (show)
             write(1, big_buffer, sz);
 
-        if (write(fd, big_buffer, sz) == -1) {
+        if (write(__get_file_fd, big_buffer, sz) == -1) {
             perror("[ERROR] Failed to write file.\n");
             goto error;
         }
@@ -459,27 +460,28 @@ static Result get_file(u32 offset, u32 whence, bool show) {
         goto error;
     }
 
-    if (flock(fd, LOCK_UN) == -1) {
+    if (flock(__get_file_fd, LOCK_UN) == -1) {
         perror("[ERR] Flock.\n");
         goto error_close;
     }
 
-    R_FAIL_RETURN(EXIT_FAILURE, close(fd) == -1, "[ERROR] Failed to close file.\n");
+    R_FAIL_RETURN(EXIT_FAILURE, close(__get_file_fd) == -1, "[ERROR] Failed to close file.\n");
 
     printf("Scoreboard file \"%s\" was saved at: \"/.\"\n", fname);
 
     return EXIT_SUCCESS;
 
 error:
-    if (flock(fd, LOCK_UN) == -1) {
+    if (flock(__get_file_fd, LOCK_UN) == -1) {
         perror("[ERR] Flock.\n");
     }
 
 error_close: 
-    if (close(fd) == -1) {
+    if (close(__get_file_fd) == -1) {
         perror("[ERROR] Failed to close file.\n");
     }
 
+    __get_file_fd = -1;
     return EXIT_FAILURE;
 }
 

@@ -11,7 +11,7 @@ extern char *GSport;
 #define CUR_IP_VAR (player_ip)
 #define CUR_PORT_VAR (player_port)
 
-static struct addrinfo *own_data;
+static struct addrinfo *UDPown_data = NULL;
 static socklen_t addrlen;
 static struct sockaddr_in addr;
 
@@ -30,12 +30,12 @@ ssize_t udp_sender_try_init() {
     hints.ai_socktype = SOCK_DGRAM; // UDP socket
     hints.ai_flags = AI_PASSIVE;
 
-    if (getaddrinfo(NULL, GSport, &hints, &own_data) != 0) {
+    if (getaddrinfo(NULL, GSport, &hints, &UDPown_data) != 0) {
         perror("[ERR] Gettaddrinfo.\n");
         return -1;
     }
 
-    ssize_t n = bind(socket_udp_fd, own_data->ai_addr, own_data->ai_addrlen);
+    ssize_t n = bind(socket_udp_fd, UDPown_data->ai_addr, UDPown_data->ai_addrlen);
 
     if (n == -1) {
         perror("[ERR] Bind.\n");
@@ -72,6 +72,9 @@ ssize_t udp_sender_send(const u8 *data, size_t sz) {
 void udp_sender_fini() {
     if (socket_udp_fd != -1) {
         socket_udp_fd = -1;
-        freeaddrinfo(own_data);
+        if (UDPown_data == NULL) {
+            freeaddrinfo(UDPown_data);
+            UDPown_data = NULL;
+        }
     }
 }

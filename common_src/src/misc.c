@@ -14,3 +14,14 @@ Result get_plid(char *ap, size_t *plid) {
 
     return EXIT_SUCCESS;
 }
+
+int handle_fd_close(int fd) {
+    if (fd != -1) {
+        flock(fd, LOCK_UN);
+        int res = close(fd);
+        fd = -1;
+        return res;
+    }
+    
+    return -1;
+}

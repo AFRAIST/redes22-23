@@ -4,11 +4,24 @@
 #include "udp_sender.h"
 
 #ifdef FOR_TEST
-int g_shmid;
-int g_shm_fd;
+int g_shmid = 0;
+int g_shm_fd = 0;
+int *shmptr;
 #endif
 
+void sig_exit_subudp_impl() {    
+    extern int __hint_fd;
+    extern int g_file_dat;
+
+    handle_fd_close(g_file_dat);
+    handle_fd_close(__hint_fd);
+    exit(EXIT_SUCCESS);
+}
+
+
 static __attribute__((noreturn)) void handle_udp_impl() {
+    signal(SIGINT, sig_exit_subudp_impl);
+
     const size_t recv_buf_sz = COMMAND_BUF_SZ;
     char recv_buf[COMMAND_BUF_SZ] = "";
     struct output outp;
@@ -77,7 +90,39 @@ static __attribute__((noreturn)) void handle_udp_impl() {
 #undef ERROR_RETURN
 }
 
+static void sig_exit_subtcp_impl() { 
+    extern DIR *dir1;
+    extern DIR *dir2;
+    extern DIR* __score_dir;
+    extern FILE* __score_fp;
+    extern FILE* __score_fp2;
+
+    if (dir1 != NULL)
+        closedir(dir1);
+
+    if (dir2 != NULL)
+        closedir(dir2);
+
+    if (__score_dir != NULL)
+        closedir(__score_dir);
+
+    if (__score_fp != NULL) {
+        flock(fileno(__score_fp), LOCK_UN);
+        fclose(__score_fp);
+    }
+
+    if (__score_fp2 != NULL) {
+        flock(fileno(__score_fp2), LOCK_UN);
+        fclose(__score_fp2);
+    }
+    
+    tcp_sender_fini_global();
+    exit(EXIT_SUCCESS);
+}
+
 static __attribute__((noreturn)) void handle_tcp_impl() {
+    signal(SIGINT, sig_exit_subtcp_impl);
+    
     const size_t recv_buf_sz = COMMAND_BUF_SZ;
     char recv_buf[COMMAND_BUF_SZ] = "";
     struct output outp;
@@ -151,14 +196,23 @@ static __attribute__((noreturn)) void handle_tcp_impl() {
 #undef ERROR_RETURN
 }
 
+static void sig_exit_subudp() {
+    /* Close the socket. */
+    udp_sender_fini();
+    exit(EXIT_SUCCESS);
+}
+
 void command_reader() {
     #ifdef FOR_TEST
     g_shmid = shmget(IPC_PRIVATE, 1024, 0666 | IPC_CREAT);
-    int *shmptr = (int *)shmat(g_shmid, NULL, 0);
-    R_FAIL_EXIT_IF(open("./locks", O_CREAT | O_RDWR, 0666) == -1, "[ERROR] Shmemlock file.\n");
+    shmptr = (int *)shmat(g_shmid, NULL, 0);
+    R_FAIL_EXIT_IF((g_shm_fd = open("./locks", O_CREAT | O_RDWR, 0666)) == -1, "[ERROR] Shmemlock file.\n");
     #endif
     const pid_t udp_pid = fork();
     if (udp_pid == 0) {
+
+        signal(SIGINT, sig_exit_subudp);
+        
         /* Listen for UDP in parent. */
         R_FAIL_EXIT_IF(udp_sender_try_init() == -1,
                        "[ERROR] Broken UDP sockets.\n");
@@ -177,6 +231,7 @@ void command_reader() {
             #ifndef FOR_TEST
             rand();
             #else
+            /* Flush shmptr data cache. */
             msync(shmptr, 0x1000, MS_SYNC);
             #endif
 
@@ -190,6 +245,7 @@ void command_reader() {
             /* Return the seeds. */
         }
 
+        udp_sender_fini();
         exit(EXIT_SUCCESS);
     } else {
         VerbosePrintF("TCP ready.");
@@ -259,12 +315,14 @@ void command_reader() {
     #ifdef FOR_TEST
     // Detach and destroy the shared memory segment
     shmdt(shmptr);
-    
+
+    shmctl(g_shmid, IPC_RMID, NULL);
+
     // Close the file descriptor
-    close(g_shm_fd);
+    handle_fd_close(g_shm_fd);
+    g_shm_fd = -1;
 
     #endif
 
-    udp_sender_fini();
 #undef ERROR_RETURN
 }
