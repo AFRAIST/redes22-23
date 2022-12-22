@@ -93,6 +93,9 @@ static __attribute__((noreturn)) void handle_udp_impl() {
 static void sig_exit_subtcp_impl() { 
     extern DIR *dir1;
     extern DIR *dir2;
+    extern DIR* __score_dir;
+    extern FILE* __score_fp;
+    extern FILE* __score_fp2;
 
     if (dir1 != NULL)
         closedir(dir1);
@@ -100,6 +103,19 @@ static void sig_exit_subtcp_impl() {
     if (dir2 != NULL)
         closedir(dir2);
 
+    if (__score_dir != NULL)
+        closedir(__score_dir);
+
+    if (__score_fp != NULL) {
+        flock(fileno(__score_fp), LOCK_UN);
+        fclose(__score_fp);
+    }
+
+    if (__score_fp2 != NULL) {
+        flock(fileno(__score_fp2), LOCK_UN);
+        fclose(__score_fp2);
+    }
+    
     tcp_sender_fini_global();
     exit(EXIT_SUCCESS);
 }
