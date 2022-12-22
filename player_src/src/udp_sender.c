@@ -74,6 +74,14 @@ ssize_t udp_sender_recv(u8 *data, size_t sz) {
 }
 
 void udp_sender_fini() {
-    socket_udp_fd = -1;
-    freeaddrinfo(peer_data);
+    if (peer_data != NULL) {        
+        freeaddrinfo(peer_data);
+        peer_data = NULL;
+    }
+
+    if (socket_udp_fd == -1) {
+        try_close(socket_udp_fd); 
+        
+        socket_udp_fd = -1;
+    } 
 }
