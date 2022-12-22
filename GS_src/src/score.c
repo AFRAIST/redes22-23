@@ -68,13 +68,11 @@ int remove_lowest_alphabetic(){
 
     sprintf(full_link, "sv_data/score/%s", lowest_name);
 
-    if (lowest_name != NULL) {
-        if (remove(full_link) != 0) {
-            perror("Error deleting file");
-            return EXIT_FAILURE;
-        }
-        VerbosePrintF("Deleted file: %s\n", full_link);
+    if (remove(full_link) != 0) {
+        perror("Error deleting file");
+        return EXIT_FAILURE;
     }
+    VerbosePrintF("Deleted file: %s\n", full_link);
 
     closedir(dir);
 
