@@ -58,7 +58,6 @@ static void sig_exit_parent() {
     extern int g_shmid;
     extern int g_shm_fd;
 
-
     // Detach and destroy the shared memory segment
     shmdt(shmptr);
     

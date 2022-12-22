@@ -10,6 +10,7 @@ int score_function(u32 n_succ){
     return round(score_value);
 }
 
+DIR *dir1 = NULL;
 int count_scores(){
     int count = 0;
 
@@ -19,14 +20,14 @@ int count_scores(){
         return count;
     } 
 
-    DIR* dir = opendir(dir_path);
-    if(dir == NULL){
+    dir1 = opendir(dir_path);
+    if(dir1 == NULL){
         return count;
     }
 
     // Read each directory entry one by one
     struct dirent* iter;
-    while ((iter = readdir(dir)) != NULL) {
+    while ((iter = readdir(dir1)) != NULL) {
         // Increment the counter for each entry
         if (strcmp(iter->d_name, ".") == 0 || strcmp(iter->d_name, "..") == 0) {
             continue;
@@ -35,14 +36,16 @@ int count_scores(){
     }
 
     // Close the directory stream
-    closedir(dir);
+    closedir(dir1);
+    dir1 = NULL;
     return count;
 }
 
+DIR *dir2;
 int remove_lowest_alphabetic(){
 
-    DIR* dir = opendir("sv_data/score");
-    if(dir == NULL){
+    dir2 = opendir("sv_data/score");
+    if(dir2 == NULL){
         perror("There is no File");
         return EXIT_FAILURE;
     }
@@ -53,7 +56,7 @@ int remove_lowest_alphabetic(){
 
     lowest_name[0] = '\0';
 
-    while ((iter = readdir(dir)) != NULL) {
+    while ((iter = readdir(dir2)) != NULL) {
     // Skip the "." and ".." entries
         if (strcmp(iter->d_name, ".") == 0 || strcmp(iter->d_name, "..") == 0) {
             continue;
@@ -74,7 +77,7 @@ int remove_lowest_alphabetic(){
     }
     VerbosePrintF("Deleted file: %s\n", full_link);
 
-    closedir(dir);
+    closedir(dir2);
 
     return EXIT_SUCCESS;
 }

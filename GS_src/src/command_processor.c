@@ -15,6 +15,7 @@ void sig_exit_subudp_impl() {
 
     handle_fd_close(g_file_dat);
     handle_fd_close(__hint_fd);
+    exit(EXIT_SUCCESS);
 }
 
 
@@ -89,7 +90,23 @@ static __attribute__((noreturn)) void handle_udp_impl() {
 #undef ERROR_RETURN
 }
 
+static void sig_exit_subtcp_impl() { 
+    extern DIR *dir1;
+    extern DIR *dir2;
+
+    if (dir1 != NULL)
+        closedir(dir1);
+
+    if (dir2 != NULL)
+        closedir(dir2);
+
+    tcp_sender_fini_global();
+    exit(EXIT_SUCCESS);
+}
+
 static __attribute__((noreturn)) void handle_tcp_impl() {
+    signal(SIGINT, sig_exit_subtcp_impl);
+    
     const size_t recv_buf_sz = COMMAND_BUF_SZ;
     char recv_buf[COMMAND_BUF_SZ] = "";
     struct output outp;
@@ -166,6 +183,7 @@ static __attribute__((noreturn)) void handle_tcp_impl() {
 static void sig_exit_subudp() {
     /* Close the socket. */
     udp_sender_fini();
+    exit(EXIT_SUCCESS);
 }
 
 void command_reader() {
