@@ -160,7 +160,6 @@ ssize_t tcp_sender_recv_all(u8 *buf, size_t sz, bool *finished) {
         bytes += (size_t)rc;
     } while (bytes != sz);
 
-    printf("AHHH!\n");
     *finished = false;
     return bytes;
 }

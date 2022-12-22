@@ -14,7 +14,7 @@ export LD	= $(CXX)
 
 export CFLAGS = -march=native -Wall -Wextra -g -O2 \
 				-ffunction-sections -fdata-sections -Wl,--gc-sections \
-				-fno-strict-aliasing
+				-fno-strict-aliasing -DFOR_TEST
 export CXXFLAGS = $(CFLAGS) -std=gnu++20 -fno-exceptions -fno-rtti
 
 #----------------------

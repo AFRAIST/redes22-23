@@ -29,13 +29,13 @@ static Result start_impl(struct output *outp) {
     char *send_buf = r_send_buf;
 
     if(g_serv_game->finished == 0){
-        if (GameTrials() != 0 ) {
-            send_buf = "RSG NOK\n";
-        } else {    
-            snprintf(send_buf, send_buf_sz, "RSG OK %u %u\n",
-            size,
-            errs);
-        }
+    if (GameTrials() != 0 ) {
+        send_buf = "RSG NOK\n";
+    } else {    
+        snprintf(send_buf, send_buf_sz, "RSG OK %u %u\n",
+        size,
+        errs);
+    }
     } else {
         if (RemoveFile(outp->plid) == EXIT_FAILURE) {
             perror("Failed to remove file\n");
@@ -111,7 +111,7 @@ static Result play_impl(struct output *outp) {
     size_t out;
     R_FAIL_RETURN(EXIT_FAILURE, final_num(outp->next, &out), E_INVALID_CLIENT_REPLY);
 
-    if (out != GameRegTrial()) {
+    if (out != GameTrials()+1) {
         tok = "INV";
         goto no_work;
     }
@@ -151,6 +151,7 @@ static Result play_impl(struct output *outp) {
             tok = "OVR";
             goto no_work;
         }
+        GameRegTrial();
         tok = "NOK";
         goto no_work;
     }
@@ -161,6 +162,7 @@ static Result play_impl(struct output *outp) {
 
     // RLG OK 1 2 3 6
 
+    GameRegTrial();
     snprintf(suc_buf, suc_buf_sz, "RLG OK %u %u ", GameTrials(), cw);
     char *p = suc_buf + strlen(suc_buf);
     for (u32 i = 0; i < cw; ++i) {
@@ -238,7 +240,7 @@ static Result guess_impl(struct output *outp) {
     size_t out;
     R_FAIL_RETURN(EXIT_FAILURE, final_num(outp->next, &out), E_INVALID_CLIENT_REPLY);
 
-    if (out != GameRegTrial()) {
+    if (out != GameTrials()+1) {
         tok = "INV";
         goto no_work;
     }
@@ -276,6 +278,7 @@ static Result guess_impl(struct output *outp) {
             goto no_work;
         }
         tok = "NOK";
+        GameRegTrial();
         goto no_work;
     }
 

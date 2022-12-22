@@ -10,8 +10,8 @@ static ALWAYS_INLINE void ignore_signal_impl(int signum) {
     sigaction(signum, &act, NULL);
 }
 
-void ignore_signal_sigpipe() { ignore_signal_impl(SIGPIPE); }
 
+void ignore_signal_sigpipe() { ignore_signal_impl(SIGPIPE); }
 void ignore_signal_sigchld() { ignore_signal_impl(SIGCHLD); }
 
 void ignore_signals() {
