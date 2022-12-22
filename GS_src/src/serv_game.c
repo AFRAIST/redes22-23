@@ -4,7 +4,7 @@
 static __attribute__((aligned(1024))) u8 g_file_arena[0x2000];
 ServGame *g_serv_game = (ServGame *)((u8 *)g_file_arena + 8);
 
-int g_file_dat = 0;
+int g_file_dat = -1;
 bool exists;
 
 Result GameAcquire(size_t plid) {
@@ -75,8 +75,20 @@ u32 GameTrials() {
 }
 
 Result GameRelease() {
-    R_FAIL_RETURN(EXIT_FAILURE, flock(g_file_dat, LOCK_UN) == -1, E_ACQUIRE_ERROR);
-    return EXIT_SUCCESS;
+    Result rc;
+    if (flock(g_file_dat, LOCK_UN) == -1) {
+        perror(E_ACQUIRE_ERROR);
+        rc = EXIT_FAILURE;
+    }
+
+    if (close(g_file_dat) == -1) {
+        perror("[ERROR] Failed to close serialization file.\n");
+        rc = EXIT_FAILURE;
+    }
+
+    g_file_dat = -1;
+
+    return rc;
 }
 
 Result StartGame() {
@@ -146,12 +158,6 @@ Result ExitAndSerializeGame() {
         rc = EXIT_FAILURE;
     }
 
-    if (close(g_file_dat) == -1) {
-        perror("[ERROR] Failed to close serialization file.\n");
-        rc = EXIT_FAILURE;
-    }
-
-    g_file_dat = 0;
     return rc;
 }
 

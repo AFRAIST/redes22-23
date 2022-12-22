@@ -28,6 +28,7 @@ static inline void ParseDataFromFile(Dictionary *dict, FILE *fp, char **data,
 
     /* We don't need it anymore! */
     fclose(fp);
+    fp = NULL;
 }
 
 size_t random_entry(Dictionary *dict) {

@@ -15,10 +15,13 @@ Result get_plid(char *ap, size_t *plid) {
     return EXIT_SUCCESS;
 }
 
-void handle_fd_close(int fd) {
+int handle_fd_close(int fd) {
     if (fd != -1) {
         flock(fd, LOCK_UN);
-        close(fd);
+        int res = close(fd);
         fd = -1;
+        return res;
     }
+    
+    return -1;
 }

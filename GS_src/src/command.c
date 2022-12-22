@@ -477,6 +477,7 @@ out:
 }
 
 
+int __hint_fd = -1;
 static Result hint_impl(struct output *outp) {
     (void)outp;
     R_FAIL_RETURN(EXIT_FAILURE, StartGame() == EXIT_FAILURE, E_FAILED_SERIAL_READ);
@@ -490,15 +491,15 @@ static Result hint_impl(struct output *outp) {
     snprintf(path, 0x1000, "assets/%s", c); 
 
     fprintf(stderr, "Path: %s.\n", path);
-    int fd = open(path, O_RDONLY);
+    __hint_fd = open(path, O_RDONLY);
 
-    if (flock(fd, LOCK_SH) == -1) {
+    if (flock(__hint_fd, LOCK_SH) == -1) {
         perror("[ERR] Failed to flock.");
         goto error;
     }
 
     struct stat sb;
-    if (fstat(fd, &sb) == -1) {
+    if (fstat(__hint_fd, &sb) == -1) {
         perror("[ERR] Failed to stat.");
         goto error;
     }
@@ -507,7 +508,7 @@ static Result hint_impl(struct output *outp) {
 
     u8 *buf = r_buf + 0x1000;
     u32 sz;
-    if((s32)(sz = read(fd, buf, 4 * 1024 * 1024)) == -1)
+    if((s32)(sz = read(__hint_fd, buf, 4 * 1024 * 1024)) == -1)
         goto error;
 
 
@@ -523,7 +524,7 @@ static Result hint_impl(struct output *outp) {
 
     full_size -= sz;
     while (full_size != 0) {
-        if((s32)(sz = read(fd, buf, 4 * 1024 * 1024)) == -1) {
+        if((s32)(sz = read(__hint_fd, buf, 4 * 1024 * 1024)) == -1) {
             perror(E_FAILED_REPLY);
             goto skip;
         }
@@ -539,12 +540,8 @@ static Result hint_impl(struct output *outp) {
     if (tcp_sender_send((u8 *)"\n", 1) == -1)
         perror(E_FAILED_REPLY);
 
-    if (flock(fd, LOCK_UN) == -1) {
-        perror("[ERR] Failed to flock.\n");
-    }
-
 skip:
-    if (close(fd) == -1) {
+    if (handle_fd_close(__hint_fd) == -1) {
         perror("[ERR] Failed to close file.\n");
     }
     return EXIT_SUCCESS;
@@ -552,7 +549,7 @@ skip:
 error:
     perror(E_FAILED_REPLY);
 
-    if (close(fd) == -1) {
+    if (handle_fd_close(__hint_fd) == -1) {
         perror("[ERR] Failed to close file.\n");
     }
 

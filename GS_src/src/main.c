@@ -44,11 +44,14 @@ char GSport_GSip_reader(int argc, char **argv, FILE **word_file,
 }
 
 
+FILE *word_file = NULL;
 static void sig_exit_parent() { 
     if (GSport != NULL)
         free(GSport);
     FiniDictionary(&dict_instance);
 
+    if (word_file == NULL)
+        fclose(word_file);
 
     #ifdef FOR_TEST
     extern int *shmptr;
@@ -72,8 +75,6 @@ static void sig_exit_parent() {
 }
 
 int main(int argc, char *argv[]) {
-    FILE *word_file = NULL;
-
     ignore_signals();
 
     if (GSport_GSip_reader(argc, argv, &word_file, &GSport) == EXIT_FAILURE) {

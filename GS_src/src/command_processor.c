@@ -9,7 +9,18 @@ int g_shm_fd = 0;
 int *shmptr;
 #endif
 
+void sig_exit_subudp_impl() {    
+    extern int __hint_fd;
+    extern int g_file_dat;
+
+    handle_fd_close(g_file_dat);
+    handle_fd_close(__hint_fd);
+}
+
+
 static __attribute__((noreturn)) void handle_udp_impl() {
+    signal(SIGINT, sig_exit_subudp_impl);
+
     const size_t recv_buf_sz = COMMAND_BUF_SZ;
     char recv_buf[COMMAND_BUF_SZ] = "";
     struct output outp;
@@ -153,7 +164,7 @@ static __attribute__((noreturn)) void handle_tcp_impl() {
 }
 
 static void sig_exit_subudp() {
-
+    /* Close the socket. */
     udp_sender_fini();
 }
 
@@ -186,6 +197,7 @@ void command_reader() {
             #ifndef FOR_TEST
             rand();
             #else
+            /* Flush shmptr data cache. */
             msync(shmptr, 0x1000, MS_SYNC);
             #endif
 
@@ -199,6 +211,7 @@ void command_reader() {
             /* Return the seeds. */
         }
 
+        udp_sender_fini();
         exit(EXIT_SUCCESS);
     } else {
         VerbosePrintF("TCP ready.");
@@ -277,6 +290,5 @@ void command_reader() {
 
     #endif
 
-    udp_sender_fini();
 #undef ERROR_RETURN
 }

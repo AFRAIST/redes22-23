@@ -58,6 +58,9 @@ static void sig_exit() {
     if (command_exit() == EXIT_FAILURE)
         perror(E_QUIT_SERVER);
 
+    extern int __get_file_fd;
+    handle_fd_close(__get_file_fd);
+
     fflush(stderr);
     fflush(stdout);
 
