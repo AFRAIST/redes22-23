@@ -114,10 +114,7 @@ static __attribute__((noreturn)) void handle_tcp_impl() {
         ERROR_RETURN();
 
     if (!strcmp(recv_buf, "GSB\n")) {
-        perror("Not yet implemented!");
-        if (tcp_sender_fini())
-            perror("[ERR] Closing TCP.\n");
-        exit(EXIT_FAILURE);
+        command_scoreboard(&outp);
     }
 
     char *cmd, *tok;

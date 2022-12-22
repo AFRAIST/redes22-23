@@ -3,6 +3,7 @@
 #include "serv_game.h"
 #include "udp_sender.h"
 #include "tcp_sender.h"
+#include "score.h"
 
 static inline u32 get_errs(u32 size) {
     if (size < 7)
@@ -124,6 +125,7 @@ static Result play_impl(struct output *outp) {
     if(fespace == 0){
         g_serv_game->finished = 1;
         tok = "WIN";
+        save_score(outp, word);
         goto no_work;
     }
 
@@ -266,10 +268,10 @@ static Result guess_impl(struct output *outp) {
     #define suc_buf_sz (0x1000)
     char suc_buf[suc_buf_sz];
 
-    // RLG OK 1 2 3 6
 
     g_serv_game->finished = 1;
     snprintf(suc_buf, suc_buf_sz, "RWG WIN %u\n", GameTrials());
+    save_score(outp, word);
 
     VerbosePrintF("Sent message: %s\n", suc_buf);
     const size_t suc_sz = strlen(suc_buf); 
@@ -322,10 +324,82 @@ out:
     exit(EXIT_SUCCESS);
 }
 
-Result command_scoreboard(struct output *outp) {
-    (void)(outp);
-    R_NOT_IMPLEMENTED();
+Result scoreboard_impl(){
+    u8 *r_buf = malloc(0xA000);    
+    //R_FAIL_RETURN(EXIT_FAILURE, StartGame() == EXIT_FAILURE, E_FAILED_SERIAL_READ);
+    
+    if(count_scores() == 0){
+        printf("%i", count_scores());
+        if (tcp_sender_send((u8 *)"RSB EMPTY\n", 10) != 10) {
+            perror(E_FAILED_REPLY);
+            return EXIT_SUCCESS;
+        }
+
+        if (tcp_sender_fini() == -1) perror("[ERR] Closing TCP.\n"); \
+        exit(EXIT_SUCCESS);
+    }
+
+    char * const a_buf = (char *)r_buf + 0x1000;
+    char *buf = a_buf;
+
+    ScoreEntry scoreboard_list[TOP_SCORE];
+
+    if(get_scoreboard(scoreboard_list) == EXIT_FAILURE){
+        perror("[ERR] Getting Scoreboard"); 
+        return EXIT_FAILURE;
+    }
+
+    for(u32 i = total_scores; i > 0; i--){
+        sprintf(buf, "TOP %i: %s\n",total_scores - i + 1, scoreboard_list[i - 1].score_str);
+        buf += strlen(buf);
+    }
+
+    const size_t file_sz = strlen(a_buf);
+    buf[0] = '\n';
+    buf[1] = '\x00';
+
+    char dat[0x1000];
+    sprintf(dat, "RSB OK Scoreboard %zu ",  file_sz);
+
+    const size_t diff = strlen(dat);
+    u8 *send_buf = (u8 *)a_buf - diff;
+    memcpy(send_buf, dat, diff);
+
+    VerbosePrintF("Sending the data!\n");
+    if(tcp_sender_send(send_buf, (size_t)strlen((char *)send_buf)) == -1) {
+        goto no_work;
+    }
+
+    free(r_buf);
     return EXIT_SUCCESS;
+
+no_work:
+    free(r_buf);
+    return EXIT_FAILURE;
+
+}
+Result command_scoreboard(struct output *outp) {
+    Result rc = EXIT_SUCCESS;
+
+    printf("AAAAAAAAAAAAAAA\n");
+    if (outp->err)
+        goto out;
+
+    printf("BBBBBBBB\n");
+
+
+    if ((rc = scoreboard_impl()) == EXIT_FAILURE) {
+        goto out;
+    } 
+
+    R_FAIL_EXIT_IF(GameRelease() == EXIT_FAILURE, E_RELEASE_ERROR);
+    exit(rc);
+
+out:
+    R_FAIL_EXIT_IF(tcp_sender_send((u8 *)"RSB ERR\n", 8) != 8,
+                      E_FAILED_REPLY);
+
+    exit(EXIT_FAILURE);
 }
 
 
