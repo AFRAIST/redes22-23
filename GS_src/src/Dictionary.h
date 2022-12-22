@@ -14,6 +14,10 @@ typedef struct {
     size_t amt;
 } Dictionary;
 
+#ifdef FOR_TEST
+extern int g_num_test;
+#endif
+
 extern Dictionary dict_instance;
 
 #define DICT_INVALID_WORD_SIZE_ERROR "Dictionary: Invalid word size!"

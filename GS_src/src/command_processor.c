@@ -3,6 +3,10 @@
 #include "tcp_sender.h"
 #include "udp_sender.h"
 
+#ifdef FOR_TEST
+int g_num_test = 0;
+#endif
+
 static __attribute__((noreturn)) void handle_udp_impl() {
     const size_t recv_buf_sz = COMMAND_BUF_SZ;
     char recv_buf[COMMAND_BUF_SZ] = "";
@@ -167,7 +171,11 @@ void command_reader() {
                 continue;
 
             /* Spin the seeds. */
+            #ifndef FOR_TEST
             rand();
+            #else
+            g_num_test = (g_num_test == 0) ? 1 : (g_num_test + 1);
+            #endif
 
             const pid_t h_udp = fork();
             if (h_udp == 0) {
