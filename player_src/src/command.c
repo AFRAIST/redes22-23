@@ -466,6 +466,8 @@ static Result get_file(u32 offset, u32 whence, bool show) {
 
     R_FAIL_RETURN(EXIT_FAILURE, close(fd) == -1, "[ERROR] Failed to close file.\n");
 
+    printf("Scoreboard file \"%s\" was saved at: \"/.\"\n", fname);
+
     return EXIT_SUCCESS;
 
 error:
