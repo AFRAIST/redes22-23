@@ -32,7 +32,7 @@ ssize_t udp_sender_try_init() {
 ssize_t udp_sender_send(const u8 *data, size_t sz) {
     struct timeval tmout;
     memset((char *)&tmout,0,sizeof(tmout)); /* Clear time structure. */
-    tmout.tv_sec = 2;
+    tmout.tv_sec = TIMEOUT_VALUE_UDP;
     if (setsockopt(socket_udp_fd, SOL_SOCKET, SO_SNDTIMEO, (struct timeval *)&tmout,sizeof(struct timeval)) == -1) {
         perror("Setsockopt.\n");
         return -1;
@@ -54,7 +54,7 @@ ssize_t udp_sender_send(const u8 *data, size_t sz) {
 ssize_t udp_sender_recv(u8 *data, size_t sz) {
     struct timeval tmout;
     memset((char *)&tmout,0,sizeof(tmout)); /* Clear time structure. */
-    tmout.tv_sec = 2;
+    tmout.tv_sec = TIMEOUT_VALUE_UDP;
     if (setsockopt(socket_udp_fd, SOL_SOCKET, SO_RCVTIMEO, (struct timeval *)&tmout,sizeof(struct timeval)) == -1) {
         perror("Setsockopt.\n");
         return -1;

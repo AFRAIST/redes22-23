@@ -111,18 +111,32 @@ static Result play_impl(struct output *outp) {
     size_t out;
     R_FAIL_RETURN(EXIT_FAILURE, final_num(outp->next, &out), E_INVALID_CLIENT_REPLY);
 
+    u32 i = 0;
+    for(; i < 40 && g_serv_game->letter_guess[i].letter != 0; ++i) {
+        if (g_serv_game->letter_guess[i].letter == ch) {
+            if (g_serv_game->word_guess[i+1].word != 0) {                            
+                if (out != GameTrials()+1) {
+                    tok = "INV";
+                    goto no_work;
+                }
+                
+                tok = "DUP";
+                goto no_work;
+            } else {
+                if (g_serv_game->last_was_incremental) {
+                    GameUnregTrial();
+                    goto _continue;
+                }
+            }
+        }
+    }
+
     if (out != GameTrials()+1) {
         tok = "INV";
         goto no_work;
     }
 
-    u32 i = 0;
-    for(; i < 40 && g_serv_game->letter_guess[i].letter != 0; ++i) {
-        if (g_serv_game->letter_guess[i].letter == ch) {
-            tok = "DUP";
-            goto no_work;
-        }
-    }
+_continue:
     g_serv_game->letter_guess[i].letter = ch;
 
     /* Map with each pos. */
@@ -153,7 +167,7 @@ static Result play_impl(struct output *outp) {
         }
         GameRegTrial();
         tok = "NOK";
-        goto no_work;
+        goto no_work_nok;
     }
 
     
@@ -173,16 +187,28 @@ static Result play_impl(struct output *outp) {
 
 
     const size_t suc_sz = strlen(suc_buf); 
-    R_FAIL_RETURN(EXIT_FAILURE, (size_t)udp_sender_send((u8 *)suc_buf, suc_sz) != suc_sz, E_FAILED_REPLY);
+    
+    if ((size_t)udp_sender_send((u8 *)suc_buf, suc_sz) != suc_sz) {
+        perror(E_FAILED_REPLY);
+        g_serv_game->last_was_incremental = false;
+        return EXIT_FAILURE;
+    }
+
     return EXIT_SUCCESS;
 
 no_work:
+    g_serv_game->last_was_incremental = false;
+no_work_nok:
     ;
     char send_buf[0x1000];
 
     sprintf(send_buf, "RLG %s %u\n", tok, GameTrials());
     const size_t send_buf_sz = strlen(send_buf);
-    R_FAIL_RETURN(EXIT_FAILURE, (size_t)udp_sender_send((u8 *)send_buf, send_buf_sz) != send_buf_sz, E_FAILED_REPLY);
+    if ((size_t)udp_sender_send((u8 *)send_buf, send_buf_sz) != send_buf_sz) {
+        perror(E_FAILED_REPLY); 
+        g_serv_game->last_was_incremental = false;
+        return EXIT_FAILURE;
+    }
 
     return EXIT_SUCCESS;
     #undef suc_buf_sz
@@ -240,10 +266,6 @@ static Result guess_impl(struct output *outp) {
     size_t out;
     R_FAIL_RETURN(EXIT_FAILURE, final_num(outp->next, &out), E_INVALID_CLIENT_REPLY);
 
-    if (out != GameTrials()+1) {
-        tok = "INV";
-        goto no_work;
-    }
 
     i = 0;
     u32 guessed_word_size = strlen(word_guessed); 
@@ -251,10 +273,31 @@ static Result guess_impl(struct output *outp) {
         VerbosePrintF("other attempts: %s\n", g_serv_game->word_guess[i].word);
         //isto vai poder ir para uma funcao compare_words
         if(strcasecmp(g_serv_game->word_guess[i].word, word_guessed) == 0) {
-            tok = "DUP";
-            goto no_work;
+            if (g_serv_game->word_guess[i+1].word != 0) {
+                if (out != GameTrials()+1) {
+                    tok = "INV";
+                    goto no_work;
+                }
+        
+                tok = "DUP";
+                goto no_work;
+            } else {
+                if (g_serv_game->last_was_incremental) {
+                    GameUnregTrial();
+                    goto _continue;
+                }
+            }
         }
     }
+    
+
+    if (out != GameTrials()+1) {
+        tok = "INV";
+        goto no_work;
+    }
+
+_continue:
+
     g_serv_game->word_guess[i].word = StrSerializeDup(word_guessed);
     VerbosePrintF("New attempted word: %s %i\n", g_serv_game->word_guess[i].word, i);
 
@@ -279,7 +322,7 @@ static Result guess_impl(struct output *outp) {
         }
         tok = "NOK";
         GameRegTrial();
-        goto no_work;
+        goto no_work_nok;
     }
 
     
@@ -293,17 +336,27 @@ static Result guess_impl(struct output *outp) {
 
     VerbosePrintF("Sent message: %s\n", suc_buf);
     const size_t suc_sz = strlen(suc_buf); 
-    R_FAIL_RETURN(EXIT_FAILURE, (size_t)udp_sender_send((u8 *)suc_buf, strlen(suc_buf)) != suc_sz, E_FAILED_REPLY);
+    if ((size_t)udp_sender_send((u8 *)suc_buf, strlen(suc_buf)) != suc_sz) {
+        perror(E_FAILED_REPLY);
+        g_serv_game->last_was_incremental = false;
+        return EXIT_FAILURE;
+    }
+    
     return EXIT_SUCCESS;
-
 no_work:
+    g_serv_game->last_was_incremental = false;
+no_work_nok:
     ;
     #define fmt_sz (0x1000)
     char send_buf[fmt_sz];
 
     snprintf(send_buf, fmt_sz, "RWG %s %u\n", tok, GameTrials());
     const size_t send_buf_sz = strlen(send_buf);
-    R_FAIL_RETURN(EXIT_FAILURE, (size_t)udp_sender_send((u8 *)send_buf, send_buf_sz) != send_buf_sz, E_FAILED_REPLY);
+    if ((size_t)udp_sender_send((u8 *)send_buf, send_buf_sz) != send_buf_sz) {
+        perror(E_FAILED_REPLY);
+        g_serv_game->last_was_incremental = false;
+        return EXIT_FAILURE;
+    }
 
     return EXIT_SUCCESS;
     #undef fmt_sz
@@ -521,6 +574,21 @@ Result command_hint(struct output *outp) {
         goto out;
     }
 
+    bool game_empty;
+    if ((rc = GameEmpty(&game_empty)) == EXIT_FAILURE) {
+        perror(E_ACQUIRE_ERROR);
+        goto out_release;
+    }
+    
+    if (game_empty) { 
+        if (tcp_sender_send((u8 *)"RHL NOK\n", 8) != 8) {
+            perror(E_FAILED_REPLY);
+        }
+
+        if (tcp_sender_fini() == -1) perror("[ERR] Closing TCP.\n");
+        exit(EXIT_SUCCESS);
+    }
+
     if ((rc = hint_impl(outp)) == EXIT_FAILURE) {
         goto out;
     } 
@@ -531,6 +599,11 @@ Result command_hint(struct output *outp) {
 
     if (tcp_sender_fini() == -1) perror("[ERR] Closing TCP.\n");
     exit(rc);
+
+out_release:
+    if (GameRelease() == EXIT_FAILURE) {
+        perror(E_RELEASE_ERROR);
+    }
 
 out:
     if(tcp_sender_send((u8 *)"ERR\n", 4) != 4) {

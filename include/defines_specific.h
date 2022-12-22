@@ -6,3 +6,6 @@
 #define PLID_MAX_SIZE 6
 
 #define WORD_LETTERS 30
+
+#define TIMEOUT_VALUE_TCP (2)
+#define TIMEOUT_VALUE_UDP (2)

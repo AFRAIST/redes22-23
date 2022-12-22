@@ -582,6 +582,7 @@ static Result hint_impl() {
 
 Result command_hint(struct input *inp) {
     (void)inp;
+    RETURN_IF_NOT_ACTIVE_GAME();
     R_FAIL_RETURN(EXIT_FAILURE, tcp_sender_try_init() != EXIT_SUCCESS,
                   E_FAILED_SOCKET);
 

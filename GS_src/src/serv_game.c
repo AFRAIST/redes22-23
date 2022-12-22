@@ -62,7 +62,12 @@ Result GameEmpty(bool *out) {
 }
 
 u32 GameRegTrial() {
+    g_serv_game->last_was_incremental = true;
     return ++g_serv_game->trials;
+}
+
+u32 GameUnregTrial() {
+    return --g_serv_game->trials;
 }
 
 u32 GameTrials() {
