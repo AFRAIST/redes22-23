@@ -75,7 +75,7 @@ u32 GameTrials() {
 }
 
 Result GameRelease() {
-    Result rc;
+    Result rc = EXIT_SUCCESS;
     if (flock(g_file_dat, LOCK_UN) == -1) {
         perror(E_ACQUIRE_ERROR);
         rc = EXIT_FAILURE;
